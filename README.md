@@ -23,9 +23,6 @@ The Re-Write. Taking the original ideas of using placeholder variables and templ
 Having everything was too much and needed to be pruned.  
 For personal projects, having getters and setters integrated in one overloaded function was not as elegant in the code as it could have been, and added complexity, the template function with the possibility of loading subtemplates to extract headers on the fly has been simplified, and the debug static class was simplfied.
 
-# Documentation
-Each class and method are documented with PHPDoc, similar to javadoc. In short, a comment block before each method, with a description of the method, the description of the arguments and the return values, if any.
-
 # Included Library Files
 The RedSea Lite library itself comprises of the following components:
 
@@ -42,6 +39,12 @@ The RedSea Lite library itself comprises of the following components:
 
 ## Setup 
 Unzip the code unto a folder. As long as the code is in the unzipped folders, just include the `redsea.inc.php` file, which will set up the required constants and uncomment the library files you require. Do not comment out the `debug.inc.php` class, as all other RedSea libraries depend on it.
+
+## Documentation
+Each class and method are documented with PHPDoc, similar to javadoc. In short, a comment block before each method, with a description of the method, the description of the arguments and the return values, if any. 
+
+## Test Suite
+Apart from the MariaDB examples that need to connect to a MariaDB database, the other examples can run stand alone. The test suite is in the `tests` directory where each function in the library is tested out and should work on any PHP 8.x capable web server.
 
 ## Examples
 
