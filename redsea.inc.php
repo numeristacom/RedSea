@@ -19,6 +19,10 @@
 
 // Setup:
 
+/**
+ * Define end of line and horizontal rule constants depending on execution context (CLI or web)
+ */
+
 if(php_sapi_name() === 'cli') {
     /**
      * Set End of line constant to PHP_EOL when running on the command line
@@ -56,14 +60,18 @@ if(php_sapi_name() === 'cli') {
      * @internal
      */
     define("RS_CLI", false);
-
 }
 
-// debug.inc.php must be set first as all other objects depend on it!
+//Library autoloader
+// debug.inc.php must be set first as all other objects depend on it for debug and execution flow services
 include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "debug.inc.php");
-include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "form.inc.php");
-include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "string.inc.php");
-include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "template.inc.php");
-include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "db.inc.php");
+
+//include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "template.inc.php");
+//include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "form.inc.php");
+//include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "html.inc.php");
+//include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "sqlite3.inc.php");
+//include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "mariadb.inc.php");
+//include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "string.inc.php");
+//include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "timer.inc.php");
 
 ?> 
