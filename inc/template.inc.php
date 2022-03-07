@@ -122,6 +122,64 @@ class template {
     }
 
     /**
+     * Get an HTML element identified by it's ID attribute from a ressource content loaded by loadHtmlRessource
+     * @param string $elementID The ID value of the attribute that you want to extract.
+     * @param mixed $PathToFileContainingElementID Path and name of the HTML file containing the elements to load
+     * @param bool $onlyInnerHTML If true, only the contents inside the tag identified by ID will be returned,
+     * but not the openign and closing parent tag identified by the ID. If False, the complete tag and it's contents
+     * will be returned. Default false.
+     * @return string|false On sucess, the HTML code of the requested element will be returned, or FALSE on error.
+     * In case of error, in addition to the above:
+     * - The method itself will return FALSE
+     * - The object's $errorFlag flag will be set to TRUE
+     * - Error details can be obtained by calling the object's getLastError() method.
+     */
+    public function getElementById($elementID, $PathToFileContainingElementID, $onlyInnerHTML=false) {
+        debug::flow();
+        $fileContent=null;
+
+        if(!is_file($PathToFileContainingElementID)) {
+            debug::err("Invalid path to file", $PathToFileContainingElementID);
+            return false;
+        } else {
+            // Generate a hash of the file path, this will be used to identify cached content
+            $fileContent = file_get_contents($PathToFileContainingElementID);
+            if($fileContent === false) {
+                debug::err("Error loading file", $PathToFileContainingElementID);
+                return false;
+            } else {
+                $dom = new \DOMDocument;
+                $dom->loadHTML($fileContent);
+                //Get the content, if it exists.
+                $ressourceHTML = null;
+                $domRessource = $dom->getElementById($elementID);
+                if(!is_null($domRessource)) {
+                    $htmlCode = $dom->saveHTML($domRessource);
+                    if($onlyInnerHTML) {
+                        /* From the returned HTML code:
+                        A. Identify the position of the first > character starting from beginning of string (end of initial tag)
+                        B. Identify the position of the last < character starting from end of string (start of final tag)
+                        C. Extract the string
+                            - starting from value in A+1 (next character)
+                            - reading from position of value B-1 (previous character) and subtracting A to exclude the start of string
+                            - ...
+                            - SUCCESS!
+                        */
+                        $endFirstTag = strpos($htmlCode, '>');
+                        $startLastTag = strrpos($htmlCode, '<', -1);
+                        return substr($htmlCode, $endFirstTag+1, ($startLastTag - $endFirstTag-1));
+                    } else {
+                        return $htmlCode;
+                    }
+                } else {
+                    debug::err("Could not find specified ID in HTML ressource", $elementID);
+                    return false;
+                }
+            }            
+        }        
+    }
+
+    /**
      * Render the HTML template, replacing set placeholder values set by the var() method.
      * @return string HTML output 
      * @see template::var()

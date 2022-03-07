@@ -21,7 +21,7 @@ The Re-Write. Taking the original ideas of using placeholder variables and templ
 
 - 2022 - Lite  
 Having everything was too much and needed to be pruned.  
-For personal projects, having getters and setters integrated in one overloaded function was not as elegant in the code as it could have been, and added complexity, the template function with the possibility of loading subtemplates to extract headers on the fly may still find it's way back in, but a simple workaround with a standalone hand adapted HTML include could save a lot of cycles unless cached. That's something for another day, and the debug static class was simplfied.
+For personal projects, having getters and setters integrated in one overloaded function was not as elegant in the code as it could have been, and added complexity, the template function with the possibility of loading subtemplates to extract headers on the fly has been simplified, and the debug static class was simplfied.
 
 # Documentation
 Each class and method are documented with PHPDoc, similar to javadoc. In short, a comment block before each method, with a description of the method, the description of the arguments and the return values, if any.
