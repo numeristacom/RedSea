@@ -12,7 +12,7 @@ namespace RedSea;
 * Static class providing debug reporting services to the RedSea library and usable in any custom 
 * code that implements this class library
 */
-class d {
+class debug {
     /**
      * This public flag is set if an error message has been set and is waiting to be read.
      * If True: There is a pending error.
@@ -33,8 +33,8 @@ class d {
      * - 0: No debug (off)
      * - 1: Application flow: Display notifications as long as there is no other details to display.
      * This is the equivalent of calling d:dbg();
-     * - 2: Display message (if set), method name, file and line but not method arguments
-     * - 3: Display message (if set), method name, file, line and method arguments 
+     * - 2: Display message (if set), method name, file and line but not method argument
+     * - 3 Same as 2 but adding calling function arguments.
      * @see rsDebug::setDebugLevel()
      * @internal
      */
@@ -47,132 +47,73 @@ class d {
      * */
     public static $lastErrorMessage = null;
 
+
     /**
-     * This is a helper method for the dbg method. It will take the set error message to display
-     * and store it before calling the dbg method to display the error as dbg only renders the error and trace to the screen
-     * and does not store it for later error processing.
+     * Displays program flow. When no arguments are provided, it can be used to trace through program execution by outputting the 
+     * calling function/method's name, file and line number.
+     * If parameters are set then these details will be output too.
+     * @param string $message Message to display during program execution flow
+     * @param variant $optionalData Extra data of any sort that can be useful to debug program flow.
+     * @param integer $backUpTraceLevels = The backtrace index to display. 0 is the function itself. 1 (default) is the
+     * function that called this function, and 2 is another level back, if another function is used to call flow (such as the err method of the debug class) 
+     * @return void 
+     */
+    static function flow($message=null, $optionalData=null, $backUpTraceLevels = 0) {
+
+        if(self::$debugLevel > 0) {
+            //App flow
+            $backTrace = debug_backtrace();
+            if(count($backTrace) == 1) {
+                //Call directly from a php script outside of a function
+                $traceIndex = 0 + $backUpTraceLevels;
+            } else {
+                //Call from some nested function
+                $traceIndex = 1 + $backUpTraceLevels;
+            }
+            print($backTrace[$traceIndex]['function'] . '() - ' . $backTrace[$traceIndex]['file'] . ':' . $backTrace[$traceIndex]['line'] . RS_EOL);
+            if(self::$debugLevel > 1) {
+                // App flow and flow state
+                if(!is_null($message)) {
+                    print($message . RS_HR);
+                }
+                if(!is_null($optionalData)) {
+                    print(var_dump($optionalData) . RS_HR);
+                }
+            }
+        }
+    }
+
+
+    /**
+     * This is a wrapper to the flow method, but will set the class error flag and store it for future processing.
      * @param mixed|null $message 
      * @param mixed|null $optionalData 
      * @return void 
      */
-    static function dbgError($message=null, $optionalData=null) {
+    static function err($message, $optionalData=null) {
+        
         self::$lastErrorMessage = $message;
+        debug::flow($message, $optionalData, 2); // 2 is set to ignore 2 levels of backtrace.
+
         if(self::$dieOnError) {
-            self::$debugLevel = 3;
-        }
-        d::dbg($message, $optionalData, true);
-        if(self::$dieOnError) {
-            die("Die On Error flag set. Program halted.");
+            //Output a stacktrace and die.
+            die(RS_HR . var_dump(debug_backtrace()) . RS_HR . "Die On Error flag set. Program halted.");
+        } else {
+            self::$lastErrorMessage = $message;
         }
     }
 
     /**
-     * Output debug information to the screen, depending on the state of the self:$debugLevel property of the class.
-     * @param string $message Message or string to output. If null, no output will be generated.
-     * @param $optionalData Variable data to be displayed. Can by any PHP data type. If null, no output for this data will be generated.
-     * @param bool $functionArguments If TRUE, pull the arguments supplied to the parent function or method that called this method
-     * @param bool $backtraceOneMore Will be set if the call comes from the dbgError method and the backtrace needs to ignore
-     * the extra intermediate entry in the call stack.
-     * @return void There is no return value, output is generated direct to screen/browser.
+     * Output a fatal error and stop program execution.
+     * @param string $message Message to display during program execution flow
+     * @param variant $optionalData Extra data of any sort that can be useful to debug program flow.
+     * @return void 
      */
-    static function dbg($message=null, $optionalData=null, $backtraceOneMore=false) {
-        
-        /*
-         * Format of debug message:
-         * 0: Nothing - debugging deactivated.
-         * 1: Only display "message free" calls to illustrate program flow. No rendering of function call arguments
-         * 2: All calls and messages, but no rendering of function/method call arguments
-         * 3: Everything.
-         */
-
-        // Handles debug levels 1, 2 and 3
-        $dbgMessage = null;
-
-        if(self::$debugLevel > 0) {
-
-            if(!empty($message) && self::$debugLevel == 1) {
-                //Don't do anything in this case as we are in level 1 flow mode and we
-                //need to ignore anything with a message.
-                return false;
-            } 
-            
-            // All other cases and debug levels, we need the backtrace data.
-            $dbgBacktrace = debug_backtrace();
-
-            if($backtraceOneMore == false) {
-                $backTraceIndexModifier = 0;
-            } else {
-                $backTraceIndexModifier = 1;
-            }
-        
-            $dbgQuickStackTrace = null;
-            if(isset($dbgBacktrace[1 + $backTraceIndexModifier]['class'])) {
-                $dbgQuickStackTrace .= 'Class: ' . $dbgBacktrace[1 + $backTraceIndexModifier]['class'] . RS_EOL;
-            }
-
-            if(isset($dbgBacktrace[1 + $backTraceIndexModifier]['function'])) {
-                $dbgQuickStackTrace .= 'Function: ' . $dbgBacktrace[1 + $backTraceIndexModifier]['function'] . RS_EOL;
-            }
-
-            $dbgQuickStackTrace .= 'Source: ' . $dbgBacktrace[0 + $backTraceIndexModifier]['file'] . ":" . $dbgBacktrace[0 + $backTraceIndexModifier]['line'] . RS_EOL;
-
-            if(isset($dbgBacktrace[2 + $backTraceIndexModifier]['file'])) {
-                $dbgQuickStackTrace .= 'Called from: ' . $dbgBacktrace[2 + $backTraceIndexModifier]['file'] . ':'. $dbgBacktrace[2 + $backTraceIndexModifier]['line'] . RS_EOL;
-            }
-
-            $dbgMessage = $dbgQuickStackTrace;
-
-            if(RS_CLI) {
-                $startLine = '';
-                $endLine = '';
-                $newLine = "\r\n";
-            } else {
-                $startLine = '<small><i>';
-                $endLine = '</i></small>';
-                $newLine = "<br>";
-            }
-            
-
-            if(!is_null($optionalData)) {
-                $dbgMessage = $startLine .  $optionalData . $endLine . $newLine . $startLine .  $dbgQuickStackTrace . $endLine;
-            } else {
-                $dbgMessage = $startLine .  $dbgQuickStackTrace . $endLine;
-            }
-            
-
-
-            if(self::$debugLevel > 1) {
-                //Handles debug levels 2 and 3
-                if(!empty($message)) {
-                    $dbgMessage  = $message . RS_EOL . RS_EOL . $dbgMessage;
-                } else {
-                    $dbgMessage = "Flow Control" . $message . RS_EOL . RS_EOL . $dbgMessage;
-                }
-                
-            }
-
-            //Prepare debug 2
-            if(self::$debugLevel > 2) {
-                //Handles debug level 3
-                $dbgMessage .= RS_EOL;
-                if(isset($dbgBacktrace[1 + $backTraceIndexModifier]['function'])) {
-                    if(count($dbgBacktrace[1 + $backTraceIndexModifier]['args']) == 0) {
-                        $dbgMessage .= $startLine . "No parameters supplied" . $endLine;
-                    } else {
-                        $dbgMessage .= $startLine . "Parameters:" . RS_EOL . str_replace(PHP_EOL, RS_EOL, var_export($dbgBacktrace[1 + $backTraceIndexModifier]['args'], true)) . $endLine;
-                    }
-                }   
-            }
-            
-
-            //Final output
-            if(RS_CLI) {
-                echo RS_HR . $dbgMessage . RS_HR;
-            } else {
-                echo '<div style="background:#fc8403;">' .  $dbgMessage . '</div>'. RS_HR;
-            }
-        }
-    }
+    static function fatal($message, $optionalData) {
+        self::$dieOnError = true;
+        self::$debugLevel = 2;
+        self::err($message, $optionalData);
+   }
 
     /**
      * Set an error message.
@@ -201,47 +142,6 @@ class d {
             return $err;
         }
     }    
-}
-
-/**
-* A simple class that starts and stops a timer
-*/
-class timer {
-    /**
-     * Stores a float value generated by startTimer
-     * @internal
-     */
-    private $dbgTimer = null;
-    /**
-    
-     * Start a timer, storing the current time in the $dbgTimer property in the class.
-     * @return void
-     */
-    static function startTimer() {
-        self::$dbgTimer = microtime(true);
-    }
-
-    /**
-     * Get current runtime in microseconds, without resetting the timer
-     * @return bool|int Timer value in microseconds or FALSE if timer was not started.
-     */
-    public static function getElapsedTime() {
-        if(self::$dbgTimer == null) {
-            return false;
-        } else {
-            return microtime(true) - self::$dbgTimer;
-        }
-    }
-
-    /**
-     * Reset the timer and return elapsed time based on a start time set in the $dbgTimer property.
-     * @return number of microseconds since the startTimer method was called, or FALSE if the timer was not set.
-     */
-    public static function stopTimer() {
-        $ret = self::getElapsedTime();
-        self::$dbgTimer = null;
-        return $ret;
-    }
 }
 
 ?>

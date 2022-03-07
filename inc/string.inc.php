@@ -18,37 +18,20 @@ class str {
      * @param string $stringToEscape String containing data to be used in an SQL statement
      * @return string SQL quoted string.
      */
-    public static function escapeSQL($stringToEscape) {
+    public static function sqlString($stringToEscape) {
         return str_replace("'", "''", str_replace("'", "''", $stringToEscape));
     }
 
     /**
-     * Check that text values are actually text before using the value in a query.
-     * @param string $value String to check
-     * @return boolean True if string, false otherwise.
-     * If the value is true, then the string must be escaped before using in a db query.
-     * If false, then the value is not of the expected type.
+     * Check that provided value is numerical or boolean for use in an SQL query, and replace by null if not
+     * @param string $num Number data to be used in an SQL statement
+     * @return string Number if numerical, or null if not.
      */
-    public static function checkString($value) {
-        if(is_string($value)) {
-            return true;
+    public static function sqlNumber($num) {
+        if(is_numeric($num)) {
+            return $num;
         } else {
-            return false;
-        }
-    }
-
-    /**
-     * Check that number values are actually text.
-     * It uses the is_numeric function that will check any numerical type (int, float, bool..)
-     * @param numerical $value Numerical value to check
-     * @return boolean True of numerical, false otherwise.
-     * If a numerical value evaluates as false then it must not be used in a query
-     */
-    public static function checkNumerical($value) {
-        if(is_numeric($value)) {
-            return true;
-        } else {
-            return false;
+            return null;
         }
     }
 
@@ -118,7 +101,7 @@ class str {
      * - The object's $errorFlag flag will be set to TRUE
      * - Error details can be obtained by calling the object's getLastError() method.
      */
-    static function mid($str="", $start=null, $len=null) {
+    static function mid($str, $start, $len) {
         return substr($str, $start, $len);
     }
 }

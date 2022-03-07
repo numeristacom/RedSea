@@ -56,15 +56,15 @@ class template {
      * - Error details can be obtained by calling the object's getLastError() method.
      */
     function __construct($TemplatePath = null) {
-        d::dbg();
+        debug::flow();
         if(!file_exists($TemplatePath)) {
-            d::dbgError("No file found at $TemplatePath");
+            debug::err("No file found at $TemplatePath");
             return false;
         } else {
             // Here we go!
             $TemplateContent = file_get_contents($TemplatePath);
             if($TemplateContent == false) {
-                d::dbgError("Could not read contents of file $TemplatePath");
+                debug::err("Could not read contents of file $TemplatePath");
                 return false;
             } else {
                 $this->TemplateContent = $TemplateContent;
@@ -74,41 +74,33 @@ class template {
     }
 
     /**
-     * Get or set a template's placeholder variable. 
-     * @param string $variableName Exact name of the placeholder variable to be get or set.
-     * @param string $variableValue If this value is set, it needs to be added or updated.
-     * If the value is null, then the method will return the currently set value for the 
-     * placeholder variable defined by $variableName.
-     * Note: This means you cannot set NULL as a value which makes no sense for HTML output anyway.
-     * If you require a placeholder value to be set as blank, you can set with an
-     * empty string - this will cause the placeholder variable to be replaced with "nothing".
+     * Set a template's placeholder variable. 
+     * @param string $variableName Exact name of the placeholder variable to set.
+     * @param string $variableValue Value to be set.
      * @param bool $appendValue If FALSE, the placeholder will be set to the value of the
-     * variable value. If TRUE, the variable value will be appended to the end of the corresponding
-     * placeholder. Default: False.
-     * @return mixed Return value depends on arguments:
-     * - If no placeholder name submitted, return FALSE.
-     * - If a placeholder name is set, but the corresponding value is NULL, then the current value
-     * of the placeholder variable is returned. If the placeholder is not set, FALSE will be returned.
-     * In case of error, in addition to the above:
-     * - The method itself will return FALSE
-     * - The object's $errorFlag property will be set to TRUE
-     * - Error details can be obtained by calling the object's getLastError() method.
+     * variable value. If TRUE, the new value will be appended to the current placeholder value
+     * @return void.
      */
-    public function var($variableName, $variableValue, $appendValue=false) {
-        d::dbg();           
-        if(is_null($variableValue)) {
-            if(isset($this->variableArray["$variableName"])) {
-                return $this->variableArray["$variableName"];
-            } else {
-                d::dbgError("No value set for defined variable value", $variableValue);
-                return false;
-            }
+    public function set($variableName, $variableValue=null, $appendValue=false) {
+        if($appendValue) {
+            $this->variableArray["$variableName"] .= $variableValue;
         } else {
-            if($appendValue) {
-                $this->variableArray["$variableName"] .= $variableValue;
-            } else {
-                $this->variableArray["$variableName"] = $variableValue;
-            }
+            $this->variableArray["$variableName"] = $variableValue;
+        }
+    }
+
+    /**
+     * Get the current value set in a template placeholder variable
+     * @param string $variableName Name of the placeholder to return
+     * @return mixed current value of the placeholder. If False then the placeholder is not set
+     * You can check the debug::getLastError() static method to get more details.
+     */
+    public function get($variableName) {
+        if(isset($this->variableArray["$variableName"])) {
+            return $this->variableArray["$variableName"];
+        } else {
+            debug::err("No value set for defined variable value", $variableName);
+            return false;
         }
     }
 
@@ -122,124 +114,11 @@ class template {
      * @return true This method always returns true, even if there was no variable to unset.
      * @see template::var()
      */
-    public function unsetVar($variableName) {
+    public function unset($variableName) {
         if(isset($this->variableArray["$variableName"])) {
             unset($this->variableArray["$variableName"]);
         }
         return true;
-    }
-
-    /**
-     * Load an external HTML file containing elements to be extracted for a template.
-     * A ressource file contains HTML content identified by ID attributes that can be extracted and
-     * used in a parent display template.
-     * When a new ressource file is loaded, the method will return a unique hash code that references
-     * the element to be used by the getHtmlRessource or unsetHtmlRessource methods.
-     * @param string $pathToFile Path to the HTML file to load.
-     * If file has not been loaded, it will be read into the object and identified by a unique hash
-     * generated from the file name.
-     * If the file has been loaded (as identified internally by the file path hash), the data in the
-     * object will be refreshed. Note that refreshing the existing ressource will not affect any
-     * previously extracted elements by the getElementByID method.
-     * @return false|string On success, the method returns a unique hash that identifies the loaded
-     * content in the object. On error, return FALSE.
-     * In case of error, in addition to the above:
-     * - The method itself will return FALSE
-     * - The object's $errorFlag flag will be set to TRUE
-     * - Error details can be obtained by calling the object's getLastError() method.
-     */
-    public function loadHtmlRessource($pathToFile) {
-        d::dbg();
-        if(!is_file($pathToFile)) {
-            d::dbgError("Invalid path to file", $pathToFile);
-            return false;
-        } else {
-            // Generate a hash of the file path, this will be used to identify cached content
-            $fileHash = sha1($pathToFile);
-            $rcContent = file_get_contents($pathToFile);
-            if($rcContent !== false) {
-                $this->externalRessourceContent[$fileHash] = $rcContent;
-                return $fileHash;
-            } else {
-                d::dbgError("Error loading file", $pathToFile);
-                return false;
-            }            
-        }
-    }
-
-    /**
-     * Unloads a loaded ressource from the template object referenced by it's unique hash.
-     * @param string $hash Hash referencing the ressource returned by loadHtmlRessource.
-     * @return bool TRUE if the ressource was successfully removed. False on failure.
-     * In case of error, in addition to the above:
-     * - The method itself will return FALSE
-     * - The object's $errorFlag flag will be set to TRUE
-     * In case of error, in addition to the above:
-     * - The method itself will return FALSE
-     * - The object's $errorFlag flag will be set to TRUE
-     * - Error details can be obtained by calling the object's getLastError() method.
-     */
-    public function unloadHtmlRessource($hash) {
-        if(array_key_exists($hash, $this->externalRessourceContent)) {
-            //Delete the element from the hash
-            unset($this->externalRessourceContent[$hash]);
-            return true;
-        } else {
-            d::dbgError("Specified hash does not exist", $hash);
-            return false;
-        }
-    }
-
-    /**
-     * Get an HTML element identified by it's ID attribute from a ressource content loaded by loadHtmlRessource
-     * @param string $elementID The ID value of the attribute that you want to extract.
-     * @param mixed $ressourceHashValue The hash value of the ressource element returned by loadHtmlRessourceFile
-     * @param bool $onlyInnerHTML If true, only the contents inside the tag identified by ID will be returned,
-     * but not the openign and closing parent tag identified by the ID. If False, the complete tag and it's contents
-     * will be returned. Default false.
-     * @return string|false On sucess, the HTML code of the requested element will be returned, or FALSE on error.
-     * In case of error, in addition to the above:
-     * - The method itself will return FALSE
-     * - The object's $errorFlag flag will be set to TRUE
-     * - Error details can be obtained by calling the object's getLastError() method.
-     */
-    public function getElementById($elementID, $ressourceHashValue, $onlyInnerHTML=false) {
-        d::dbg();
-        $extractedContent = false;
-        // Loading this from the global namespace. Required as otherwise DOMDocument will be searched only in the 
-        // current RedSea namespace, and that will cause a runtime error.
-        if(array_key_exists($ressourceHashValue, $this->externalRessourceContent)) {
-            $dom = new \DOMDocument;
-            $dom->loadHTML($this->externalRessourceContent[$ressourceHashValue]);
-            //Get the content, if it exists.
-            $ressourceHTML = null;
-            $domRessource = $dom->getElementById($elementID);
-            if(!is_null($domRessource)) {
-                $htmlCode = $dom->saveHTML($domRessource);
-                if($onlyInnerHTML) {
-                    /* From the returned HTML code:
-                    A. Identify the position of the first > character starting from beginning of string (end of initial tag)
-                    B. Identify the position of the last < character starting from end of string (start of final tag)
-                    C. Extract the string
-                        - starting from value in A+1 (next character)
-                        - reading from position of value B-1 (previous character) and subtracting A to exclude the start of string
-                        - ...
-                        - SUCCESS!
-                    */
-                    $endFirstTag = strpos($htmlCode, '>');
-                    $startLastTag = strrpos($htmlCode, '<', -1);
-                    return substr($htmlCode, $endFirstTag+1, ($startLastTag - $endFirstTag-1));
-                } else {
-                    return $htmlCode;
-                }
-            } else {
-                d::dbgError("Could not find id in HTML ressource", $elementID);
-                return false;
-            }
-        } else {
-            d::dbgError("Specified hash key does not exist in the external ressource array", $ressourceHashValue);
-            return false;
-        }
     }
 
     /**
@@ -248,10 +127,10 @@ class template {
      * @see template::var()
      */
     public function render() {
-        d::dbg();
+        debug::flow();
         $htmlOutput = $this->TemplateContent;
         foreach($this->variableArray as $var => $value) {
-            d::dbg("Variable: $var - Value: $value");
+            debug::flow("Variable: $var - Value: $value");
             $htmlOutput = str_replace($var, $value, $htmlOutput);
         }
         return $htmlOutput;
