@@ -194,21 +194,6 @@ class template {
     }
 
     /**
-     * Put an element into the cache, creating the cached element if it does not exist.
-    */
-    public function setCacheElement($cacheElementKey,  $dataToCache) {
-
-    }   
-    
-    /**
-     * Get an element from the cache, or FALSE if element does not exist.
-     */
-    public function getCacheElement($cacheElementKey) {
-        //Try to read from - or return FALSE if the file does not exist.
-        return file_get_contents(RS_CACHE . $cacheElementKey);
-    }
-
-    /**
      * Render the HTML template, replacing set placeholder values set by the var() method.
      * @return string HTML output 
      * @see template::var()
