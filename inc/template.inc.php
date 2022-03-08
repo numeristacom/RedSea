@@ -28,11 +28,6 @@ namespace RedSea;
 class template {
 
     /**
-     * Stores the internal status of the template caching state. Default: True. Can be accessed directly from out side
-     */
-    public $enableContentCaching = true;
-
-    /**
      * Stores the variables and values in memory until they are rendered into the template.
      * @internal
      */
@@ -149,47 +144,51 @@ class template {
             return false;
         } else {
             // Check if caching is enabled
-            if($this->enableContentCaching) {
-                $cacheFileName = basename($PathToFileContainingElementID) . "." . $elementID . "." . $onlyInnerHTML;
-
-            
-
-                //Get the content through DOM.
-                $fileContent = file_get_contents($PathToFileContainingElementID);
-                if($fileContent === false) {
-                    debug::err("Could read from the specified ressource file", $PathToFileContainingElementID);
-                    return false;
-                } else {
-                    $dom = new \DOMDocument;
-                    $dom->loadHTML($fileContent);
-                    //Get the content, if it exists.
-                    $ressourceHTML = null;
-                    $domRessource = $dom->getElementById($elementID);
-                    if(!is_null($domRessource)) {
-                        $htmlCode = $dom->saveHTML($domRessource);
-                        if($onlyInnerHTML) {
-                            /* From the returned HTML code:
-                            A. Identify the position of the first > character starting from beginning of string (end of initial tag)
-                            B. Identify the position of the last < character starting from end of string (start of final tag)
-                            C. Extract the string
-                                - starting from value in A+1 (next character)
-                                - reading from position of value B-1 (previous character) and subtracting A to exclude the start of string
-                                - ...
-                                - SUCCESS!
-                            */
-                            $endFirstTag = strpos($htmlCode, '>');
-                            $startLastTag = strrpos($htmlCode, '<', -1);
-                            $htmlCode = substr($htmlCode, $endFirstTag+1, ($startLastTag - $endFirstTag-1));
-                        } 
-                        //Cache the output for future use.
-                        file_put_contents(RS_CACHE . $cacheFileName, $htmlCode);
-                        //and return the data.
-                        return $htmlCode;
-                    } else {
-                        debug::err("Could not find specified ID in HTML ressource", $elementID);
-                        return false;
+            if(cache::$enableContentCaching) {
+                $content = cache::getCachedElement(cache::makeElementByIdCacheName($PathToFileContainingElementID, $elementID, $onlyInnerHTML));
+                if($content !== false) {
+                    return $content;
+                }
+            }
+            //If we get here either caching is disabled or there was a cache miss.
+            //Get the content through DOM.
+            $fileContent = file_get_contents($PathToFileContainingElementID);
+            if($fileContent === false) {
+                debug::err("Could read from the specified ressource file", $PathToFileContainingElementID);
+                return false;
+            } else {
+                $dom = new \DOMDocument;
+                $dom->loadHTML($fileContent);
+                //Get the content, if it exists.
+                $ressourceHTML = null;
+                $domRessource = $dom->getElementById($elementID);
+                if(!is_null($domRessource)) {
+                    $htmlCode = $dom->saveHTML($domRessource);
+                    if($onlyInnerHTML) {
+                        /* From the returned HTML code:
+                        A. Identify the position of the first > character starting from beginning of string (end of initial tag)
+                        B. Identify the position of the last < character starting from end of string (start of final tag)
+                        C. Extract the string
+                            - starting from value in A+1 (next character)
+                            - reading from position of value B-1 (previous character) and subtracting A to exclude the start of string
+                            - ...
+                            - SUCCESS!
+                        */
+                        $endFirstTag = strpos($htmlCode, '>');
+                        $startLastTag = strrpos($htmlCode, '<', -1);
+                        $htmlCode = substr($htmlCode, $endFirstTag+1, ($startLastTag - $endFirstTag-1));
+                    } 
+                    //Cache the output for future use.
+                    if(cache::$enableContentCaching) {
+                        $cacheReturn = cache::setCachedElement(cache::makeElementByIdCacheName($PathToFileContainingElementID, $elementID, $onlyInnerHTML), $htmlCode);
                     }
-                }   
+                    //and return the data.
+                    return $htmlCode;
+                } else {
+                    debug::err("Could not find specified ID in HTML ressource", $elementID);
+                    return false;
+                }
+               
             }
         }        
     }

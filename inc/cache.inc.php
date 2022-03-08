@@ -8,6 +8,37 @@
 
 namespace RedSea;
 
-class clear {
+class cache {
     
+    /**
+     * Stores the internal status of the template caching state. Default: True. Can be accessed directly from out side
+     */
+    public static $enableContentCaching = true;
+
+    static function makeElementByIdCacheName($PathToFileContainingElementID, $elementID, $onlyInnerHTML) {
+        return basename($PathToFileContainingElementID) . "." . $elementID . "." . $onlyInnerHTML;
+    }
+
+    static function makeTemplateCacheName($PathToFileContainingElementID) {
+        return basename($PathToFileContainingElementID);
+    }
+
+    static function isInCache($cacheName) {
+        return file_exists(RS_CACHE . $cacheName);
+    }
+
+    static function setCachedElement($cacheName, $cacheContent) {
+        if(!is_dir(RS_CACHE)) {
+            mkdir(RS_CACHE);
+        }
+        return file_put_contents(RS_CACHE . $cacheName, $cacheContent);
+    }
+
+    static function getCachedElement($cacheName) {
+        if(self::isInCache($cacheName)) {
+            return file_get_contents(RS_CACHE . $cacheName);
+        } else {
+            return false;
+        }
+    }
 }
