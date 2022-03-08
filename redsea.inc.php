@@ -62,6 +62,12 @@ if(php_sapi_name() === 'cli') {
     define("RS_CLI", false);
 }
 
+/**
+ * Define a cache directory, but don't do anything with it right now.
+ * This will be used for including rpe-processed external components from the template getElementByID method 
+ */
+define("RS_CACHE", __DIR__ . DIRECTORY_SEPARATOR);
+
 //Library autoloader
 // debug.inc.php must be set first as all other objects depend on it for debug and execution flow services
 include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "debug.inc.php");

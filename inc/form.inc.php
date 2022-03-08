@@ -128,9 +128,9 @@ class input {
      * - Error details can be obtained by calling the object's getLastError() method.
      */
     public function __construct($inputType) {
-        d::dbg();
+        debug::flow();
         if(empty($inputType)) {
-            d::dbgError("Input type is empty");
+            debug::err("Input type is empty");
             return false;
         } else {
             $this->type('input');
@@ -139,7 +139,7 @@ class input {
             if(in_array($inputType, $this->inputTypeArray)) {
                 $this->attribute('type', $inputType);
             } else {
-                d::dbgError("Input type is not in the list of known types");
+                debug::err("Input type is not in the list of known types");
                 return false;
             }
         }
@@ -151,7 +151,7 @@ class input {
      * @return string HTML code for the specified tag.
      */
     public function render() {
-        d::dbg();
+        debug::flow();
         return $this->singleLineTagRender($this->type());
     }
 }
@@ -199,9 +199,9 @@ class label {
      * - Error details can be obtained by calling the object's getLastError() method.
      */
     public function __construct($displayValue=null, $boundControlID=null, $boundFormID=null) {
-        d::dbg();
+        debug::flow();
         if(empty($displayValue)) {
-            d::dbgError('No display value set for label');
+            debug::err('No display value set for label');
             return false;
         } else {
             $this->type('label');
@@ -223,7 +223,7 @@ class label {
      * @return string HTML code for the specified tag.
      */
     public function render() {
-        d::dbg();
+        debug::flow();
         return $this->singleLineTagRender($this->type(), $this->displayValue);
     }
 
@@ -283,7 +283,7 @@ class select {
     */
     public function __construct($outputFullTag=true)
     {
-        d::dbg();
+        debug::flow();
         $this->type('select');
         $this->outputFullTag = true;
         if(!$outputFullTag) {
@@ -311,9 +311,9 @@ class select {
      * - Error details can be obtained by calling the object's getLastError() method.
      */
     public function quickAdd($label=null, $value=null, $isSelected=false, $isDisabled=false) {
-        d::dbg();
+        debug::flow();
         if(is_null($label)) {
-            d::dbgError("No label to display");
+            debug::err("No label to display");
             return false;
         } else {
             if($isSelected) {
@@ -342,14 +342,14 @@ class select {
      */
      public function addOptionObject($optionObject) {
         if(!is_object($optionObject)) {
-            d::dbgError("Method argument is not an object", $optionObject);
+            debug::err("Method argument is not an object", $optionObject);
             return false;
         } else {
             if(($optionObject->type() == 'option')) {
                 $this->optionArray[] = $optionObject;
                 return true;
             } else {
-                d::dbgError("Supplied object is not an option object", $optionObject->tagType);
+                debug::err("Supplied object is not an option object", $optionObject->tagType);
                 return false;
             } 
         }   
@@ -360,7 +360,7 @@ class select {
      * @return string HTML code for the specified tag.
      */
      public function render() {
-        d::dbg();
+        debug::flow();
         $optionString = null;
         foreach($this->optionArray as $option) {
             if(is_object($option)) {
@@ -407,9 +407,9 @@ class option {
      * - Error details can be obtained by calling the object's getLastError() method.
      */
     public function __construct($optionDisplayValue, $optionInnerValue=null) {
-        d::dbg();
+        debug::flow();
         if(is_null($optionDisplayValue)) {
-            d::dbgError("option display value is null");
+            debug::err("option display value is null");
             return false;
         } else {
             $this->type('option');
@@ -425,7 +425,7 @@ class option {
      * @return string HTML code for the specified tag.
      */
      public function render() {
-        d::dbg();
+        debug::flow();
         return $this->singleLineTagRender($this->type(), $this->optionDisplayValue);
     }
 }
@@ -469,9 +469,9 @@ class textarea {
      * - Error details can be obtained by calling the object's getLastError() method.
      */
     public function __construct($tagName, $tagTextValue=null) {
-        d::dbg();
+        debug::flow();
         if(is_null($tagName)) {
-            d::dbgError("Text area requires a name to be set in the tagName variable");
+            debug::err("Text area requires a name to be set in the tagName variable");
             return false;
         } else {
             $this->attribute('name', $tagName);
@@ -488,7 +488,7 @@ class textarea {
      * @return string $txtValue Value to display inside the text area
      */
     public function setDisplayValue($textValue) {
-        d::dbg();
+        debug::flow();
         $this->tagDisplayValue = $textValue;
     }
     
@@ -497,7 +497,7 @@ class textarea {
      * @return string Currently set text to display
      */
     public function getDisplayValue() {
-        d::dbg();
+        debug::flow();
         return $this->tagDisplayValue;
     }
 
@@ -506,7 +506,7 @@ class textarea {
      * @return string HTML code for the specified tag.
      */
      public function render() {
-        d::dbg();
+        debug::flow();
         return $this->singleLineTagRender($this->type(), $this->tagDisplayValue);
     }
 }
@@ -547,9 +547,9 @@ class button {
      * - Error details can be obtained by calling the object's getLastError() method.
      */
     public function __construct($buttonName=null) {
-        d::dbg();
+        debug::flow();
         if(empty($buttonName)) {
-            d::dbgError("No text to display on the button");
+            debug::err("No text to display on the button");
             return false;
         } else {
             $this->type('button');
@@ -563,7 +563,7 @@ class button {
      * @return string HTML code for the specified tag.
      */
     public function render() {
-        d::dbg();
+        debug::flow();
         return $this->singleLineTagRender($this->type(), $this->tagDisplayValue);
     }
 }
@@ -712,9 +712,9 @@ class GlobalPropertiesAndAttributes {
      * @internal
      */
     public static function validateAndSetAttribute($name, $value, $tagSpecificArray = null) {
-        d::dbg();
+        debug::flow();
         if(empty($name)) {
-            d::dbgError("No attribute name specified");
+            debug::err("No attribute name specified");
             return false;
         } else {
             //Make sure the tag name is lower case as this is how all the tags are named internally.
@@ -727,7 +727,7 @@ class GlobalPropertiesAndAttributes {
             } elseif(array_key_exists($name, $tagSpecificArray)) {
                 $keyArrayElement = $tagSpecificArray[$name];
             } else {
-                d::dbgError("Non existing tag");
+                debug::err("Non existing tag");
                 return false;
             }
 
@@ -768,7 +768,7 @@ class GlobalPropertiesAndAttributes {
                 $keyArrayElement[0] = $value;
                 return $keyArrayElement;
             } else {
-                d::dbgError("Value does not match expected type");
+                debug::err("Value does not match expected type");
                 return false;
             }
         }
@@ -789,9 +789,9 @@ class GlobalPropertiesAndAttributes {
      * method to avoid code bloat if it was included as a trait.
      */
     public static function validateAndSetEvent($name, $value) {
-        d::dbg();
+        debug::flow();
         if(empty($name)) {
-            d::dbgError("Event name not sent");
+            debug::err("Event name not sent");
             return false;
         } else {
             $name = strtolower($name);
@@ -800,7 +800,7 @@ class GlobalPropertiesAndAttributes {
                 return $value;
             } else {
                 //Non existing tag
-                d::dbgError("Event type not recognised", $name);
+                debug::err("Event type not recognised", $name);
                 return false;
             }
         }
@@ -858,7 +858,7 @@ trait commonHtmlProperties {
      * - Error details can be obtained by calling the object's getLastError() method.
      */
     public function type($tagType = null) {
-        d::dbg();
+        debug::flow();
         if(empty($tagType)) {
             return $this->tagType;
         } else {
@@ -867,7 +867,7 @@ trait commonHtmlProperties {
                 $this->tagType = $tagType;
                 return true;
             } else {
-                d::dbgError("Tag type is already set to {$this->tagType}. Cannot set to $tagType");
+                debug::err("Tag type is already set to {$this->tagType}. Cannot set to $tagType");
                 return false;
             }
         }
@@ -900,31 +900,31 @@ trait commonHtmlProperties {
      * @see rsDebug::getLastError()
      */
     public function attribute($attributeName, $attributeValue=null) {
-        d::dbg();
+        debug::flow();
         if(is_null($attributeName)) {
-            d::dbgError("Attribute name is not specified");
+            debug::err("Attribute name is not specified");
             return false;
         } else {
             if(is_null($attributeValue)) {
-                d::dbg(__FUNCTION__ . ' running as Getter');
+                debug::flow(__FUNCTION__ . ' running as Getter');
                 $attributeName = strtolower($attributeName);
                 //Check if the selected input type exists:
                 if(array_key_exists($attributeName, $this->RenderAttributeArray)) {
                     return $this->tagAttrArray[$attributeName][0];
                 } else {
-                    d::dbgError("Attribute is not set");
+                    debug::err("Attribute is not set");
                     return false;
                 }
             } else {
-                d::dbg(__FUNCTION__ . ' running as Setter');
+                debug::flow(__FUNCTION__ . ' running as Setter');
                 $validatedAttribute = GlobalPropertiesAndAttributes::validateAndSetAttribute($attributeName, $attributeValue, $this->tagAttrArray);  
                 if($validatedAttribute !== false) {
                     // We have a valid value to add or update.
-                    d::dbg("Adding validated attribute", $validatedAttribute);
+                    debug::flow("Adding validated attribute", $validatedAttribute);
                     $this->RenderAttributeArray[strtolower($attributeName)] = $validatedAttribute;
                 } else {
                     //Something went wrong.
-                    d::dbgError("Error getting attribute details", d::$lastErrorMessage);
+                    debug::err("Error getting attribute details", debug::$lastErrorMessage);
                 }
             }
         }
@@ -957,30 +957,30 @@ trait commonHtmlProperties {
      */
     public function event($eventName, $eventValue) {
         if(empty($eventName)) {
-            d::dbgError("Event name is not specified");
+            debug::err("Event name is not specified");
             return false;
         } else {
             if(is_null($eventValue)) {
-                d::dbg(__FUNCTION__ . ' running as Getter');
+                debug::flow(__FUNCTION__ . ' running as Getter');
                 $eventName = strtolower($eventName);
                 //Check if the selected input type exists:
                 if(array_key_exists($eventName, $this->RenderEventArray)) {
                     return $this->RenderEventArray[$eventName];
                 } else {
-                    d::dbgError("Event is not set");
+                    debug::err("Event is not set");
                     return false;
                 }
             } else {
-                d::dbg(__FUNCTION__ . ' running as Setter');
+                debug::flow(__FUNCTION__ . ' running as Setter');
                 $validatedEvent = GlobalPropertiesAndAttributes::validateAndSetEvent($eventName, $eventValue);
                 if($validatedEvent !== false) {
-                    d::dbg("Adding validated event", $validatedEvent);
+                    debug::flow("Adding validated event", $validatedEvent);
                     // We have a valid value to add or update.
                     $this->RenderEventArray[strtolower($eventName)] = $validatedEvent;
                     return true;
                 } else {
                     //Something went wrong.
-                    d::dbgError(GlobalPropertiesAndAttributes::$lastError);
+                    debug::err(GlobalPropertiesAndAttributes::$lastError);
                     return false;
                 }
             }
@@ -998,7 +998,7 @@ trait commonHtmlProperties {
      * @internal
      */
     private function singleLineTagRender($tagName, $tagHasValue=null) {
-        d::dbg();
+        debug::flow();
         $commonProperties = null;
         $renderData = "<" . $tagName;
         // Generate the tag attributes.
