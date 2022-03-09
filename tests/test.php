@@ -320,6 +320,32 @@ echo "<hr>";
 /** Time page execution */
 echo "Time to generate HTML output " . RedSea\timer::getElapsedTime() . "<hr>";
 
+// MariaDB helper class - set host, user, pass and db name
+$db = new RedSea\mariadb('', '', '', '');
+
+$db->execute("drop table if exists contacts");
+$db->execute("CREATE TABLE IF NOT EXISTS contacts (
+    contact_id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL)");
+$db->execute("insert into contacts values (1, 'Joe', 'Biden')");
+echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->lastInsertID}<hr>";
+$db->execute("insert into contacts values (2, 'Emmanuel', 'Macaron')");
+echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->lastInsertID}<hr>";
+$db->execute("insert into contacts values (3, 'Vladimir', 'Putin')");
+echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->lastInsertID}<hr>";
+$db->execute("insert into contacts values (4, 'Xi', 'Jinping')");
+echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->lastInsertID}<hr>";
+$db->execute("insert into contacts values (5, 'Imran', 'Khan')");
+echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->lastInsertID}<hr>";
+
+$sql = "SELECT * FROM contacts";
+
+$rs = new RedSea\recordset($db->query($sql));
+
+while ($ret = $rs->fetchArray()) {
+    echo($ret['first_name'] . ' ' . $ret['last_name'] . '<br>');
+}
 
 /*
 // SQLite database helper class:

@@ -11,11 +11,11 @@
  */
 
 /** Usage example
-$db = new mariadb(localhost, 'mydb', 'user', 'password');
-$rs = new recordset($db->query('select count(*) as cnt from myTable'));
-while ($ret = $rs->fetchArray()) {
-    echo($ret['cnt']);
-}
+* $db = new mariadb(localhost, 'mydb', 'user', 'password');
+* $rs = new recordset($db->query('select count(*) as cnt from myTable'));
+* while ($ret = $rs->fetchArray()) {
+*    echo($ret['cnt']);
+* }
 */
 
 /**
@@ -46,16 +46,16 @@ class mariadb {
     /**
      * Opens a connection to MariaDB.
      * @param string $host Hostname or IP address of the database server to connect to
-     * @param string $dbname Name of the data base to open
      * @param string $username Username credential for the database
      * @param string $password Password credential for the database 
+     * @param string $dbname Name of the data base to open
      * @param int $port If not specified, the MariaDB default port 3306 will be used, but can be specified to any other number.
      * @return void
      * In case of error, the method will raise a fatal error to output.
      */
-    public function __construct($host, $dbname, $username, $password, $port=3306)  {
+    public function __construct($host, $username, $password, $dbname, $port=3306)  {
         debug::flow();
-        $this->mariaDSN = 'mysql:dbname=$dbname;host=$host;port=$port;charset=utf8';
+        $this->mariaDSN = "mysql:dbname=$dbname;host=$host;port=$port;charset=utf8";
         $options = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -169,7 +169,7 @@ class recordset {
      * - Error details can be obtained by calling the object's getLastError() method.
      */
     public function fetchArray($recordType=PDO::FETCH_ASSOC) {
-        $ret = $this->result->fetchArray($recordType);
+        $ret = $this->result->fetch($recordType);
         if($ret === false) {
             $this->end = true;
             debug::flow("End of Recordset");
@@ -181,4 +181,3 @@ class recordset {
 }
 
 ?>
-

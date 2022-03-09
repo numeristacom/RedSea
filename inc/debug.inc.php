@@ -93,7 +93,7 @@ class debug {
     static function err($message, $optionalData=null) {
         
         self::$lastErrorMessage = $message;
-        debug::flow($message, $optionalData, 2); // 2 is set to ignore 2 levels of backtrace.
+        debug::flow($message, $optionalData, 1);
 
         if(self::$dieOnError) {
             //Output a stacktrace and die.
