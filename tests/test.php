@@ -54,8 +54,6 @@ $rsButton->event('onClick', "javacript:alert('Hello World!'); return false;");
 // Set the template variable with the object's render method that outputs rendered HTML
 $template->set('button', $rsButton->render());
 
-
-
 //Create and set up a new textarea
 $rsTextArea = new RedSea\textarea('txtarea');
 // Set the elements display value (what displays inside the text area as a pre-defined text)

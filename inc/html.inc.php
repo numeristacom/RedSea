@@ -2,61 +2,6 @@
 
 namespace RedSea;
 
-class table extends tagFactory {
-
-    private $tagAttrArray = array(
-        'plop' => array( 0 => null, 1 => 'str'),
-        'plip' => array(0 => null, 1 => 'str'),
-        'nullval' => array(0 => null, 1 => 'bool')
-    );
-
-    public function __construct() {
-        $this->tagType = 'table';
-        $this->loadExtraAttributes($this->tagAttrArray);
-        echo $this->getLastError();
-    }
-
-    public function endTable() {
-        return '</table>';
-    }
-}
-
-class row extends tagFactory {
-
-    public function __construct() {
-        $this->tagType = 'tr';
-    }
-
-    public function endRow() {
-        return '</tr>';
-    }
-}
-
-class cell extends tagFactory {
-
-    public function __construct() {
-        $this->tagType = 'td';
-    }
-
-    public function endCell() {
-        return '</td>';
-    }
-}
-
-/* Tag specific attributes.
-    protected $tagAttrArray = array(
-        'autofocus' => array( 0 => null, 1 => 'bool'),
-        'disabled' => array( 0 => null, 1 => 'bool'),
-        'form' => array( 0 => null, 1 => 'str'),
-        'formaction' => array( 0 => null, 1 => 'str'),
-        'formenctype' => array( 0 => null, 1 => 'str'),
-        'formmethod' => array( 0 => null, 1 => 'str'),
-        'formonvalidate' => array( 0 => null, 1 => 'bool'),
-        'formtarget' => array( 0 => null, 1 => 'str'),
-        'name' => array( 0 => null, 1 => 'str'),
-        'type' => array( 0 => null, 1 => 'str')
-    );
-*/
 
 class tagFactory {
     /**
@@ -342,7 +287,7 @@ class tagFactory {
         // Generate the tag attributes.
         foreach($this->setAttrArray as $key => $value) {
             if(!is_null($value)) {  //Don't render null values.
-                debug::err('Attribute set loop', $key . " / " . $value);
+                debug::flow('Attribute set loop', $key . " / " . $value);
                 if($this->globalAttrArray[$key][1] == 'bool') { //Check the expected value from the original attribute definition.
                     //only display the key name if expected data type is BOOL and the value set for the attribute is TRUE
                     if($value === true) {
@@ -360,19 +305,19 @@ class tagFactory {
 
         //Generate the tag events.
         foreach($this->setEventArray as $key => $value) {
-            debug::err('Event set loop', $key . " / " . $value);
+            debug::flow('Event set loop', $key . " / " . $value);
             if(!is_null($value)) {
                 $renderData .= " $key=\"$value\"";
             }
         }
         $renderData .= ">";
-        debug::err('Tag event and attribute interim result', $renderData);
+        debug::flow('Tag event and attribute interim result', $renderData);
 
         if(!empty($tagValue)) {
             $renderData .= $tagValue  . "</" . $this->tagType .">\n";
         }
 
-        debug::err('Final tag output', $renderData);
+        debug::flow('Final tag output', $renderData);
 
         return $renderData;
     }
