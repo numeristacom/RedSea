@@ -46,16 +46,25 @@ class template {
     private $externalRessourceContent = array();
 
     /**
+     * Stores the value used to encapsulate template variables.
+     * @internal
+    */
+    private $templateVariableDelimiter = null;
+
+    /**
      * Class constructor that is set with an HTML template to load and process.
      * @param string $TemplatePath Path to the HTML template file that will be used by the class for output.
      * Note that this method does not have any debug support.
+     * @param string $variableDelimiter Delimiting character that encapsulates set template variables.
+     * Default value is *, but this can be changed to any text string. The value must match the symbol
+     * used for encapsulation in the template. If * is used, then the template variable must be *variable*.
      * @return bool TRUE on success, FALSE on error.
      * In case of error, in addition to the above:
      * - The method itself will return FALSE
      * - The object's $errorFlag flag will be set to TRUE
      * - Error details can be obtained by calling the object's getLastError() method.
      */
-    function __construct($TemplatePath = null) {
+    function __construct($TemplatePath = null, $variableDelimiter = '*') {
         debug::flow();
         if(!file_exists($TemplatePath)) {
             debug::err("No file found at $TemplatePath");
@@ -68,6 +77,7 @@ class template {
                 return false;
             } else {
                 $this->TemplateContent = $TemplateContent;
+                $this->templateVariableDelimiter = $variableDelimiter;
                 return true;
             }
         }
@@ -202,7 +212,7 @@ class template {
         $htmlOutput = $this->TemplateContent;
         foreach($this->variableArray as $var => $value) {
             debug::flow("Variable: $var - Value: $value");
-            $htmlOutput = str_replace($var, $value, $htmlOutput);
+            $htmlOutput = str_replace($this->templateVariableDelimiter . $var . $this->templateVariableDelimiter, $value, $htmlOutput);
         }
         return $htmlOutput;
     }

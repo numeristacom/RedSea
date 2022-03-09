@@ -1,30 +1,39 @@
 <?php
 
-use RedSea\recordset;
-
 include("../redsea.inc.php");
+
+/** Time page execution */
+RedSea\timer::startTimer();
+
+
 /** Load the template that will be used by this code to insert all PHP generated content. */
 $template = new RedSea\template('test.html');
 if($template === false) {
     die($template->getLastError());
 }
 
+/** Disable caching. If you enable it, be sure that the system can write to the defined cache directory */
+RedSea\cache::$enableContentCaching = false;
+
+/** Get the div "topmenu" out of the "ressources.html" file and load it into the topMenu variable in the template */
+$template->set('topMenu', $template->getElementById("topmenu", "ressources.html"));
+
 /** 
  * Basic use of placeholder variables: The variable name must not collide with any other value that matches, so they
  * are completely encapsulated - in the examples below they are set in the HTML template with asterisks encompassing the name,
- * like *variable name*, and the value that will be set in the variable's name in the model.
+ * like *variable name*. This value can be set in the template constructor, but by default it's *
  */
-$template->var('*title*', 'RedSea Technical Demo');
+$template->set('title', 'RedSea Technical Demo');
 
 /**
  * This is probably overkill, but this allows some simple text manipulation in a clear way, allowing
  * returning of the left part, right part or middle part of a text string without having to remember
  * the syntax of the php substr function.
  */
-$template->var('*textManipulationMethods*', 'Text Manipulation on the string "RedSea Technical Demo"');
-$template->var('*leftString*', RedSea\str::left('RedSea Technical Demo', 5));
-$template->var('*rightString*', RedSea\str::right('RedSea Technical Demo', 5));
-$template->var('*midString*', RedSea\str::mid('RedSea Technical Demo', 5, 5));
+$template->set('textManipulationMethods', 'Text Manipulation on the string "RedSea Technical Demo"');
+$template->set('leftString', RedSea\str::left('RedSea Technical Demo', 5));
+$template->set('rightString', RedSea\str::right('RedSea Technical Demo', 5));
+$template->set('midString', RedSea\str::mid('RedSea Technical Demo', 5, 5));
 
 /**
  * You can create HTML form elements in RedSea that can be integrated into an existing HTML form on a template.
@@ -34,7 +43,7 @@ $template->var('*midString*', RedSea\str::mid('RedSea Technical Demo', 5, 5));
  * a variable that is inside the existing tags.
  * You can also just create the whole tag and contents via the HTML form classes as demonstrated below.
  */
-$template->var('*HTMLFormMethods*', 'RedSea HTML Form manipulation');
+$template->set('HTMLFormMethods', 'RedSea HTML Form manipulation');
 
 // Create a new button object
 $rsButton = new RedSea\button("Button test");
@@ -43,7 +52,7 @@ $rsButton = new RedSea\button("Button test");
 // Here we are setting the button's onClick event with a piece of Javascript.
 $rsButton->event('onClick', "javacript:alert('Hello World!'); return false;");
 // Set the template variable with the object's render method that outputs rendered HTML
-$template->var('*button*', $rsButton->render());
+$template->set('button', $rsButton->render());
 
 
 
@@ -57,11 +66,11 @@ $rsTextArea->setDisplayValue("This is a text area example");
 $rsTextArea->attribute('rows', 5);
 $rsTextArea->attribute('cols', 70);
 // Set the template variable with the object's render method that outputs rendered HTML
-$template->var('*textArea', $rsTextArea->render());
+$template->set('textArea', $rsTextArea->render());
 
 // Create and set up a new label
 $rsLabel = new RedSea\label("This is a basic unbound label");
-$template->var('*label*', $rsLabel->render());
+$template->set('label', $rsLabel->render());
 
 //The HTML input tag has a lot of different types. 
 // Generate one object per variation of the input tag
@@ -93,28 +102,28 @@ $rsInputweek = new RedSea\input('week');
 
 
 // Set each corresponding template variable with each object's render method
-$template->var('*Inputbutton*', $rsInputbutton->render());
-$template->var('*checkbox*', $rsInputcheckbox->render());
-$template->var('*color*', $rsInputcolor->render());
-$template->var('*date*', $rsInputdate->render());
-$template->var('*datetime-local*', $rsInputdatetimelocal->render());
-$template->var('*email*', $rsInputemail->render());
-$template->var('*file*', $rsInputfile->render());
-$template->var('*hidden*', $rsInputhidden->render());
-$template->var('*image*', $rsInputimage->render());
-$template->var('*month*', $rsInputmonth->render());
-$template->var('*number*', $rsInputnumber->render());
-$template->var('*password*', $rsInputpassword->render());
-$template->var('*radio*', $rsInputradio->render());
-$template->var('*range*', $rsInputrange->render());
-$template->var('*reset*', $rsInputreset->render());
-$template->var('*search*', $rsInputsearch->render());
-$template->var('*submit*', $rsInputsubmit->render());
-$template->var('*tel*', $rsInputtel->render());
-$template->var('*text*', $rsInputtext->render());
-$template->var('*time*', $rsInputtime->render());
-$template->var('*url*', $rsInputurl->render());
-$template->var('*week*', $rsInputweek->render());
+$template->set('Inputbutton', $rsInputbutton->render());
+$template->set('checkbox', $rsInputcheckbox->render());
+$template->set('color', $rsInputcolor->render());
+$template->set('date', $rsInputdate->render());
+$template->set('datetime-local', $rsInputdatetimelocal->render());
+$template->set('email', $rsInputemail->render());
+$template->set('file', $rsInputfile->render());
+$template->set('hidden', $rsInputhidden->render());
+$template->set('image', $rsInputimage->render());
+$template->set('month', $rsInputmonth->render());
+$template->set('number', $rsInputnumber->render());
+$template->set('password', $rsInputpassword->render());
+$template->set('radio', $rsInputradio->render());
+$template->set('range', $rsInputrange->render());
+$template->set('reset', $rsInputreset->render());
+$template->set('search', $rsInputsearch->render());
+$template->set('submit', $rsInputsubmit->render());
+$template->set('tel', $rsInputtel->render());
+$template->set('text', $rsInputtext->render());
+$template->set('time', $rsInputtime->render());
+$template->set('url', $rsInputurl->render());
+$template->set('week', $rsInputweek->render());
 
 /**
  * A HTML select tag can render in 2 ways:
@@ -141,7 +150,7 @@ for($i = 1; $i <= 12; $i++) {
 
 // Set each corresponding template variable with each object's render method 
 // The select object will automatically render each option object you added through the addOptionObject method
-$template->var('*simpleSelect*', $rsSelectSimple->render());
+$template->set('simpleSelect', $rsSelectSimple->render());
 
 
 // Create a list box - but not a drop down one.
@@ -162,7 +171,7 @@ for($i = 1; $i <= 12; $i++) {
 }
 // Set each corresponding template variable with each object's render method 
 // The select object will automatically render each option object you added through the addOptionObject method
-$template->var('*multiSelect*', $rsSelectBox->render());
+$template->set('multiSelect', $rsSelectBox->render());
 
 /**
  * The following examples are very similar to the previous 2 list boxes, with one notable difference: these examples
@@ -196,7 +205,7 @@ for($i = 100; $i <= 112; $i++) {
 // Set each corresponding template variable with each object's render method 
 // The select object will automatically render each option object added to the select object
 //without rendering the parent <select> tag.
-$template->var('*bodyFill*', $rsSelectBodyFill->render());
+$template->set('bodyFill', $rsSelectBodyFill->render());
 
 /** This is the same exercise as above, with a new select and option object, except the output will be
  * added into a different template variable.
@@ -205,10 +214,10 @@ $template->var('*bodyFill*', $rsSelectBodyFill->render());
  */
 
 
-RedSea\d::dbg("Test with debug helper services");
+RedSea\debug::flow("Test with debug helper services");
 $rsSelectlistBoxBodyFill = new RedSea\select(false);
 for($i = 1; $i <= 12; $i++) {
-    RedSea\d::dbg("Loop", $i);
+    RedSea\debug::flow("Loop", $i);
     $rsSelectlistBoxBodyFill->addOptionObject(new RedSea\option("Month $i", $i));
 }
 
@@ -224,8 +233,8 @@ for($i = 100; $i <= 112; $i++) {
 }
 
 
-RedSea\d::$debugLevel = 0;
-$template->var('*listBoxBodyFill*', $rsSelectlistBoxBodyFill->render());
+RedSea\debug::$debugLevel = 0;
+$template->set('listBoxBodyFill', $rsSelectlistBoxBodyFill->render());
 
 /**
  * Creating a list of linked radio buttons
@@ -255,7 +264,7 @@ for($i = 1; $i<= 10; $i++) {
     $rbRender .= $lbl->render();
     $rbRender .= $rb->render() . '<br>';
 }
-$template->var('*handRadioButton*', $rbRender);
+$template->set('handRadioButton', $rbRender);
 // Claw back some memory as we don't need data in the working variable anymore.
 $rbRender = null;
 
@@ -293,10 +302,12 @@ for($i = 1; $i<= 10; $i++) {
     $cbRender .= $cbcb->render() . '<br>';
 }
 // Render the checkbox string in the template.
-$template->var('*handCheckBox*', $cbRender);
+$template->set('handCheckBox', $cbRender);
 // Claw back some memory as we don't need data in the working variable anymore.
 $cbRender = null;
 
+/** Get the div "bottommenu" out of the "ressources.html" file and load it into the bottomMenu variable in the template */
+$template->set('bottomMenu', $template->getElementById("bottommenu", "ressources.html"));
 
 /**
  * Now that the template has been set with the rendered output of all the objects used above,
@@ -305,6 +316,12 @@ $cbRender = null;
  */
 echo $template->render();
 
+echo "<hr>";
+/** Time page execution */
+echo "Time to generate HTML output " . RedSea\timer::getElapsedTime() . "<hr>";
+
+
+/*
 // SQLite database helper class:
 $db = new RedSea\SQLite("./helloworld.sqlite");
 
@@ -327,7 +344,7 @@ echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->lastIns
 
 $sql = "SELECT * FROM contacts";
 
-$rs = new recordset($db->query($sql));
+$rs = new RedSea\recordset($db->query($sql));
 
 while ($ret = $rs->fetchArray()) {
     echo($ret['first_name'] . ' ' . $ret['last_name'] . '<br>');
@@ -335,8 +352,8 @@ while ($ret = $rs->fetchArray()) {
 
 
 //Using static debug reporting:
-RedSea\d::$debugLevel = 3;
-RedSea\d::dbg("Hello World");
+RedSea\debug::$debugLevel = 3;
+RedSea\debug::flow("Hello World");
 
 //Lets force the script to die on a warning
 $db->dieOnError = true;
@@ -344,5 +361,11 @@ $db->dieOnError = true;
 // Note that debug is off, but the dieOnError overrides that.
 
 $db->execute("insert into contacts values (1, 'Joseph', 'Stalin')");
+*/
+
+
+/** Time page execution */
+echo "<hr>Page execution time: " . RedSea\timer::stopTimer() . "µsec";
+
 
 ?>

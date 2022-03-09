@@ -1,0 +1,41 @@
+.row {
+  width: 100%;
+}
+
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+#logo {
+  float: left;
+}
+
+#burger {
+  float: right;
+}
+
+#logo {
+  width: 40%;
+  padding: 15px; 
+}
+
+#burger {
+  width: 40%;
+  padding: 15px;
+}
+
+div {
+  border: dashed red;
+  border-width: 1px;
+  margin: 0px;
+}
+
+.copyright {
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: 400;
+  font-size: smaller;
+  font-style: italic;
+  text-align: center;
+}

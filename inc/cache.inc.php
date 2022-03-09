@@ -8,8 +8,7 @@
 
 namespace RedSea;
 
-class cache {
-    
+class cache {   
     /**
      * Stores the internal status of the template caching state. Default: True. Can be accessed directly from out side
      */
