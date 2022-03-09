@@ -29,13 +29,13 @@ namespace RedSea;
 
 use PDO;
 
-class mariadb {
+class pdodb {
 
     /**
      * Contains the DSN string
      * @internal 
      */
-    protected $mariaDSN = null;
+    protected $DSN = null;
     
     /**
      * Contains the database connection object
@@ -45,27 +45,40 @@ class mariadb {
 
     /**
      * Opens a connection to MariaDB.
-     * @param string $host Hostname or IP address of the database server to connect to
-     * @param string $username Username credential for the database
-     * @param string $password Password credential for the database 
-     * @param string $dbname Name of the data base to open
+     * @param string $dbtype Database type to connect to: mariadb or sqlite
+     * @param string $dbname Name of the data base to open. For an SQLite database, it will
+     * be the path and name of the SQLite database file. 
+     * @param string $host Hostname or IP address of the database server to connect to. Not required for SQLite database.
+     * @param string $username Username credential for the database. Not required for SQLite database.
+     * @param string $password Password credential for the database. Not required for SQLite database.
      * @param int $port If not specified, the MariaDB default port 3306 will be used, but can be specified to any other number.
      * @return void
      * In case of error, the method will raise a fatal error to output.
      */
-    public function __construct($host, $username, $password, $dbname, $port=3306)  {
+    public function __construct($dbtype, $dbname, $host=null, $username=null, $password=null, $port=3306)  {
         debug::flow();
-        $this->mariaDSN = "mysql:dbname=$dbname;host=$host;port=$port;charset=utf8";
+        
+        switch ($dbtype) {
+            case "mariadb":
+                $this->DSN = "mysql:dbname=$dbname;host=$host;port=$port;charset=utf8";
+                break;
+            case "sqlite":
+                $this->DSN = "sqlite:$dbname";
+                break;
+            default:
+                debug::fatal('Database type not recognised', $dbtype);
+        }
+
         $options = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false,
         ];
-        $this->dbConnection = new \PDO($this->mariaDSN, $username, $password, $options);
+        $this->dbConnection = new \PDO($this->DSN, $username, $password, $options);
         
         if(!is_object($this->dbConnection)) {
             //Something went wrong
-            debug::fatal("SQLite connection object not returned for specified db", $this->mariaDSN);
+            debug::fatal("PDO connection object not returned for specified db", $this->DSN);
         }
     }
     

@@ -320,8 +320,9 @@ echo "<hr>";
 /** Time page execution */
 echo "Time to generate HTML output " . RedSea\timer::getElapsedTime() . "<hr>";
 
-// MariaDB helper class - set host, user, pass and db name
-$db = new RedSea\mariadb('', '', '', '');
+echo "Generating MariaDB output<br>";
+// PDO helper class - set database type, database, host, user, pass for type = mariadb
+$db = new RedSea\pdodb('mariadb', '', '', '', '');
 
 $db->execute("drop table if exists contacts");
 $db->execute("CREATE TABLE IF NOT EXISTS contacts (
@@ -347,12 +348,15 @@ while ($ret = $rs->fetchArray()) {
     echo($ret['first_name'] . ' ' . $ret['last_name'] . '<br>');
 }
 
-/*
-// SQLite database helper class:
-$db = new RedSea\SQLite("./helloworld.sqlite");
+echo "Time to generate MariaDB output " . RedSea\timer::getElapsedTime() . "<hr>";
+
+echo "Generating SQLite output<br>";
+
+// PDO helper class - set database type, and path to db file = mariadb
+$db = new RedSea\pdodb('sqlite', "helloworld.sqlite");
 
 //Create a table and add some data.
-$db->execute("drop table contacts");
+$db->execute("drop table if exists contacts");
 $db->execute("CREATE TABLE IF NOT EXISTS contacts (
     contact_id INTEGER PRIMARY KEY,
     first_name TEXT NOT NULL,
@@ -376,19 +380,12 @@ while ($ret = $rs->fetchArray()) {
     echo($ret['first_name'] . ' ' . $ret['last_name'] . '<br>');
 }
 
+echo "Time to generate SQLite output " . RedSea\timer::getElapsedTime() . "<hr>";
+
 
 //Using static debug reporting:
 RedSea\debug::$debugLevel = 3;
 RedSea\debug::flow("Hello World");
-
-//Lets force the script to die on a warning
-$db->dieOnError = true;
-// Creating a primary key violation as id 1 is already assigned.
-// Note that debug is off, but the dieOnError overrides that.
-
-$db->execute("insert into contacts values (1, 'Joseph', 'Stalin')");
-*/
-
 
 /** Time page execution */
 echo "<hr>Page execution time: " . RedSea\timer::stopTimer() . "µsec";
