@@ -40,8 +40,8 @@ The RedSea Lite library itself comprises of the following components:
 ## Setup 
 Unzip the code unto a folder. As long as the code is in the unzipped folders, just include the `redsea.inc.php` file, which will set up the required constants and uncomment the library files you require. Do not comment out the `debug.inc.php` class, as all other RedSea libraries depend on it.
 
-## Documentation
-Each class and method are documented with PHPDoc, similar to javadoc. In short, a comment block before each method, with a description of the method, the description of the arguments and the return values, if any. 
+## Code Documentation
+Each class and method are documented with PHPDoc, similar to javadoc. In short, a comment block before each method, with a description of the method, the description of the arguments and the return values, if any. Long variable names are used to assist in understanding program flow, and if debug mode is set to 1, then the library will output debug details on called functions and logic decisions live.
 
 ## Test Suite
 Apart from the MariaDB examples that need to connect to a MariaDB database, the other examples can run stand alone. The test suite is in the `tests` directory where each function in the library is tested out and should work on any PHP 8.x capable web server.

@@ -221,9 +221,9 @@ class tagFactory {
      * @internal
      */
     public function attribute($name, $value) {
-        d::dbg();
+        debug::flow();
         if(empty($name)) {
-            d::dbgError("No attribute name specified");
+            debug::err("No attribute name specified");
             return false;
         } else {
             //Make sure the tag name is lower case as this is how all the tags are named internally.
@@ -266,7 +266,7 @@ class tagFactory {
 
                 //Do we have a value that matches the expected type?
                 if($isExpectedValue) {
-                    d::dbgError('Appending attribute', $name . " / " . $value);
+                    debug::err('Appending attribute', $name . " / " . $value);
                     $this->setAttrArray[$name] = $value;    //Set or update a value on the attribute array.
                     return true;
                 } else {
@@ -293,20 +293,20 @@ class tagFactory {
      * @internal
      */
     public function event($name, $value) {
-        d::dbg();
+        debug::flow();
         if(empty($name)) {
-            d::dbgError("Event name not sent");
+            debug::err("Event name not sent");
             return false;
         } else {
             $name = strtolower($name);
             $value = str_replace('"', "&quot;", $value);
-            d::dbgError('Appending event', $name . " / " . $value);
+            debug::err('Appending event', $name . " / " . $value);
             if(array_key_exists($name, $this->globalEventArray)) {
                 $this->setEventArray[$name] = $value;
                 return true;
             } else {
                 //Non existing tag
-                d::dbgError("Event type not recognised", $name);
+                debug::err("Event type not recognised", $name);
                 return false;
             }
         }
@@ -335,14 +335,14 @@ class tagFactory {
      * @internal
      */
     public function render($tagValue=null) {
-        d::dbg();
+        debug::flow();
         $commonProperties = null;
-        d::dbgError("Rendering tag", $this->tagType);
+        debug::err("Rendering tag", $this->tagType);
         $renderData = "<" . $this->tagType;
         // Generate the tag attributes.
         foreach($this->setAttrArray as $key => $value) {
             if(!is_null($value)) {  //Don't render null values.
-                d::dbgError('Attribute set loop', $key . " / " . $value);
+                debug::err('Attribute set loop', $key . " / " . $value);
                 if($this->globalAttrArray[$key][1] == 'bool') { //Check the expected value from the original attribute definition.
                     //only display the key name if expected data type is BOOL and the value set for the attribute is TRUE
                     if($value === true) {
@@ -356,23 +356,23 @@ class tagFactory {
             }
         }
 
-        d::dbgError('Tag and attribute interim result', $renderData);
+        debug::err('Tag and attribute interim result', $renderData);
 
         //Generate the tag events.
         foreach($this->setEventArray as $key => $value) {
-            d::dbgError('Event set loop', $key . " / " . $value);
+            debug::err('Event set loop', $key . " / " . $value);
             if(!is_null($value)) {
                 $renderData .= " $key=\"$value\"";
             }
         }
         $renderData .= ">";
-        d::dbgError('Tag event and attribute interim result', $renderData);
+        debug::err('Tag event and attribute interim result', $renderData);
 
         if(!empty($tagValue)) {
             $renderData .= $tagValue  . "</" . $this->tagType .">\n";
         }
 
-        d::dbgError('Final tag output', $renderData);
+        debug::err('Final tag output', $renderData);
 
         return $renderData;
     }

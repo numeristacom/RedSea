@@ -187,8 +187,7 @@ class template {
                 } else {
                     debug::err("Could not find specified ID in HTML ressource", $elementID);
                     return false;
-                }
-               
+                }  
             }
         }        
     }
