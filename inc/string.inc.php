@@ -104,6 +104,56 @@ class str {
     static function mid($str, $start, $len) {
         return substr($str, $start, $len);
     }
+
+    /**
+     * Check if a GET value exists and optionally if it is a numerical value.
+     * @param string $variableName Name of the GET variable to check.
+     * @param bool $checkNumeric If true, check if the supplied value is numerical. Default: False
+     * @return bool True if the variable is set and optionaly is also numerical if requested, otherwise false.
+     */
+
+     static function isget($variableName, $checkNumeric=false) {
+        if(isset($_GET[$variableName])) {
+            $varToCheck = $_GET[$variableName];
+            if($checkNumeric == true) {
+                if(is_numeric($varToCheck)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+     }
+
+     /**
+     * Check if a POST value exists and optionally if it is a numerical value.
+     * @param string $variableName Name of the GET variable to check.
+     * @param bool $checkNumeric If true, check if the supplied value is numerical. Default: False
+     * @return bool True if the variable is set and optionaly is also numerical if requested, otherwise false.
+     */
+
+    static function ispost($variableName, $checkNumeric=false) {
+        if(isset($_POST[$variableName])) {
+            $varToCheck = $_POST[$variableName];
+            if($checkNumeric == true) {
+                if(is_numeric($varToCheck)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+     }
 }
+
+
 
 ?>
