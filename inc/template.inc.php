@@ -204,16 +204,22 @@ class template {
 
     /**
      * Render the HTML template, replacing set placeholder values set by the var() method.
+     * @param bool $clearUnusedPlaceholders Remove any placeholders from the template at render time that may not have been set. Default: False
      * @return string HTML output 
      * @see template::var()
      */
-    public function render() {
+    public function render($clearUnusedPlaceholders=false) {
         debug::flow();
         $htmlOutput = $this->TemplateContent;
         foreach($this->variableArray as $var => $value) {
             debug::flow("Variable: $var - Value: $value");
             $htmlOutput = str_replace($this->templateVariableDelimiter . $var . $this->templateVariableDelimiter, $value, $htmlOutput);
         }
+
+        if($clearUnusedPlaceholders) {
+            $htmlOutput = preg_replace("#\{$this->templateVariableDelimiter}.[a-zA-Z0-9]\{$this->templateVariableDelimiter}#U", '', $htmlOutput);
+        }
+
         return $htmlOutput;
     }
 }
