@@ -216,8 +216,8 @@ class template {
             $htmlOutput = str_replace($this->templateVariableDelimiter . $var . $this->templateVariableDelimiter, $value, $htmlOutput);
         }
 
-        if($clearUnusedPlaceholders) {
-            $htmlOutput = preg_replace("#\{$this->templateVariableDelimiter}.[a-zA-Z0-9]\{$this->templateVariableDelimiter}#U", '', $htmlOutput);
+        if($clearUnusedPlaceholders) {          
+            $htmlOutput = preg_replace('/\*.*[a-z]\*/', '', $htmlOutput);
         }
 
         return $htmlOutput;
