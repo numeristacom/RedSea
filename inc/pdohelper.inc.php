@@ -206,7 +206,7 @@ class singleTableRecord {
     protected $dbConnection = null;
     protected $tableSetup = array();
     protected $whereArgs = array();
-    private $coherencyCheck = true;
+    private $isLoaded = false;
     protected $tableName = null;
 
     /**
@@ -293,7 +293,7 @@ class singleTableRecord {
      * read a record from the table
      * @return void 
      */
-    public function readTable() {
+    public function readRecord() {
         $sql = "SELECT * FROM " . $this->tableName . " WHERE";
         $i = 0;
         foreach($this->whereArgs as $field => $value) {
@@ -317,7 +317,26 @@ class singleTableRecord {
         }
     }
 
-    public function setValue($keyToSet, $value) {
+    /**
+     * Set a new value into the tableSetup array
+     * @param string $field Name of the column to update in the databse.
+     * @param mixed $value Value to set for that column
+     * @return boolean True on success, false on failure.
+     */
+    public function setValue($field, $value) {
+        if(array_key_exists($field, $this->tableSetup)) {
+            $this->tableName[$field]["value"] = $this->forceCleanValue($this->tableName[$field]["dataType"], $value);
+        } else {
+            debug::err("Unknown field", $field);
+            return false;
+        }
+    }
+
+    /**
+     * 
+     * @return void 
+     */
+    public function writeRecord() {
         
     }
 
