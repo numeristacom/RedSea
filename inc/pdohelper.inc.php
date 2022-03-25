@@ -290,15 +290,15 @@ class singleTableRecord {
     }
 
     /**
-     * read a record from the table
+     * read a record from the table, applying the filtering criteria if present.
      * @return void 
      */
     public function readRecord() {
-        $sql = "SELECT * FROM " . $this->tableName . " WHERE";
+        $sql = "SELECT * FROM " . $this->tableName;
         $i = 0;
         foreach($this->whereArgs as $field => $value) {
             if($i == 0) {
-                $sql .= " $field = $value";
+                $sql .= " WHERE $field = $value";
             } else {
                 $sql .= " AND $field = $value";
             }
@@ -325,6 +325,21 @@ class singleTableRecord {
      */
     public function setValue($field, $value) {
         if(array_key_exists($field, $this->tableSetup)) {
+            //If the value is an enumeration, then check it off against known values in the enum data.
+            if($this->tableName[$field]["dataFormat"] == 'e') {
+                $isInEnum = false;
+                $enumArray = $this->tableName[$field]["enumArray"];
+                foreach($enumArray as $enumKey => $enumValue) {
+                    if($value == $enumValue) {
+                        $isInEnum = true;
+                    }
+                }
+                if(!$isInEnum) {
+                    debug::err("Specified value is not in the known set of enumeration values for column $field", $value);
+                    return false;
+                }
+            }
+
             $this->tableName[$field]["value"] = $this->forceCleanValue($this->tableName[$field]["dataType"], $value);
         } else {
             debug::err("Unknown field", $field);
@@ -333,7 +348,7 @@ class singleTableRecord {
     }
 
     /**
-     * 
+     * Write the record back to the table, applying the filtering criteria.
      * @return void 
      */
     public function writeRecord() {
