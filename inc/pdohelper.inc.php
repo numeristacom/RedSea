@@ -248,7 +248,6 @@ class singleTableRecord {
                         }
                         $this->enumSetup[$currentField] = $enumArray;
                     }
-
                     $this->recordSetup[$currentField] = array("type" => $fieldDicDesc[0], "format" => $fieldDicDesc[1], "value" => null);
                 }
             }
@@ -432,7 +431,25 @@ class singleTableRecord {
             }        
         }
     }
-}
+
+    /**
+     * Get a column value to be displayed in the rendered HTML
+     * @param string $colName Name of the database column to return, if present.
+     * @return mixed value set in that column
+     */
+    public function getCol($colName) {
+
+    }
+
+    /**
+     * Get the value of an enumeration and return it's selected state for a form
+     * @param mixed $enumName Name of the enumeration key
+     * @return string "SELECTED" if the enumeration value is selected, otherwise null
+     */
+    public function getEnumforOption($enumName) {
+
+   }
+} 
 
 
 ?>
