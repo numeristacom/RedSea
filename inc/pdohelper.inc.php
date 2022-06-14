@@ -44,6 +44,11 @@ class pdodb {
     protected $dbConnection = null;
 
     /**
+     * Contains the last inserted id
+     */
+    public $insertId = null; 
+
+    /**
      * Opens a connection to MariaDB.
      * @param string $dbtype Database type to connect to: mariadb or sqlite
      * @param string $dbname Name of the data base to open. For an SQLite database, it will
@@ -104,7 +109,7 @@ class pdodb {
                 return false;
             } else {
                 $this->affectedRecords = $ret;
-                $this->lastInsertID = $this->dbConnection->lastInsertId();
+                $this->insertId = $this->dbConnection->lastInsertId();
                 return true;
             }
         }
@@ -197,20 +202,22 @@ class recordset {
     }
 }
 
-class singleTableRecord {
-
     /**
-     * Contains the database connection object
-     * @internal 
+     * Takes a table, and describes it's content.
+     * Reading returns an array containing all the fields.
+     * Updating takes 2 associative arrays, one for the data and one for the primary keys
+     * Inserting takes one array and an optional primary key array (take care if it's auto increment or not)
+     * The class will check that data added for insert or update matches the table structure to avoid sql injection attacks.
      */
-    protected $dbConnection = null;
-    protected $tableSetup = array();
+class mariaDbTableRecord {
 
-    protected $recordSetup = array();
-    protected $enumSetup = array();
-    protected $whereArgs = array();
-    protected $tableName = null;
-    protected $pkFieldName = null;
+
+    protected $tableName;   //Name of the table that the class will work on
+    protected $tableStructure = array(); //Associative array containing the table structure. Each key contains 2 elements: they table and the expected data type)
+    protected $tableKeys = array();    //Associative array containing the primary key
+    protected $tableRecord = array();  //Associative array containing the field names and the corresponding values when a record is read or used for writing
+    protected $isLoaded = false;    //Flag indicating if a the class has successfully initialised
+    protected $loadedRecoord = false;   //Flag indicating if a specific record has been loaded for changes
 
     /**
      * Set up the object by passing it a valid pdo connection object, either directly created or exported from the pdodb class.
@@ -218,238 +225,259 @@ class singleTableRecord {
      * @param string $tableToWork The name of the database table to work on.
      * @return void 
      */
-    public function __construct($pdoConnectionObject, $tableToWork) 
-    {
+    public function __construct($pdoConnectionObject, $tableToWork) {
         $this->dbConnection = $pdoConnectionObject;
         $this->tableName = str_replace("'", "''", str_replace("''", "'", $tableToWork));
 
-        $ret = $this->dbConnection->query("SHOW FULL COLUMNS FROM " . $this->tableName);
+        $ret = $this->dbConnection->query("DESCRIBE " . $this->tableName);
         //The query will return an object if it ran. Anything else is a problem.
         if(!is_object($ret)) {
             debug::err($this->dbConnection->errorInfo(), $this->tableName);
         } else {
+            $this->tableName = $tableToWork;
+
             //Lets build the handling array.
             while ($result = $ret->fetch(PDO::FETCH_ASSOC)) {
-                $fieldDicDesc = explode('|', $result['Comment']);
-                $currentField = $result['Field'];
-                // Set the coherency check flag to false if we miss any data in the description.
-                if(count($fieldDicDesc) < 3) {
-                    $this->coherencyCheck = false;
-                    debug::err("Less than 3 fields for $tableToWork.$currentField - Missing description data");
-                    return false;
-                } else {
-                    $enumArray = array();
-                    if($fieldDicDesc['1'] == "e") {
-                        //We have an enum field to customise.
-                        $enumData = explode("&", $fieldDicDesc[2]);
-                        foreach($enumData as $enumValue) {
-                            $ev = explode('=', $enumValue);
-                            $enumArray[$ev[0]] = $ev[1];
-                        }
-                        $this->enumSetup[$currentField] = $enumArray;
-                    }
-                    $this->recordSetup[$currentField] = array("type" => $fieldDicDesc[0], "format" => $fieldDicDesc[1], "value" => null);
-                }
+                $fieldName = $result['Field'];
+                $fieldType = $result['Type'];
+                $fieldNull = $result['Null'];
+                $fieldKey = $result['Key'];
+                $fieldExtra = $result['Extra'];
+                $fieldPrimitive = $this->returnPrimitiveDataType($fieldType);
+                $this->tableStructure[$fieldName] = array('field' => $fieldName, 'type' => $fieldType, 'isNull' => $fieldNull, 'key' => $fieldKey, 'extra' => $fieldExtra, 'primitive' => $fieldPrimitive);
+                $this->tableRecord[$fieldName] = array('field' => $fieldName, 'value' => null);
+                if($fieldKey == 'PRI') {
+                    //We have a primary key
+                    $this->tableKeys[$fieldName] = array('field' => $fieldName, 'type' => $fieldType, 'value' => null);
+                }                
             }
+            $this->isLoaded = true;
+        }
+        return true;
+    }
+
+    /**
+     * Return the field's primitive data type (string or number) for a given field's set data type.
+     * These data types are taken from https://mariadb.com/kb/en/data-types/ valid as of 10.3
+     * Known numerical values will be returned as numerical, all others will be returned as text.
+     * Dates will be considered text types.
+     * @param mixed $fieldDataType Database data type to check
+     * @return int 1 for numerical type, 0 for everything else (text, dates, spatial)
+     */
+    private function returnPrimitiveDataType($fieldDataType) {
+        if(stripos($fieldDataType, 'INT') !== FALSE) {
+            return 1;
+        } elseif(stripos($fieldDataType, 'DEC') !== FALSE) {
+            return 1;
+        } elseif(stripos($fieldDataType, 'BOOL') !== FALSE) {
+            return 1;
+        } elseif(stripos($fieldDataType, 'NUMERIC') !== FALSE) {
+            return 1;
+        } elseif(stripos($fieldDataType, 'FIXED') !== FALSE) {
+            return 1;
+        } elseif(stripos($fieldDataType, 'NUMBER') !== FALSE) {
+            return 1;
+        } elseif(stripos($fieldDataType, 'FLOAT') !== FALSE) {
+            return 1;
+        } elseif(stripos($fieldDataType, 'DOUBLE') !== FALSE) {
+            return 1;
+        } else {
+            return 0;
         }
     }
 
     /**
-     * Add the where conditions to an internal structure which will be used to generate a where query for reading or writing a table record.
-     * @param mixed $field Field in the current table to filter on
-     * @param mixed $value Value to use for the clause.
-     * @return void 
+     * Check the value against the corresponding field's type and return a quoted or unquoted value, depending on type, ready for use in a prepared query.
+     * @param string $field 
+     * @param mixed $value 
+     * @return mixed Quoted value for a string, unquoted for a numeric
      */
-    public function addWhere($field, $value) {
-        $field = $this->forceCleanValue('str', $field);
-        if(array_key_exists($field, $this->tableSetup)) {
-            $this->whereArgs[$field] = $this->forceCleanValue($this->tableName[$field]["dataType"], $value);
-        }
-    }
-
-    /**
-     * Return a query ready value that depends on the expected data type of the field. 
-     * @param mixed $expectedType num for Numerical fields (including boolean data), or str for String or text data.
-     * @param mixed $value Value to check
-     * @param bool $preQuote If true, any string value will be returned pre-quote delimited for use in a query in addition to being escaped, for example if you
-     * have a value abc'def passed as the value, then the method will return this value quoted and escaped as 'abc''def'. If false the string will only be escaped
-     * but will not be quoted.
-     * @return mixed Processed value
-     */
-    private function forceCleanValue($expectedType, $value, $preQuote = true) {
-        if($expectedType == "num") {
-            if(!is_numeric($value)) {
-                return null;
-            } else {
+    public function prepareValue($field, $value) {
+        if($this->tableStructure[$field]['primitive'] == 1) {
+            if(is_numeric($value)) {
                 return $value;
+            } else {
+                return null;
             }
         } else {
-            if($preQuote) {
-                $quoteChar = "'";
-            } else {
-                $quoteChar = null;
-            }
-            return $quoteChar . str_replace("'", "''", str_replace("''", "'", $value)) . $quoteChar;
+            return "'" . str_replace("'", "''", str_replace("''", "'", $value)) . "'";
         }
     }
 
     /**
-     * read a record from the table, applying the filtering criteria if present.
-     * @return void 
+     * Select a record from the table by providing an array of fields and values to select
+     * You will r
+     * @param array $selectByKeyArray Associative array of fieldnames and values to use in the select query to load one record. The format of the array
+     * is array('field' => 'value') - and can contain as many fields as required to construct the select query from a single table. They don't have to be 
+     * keys but any valid field name in the table, and a valid value corresponding to the data type. Values will be automatically escaped.
+     * @return boolean TRUE if the value was loaded, FALSE otherwise. 
      */
-    public function readRecord() {
-        $sql = "SELECT * FROM " . $this->tableName;
+    public function getOneRecordByKeys($selectByKeyArray) {
+        // Example getRecordByKeys(array('id' => 1, 'something' => 'else'));
+        $sql = "SELECT * FROM " . $this->tableName . " WHERE ";
         $i = 0;
-        foreach($this->whereArgs as $field => $value) {
+        foreach($selectByKeyArray as $field => $value) {
             if($i == 0) {
-                $sql .= " WHERE $field = $value";
+                $sql .= $field  . ' = ' . $this->prepareValue($field, $value);
             } else {
-                $sql .= " AND $field = $value";
+                $sql .= ' AND ' . $field  . ' = ' .  $this->prepareValue($field, $value);
             }
-            $sql .= " limit 1";
             $i++;
         }
+        $sql .= ' LIMIT 1';
+
         $ret = $this->dbConnection->query($sql);
         if(!is_object($ret)) {
-            debug::err($this->dbConnection->errorInfo(), $sql);
+            debug::err($this->dbConnection->errorInfo(), $this->tableName);
         } else {
-            //Lets build the handling array.
             while ($result = $ret->fetch(PDO::FETCH_ASSOC)) {
-               foreach($this->recordSetup as $col => $settings) {
-                $this->recordSetup[$col]["value"] = $result[$col];
-               }
-            }            
+                foreach($this->tableRecord as $field => $params) {
+                    $this->tableRecord[$field]['value'] = $result[$field];
+                    //Save the PK
+                    if(isset($this->tableKeys[$field])) {
+                        $this->tableKeys[$field]['value'] = $result[$field];
+                    }
+                }
+            }
         }
+        $this->loadedRecoord = true;
+        return true;
     }
 
     /**
-     * Set a new value into the tableSetup array
-     * @param string $field Name of the column to update in the databse.
-     * @param mixed $value Value to set for that column
-     * @return boolean True on success, false on failure.
+     * Get a value from a field from the loaded table record
+     * @param mixed $fieldName Name of the field from the loaded record
+     * @return mixed Value from the field, or === false if no record is set.
      */
-    public function setValue($field, $value) {
-        if(array_key_exists($field, $this->tableSetup)) {
-            //If the value is an enumeration, then check it off against known values in the enum data.
-            if($this->tableName[$field]["format"] == 'e') {
-                $isInEnum = false;
-                foreach($this->enumSetup[$field] as $enumKey => $enumValue) {
-                    if($value == $enumValue) {
-                        $isInEnum = true;
-                    }
-                }
-                if(!$isInEnum) {
-                    debug::err("Specified value is not in the known set of enumeration values for column $field", $value);
-                    return false;
-                }
+    public function getField($fieldName) {
+        if($this->isLoaded) {
+            if(array_key_exists($fieldName, $this->tableRecord)) {
+                return $this->tableRecord[$fieldName]['value'];
+            } else {
+                debug::err('Field ' . $fieldName . ' does not exist. Cannot read value');
+                return false;
             }
-
-            $this->recordSetup[$field]["value"] = $this->forceCleanValue($this->tableName[$field]["dataType"], $value, false);
         } else {
-            debug::err("Unknown field", $field);
+            debug::err('No record loaded');
             return false;
         }
     }
 
-    /** 
-     * Set the name of the primary key auto increment field so that MySQL can magically add that field. All the others will be named apart from this one.
-     */
-    public function ignorePK($primaryKeyFieldName) {
-        $this->pkFieldName = $primaryKeyFieldName;
-    }
-
     /**
-     * Write the record back to the table, applying the filtering criteria.
-     * @param bool $insert If false, run an update query. If true run an insert query. Default: False.
-     * @return mixed False on failure. Non zero value on success. This can be TRUE (or 1), but if the $insert variable is set, then this value will be
-     * the new column ID as generated by MySQL/MariaDB.
+     * Set a new value in a field in the loaded table record. That value will be escaped by the method.
+     * @param mixed $fieldName Field to insert a value into
+     * @param mixed $value Value to insert
+     * @return bool True on success, False on error
      */
-    public function writeRecord($insert=false) {
-        $i = 0;
-        if($insert) {
-            $sql = "insert into " . $this->tableName . ' ';
-            $fieldName = "";
-            $fieldValue = "";
-            foreach($this->recordSetup as $key => $value) {
-                if($key != $this->pkFieldName) {
-                    //Don't do anything if the current value is the key field. We will let the database manage that one on it's own.
-                    $workingData = $this->forceCleanValue($value['type'], $value['value']);
-                    if($i == 0) {
-                        $fieldName = '(' . $key;
-                        $fieldValue = '(' . $workingData;
-                    } else {
-                        $fieldName .= ', ' . $key;
-                        $fieldValue .= ', ' . $workingData;
-                    }
-                    $i++;   //Only increment the tab if the current record in the loop is not the key field name.
-                }
-            }
-
-            $fieldName .= ')';
-            $fieldValue .= ')';
-            $sql .= $fieldName . ' values ' . $fieldValue;
-
-            $ret = $this->dbConnection->exec($sql);
-            if(!$ret) {
-                debug::err($sql, $this->dbConnection->errorInfo());
-                return false;
+    public function setField($fieldName, $value) {
+        if($this->isLoaded) {
+            if(array_key_exists($fieldName, $this->tableRecord)) {
+                $this->tableRecord[$fieldName]['value'] = $value;
+                return true;
             } else {
-                return $this->lastInsertID = $this->dbConnection->lastInsertId();
+                debug::err('Field ' . $fieldName . ' does not exist. Cannot set value');
+                return false;
             }
-
         } else {
-            $sql = "update " . $this->tableName . ' set ';
-            foreach($this->recordSetup as $key => $value) {
-                if($key != $this->pkFieldName) {
-                    //Don't do anything if the current value is the key field. We will let the database manage that one on it's own.
-                    $workingData = $this->forceCleanValue($value['type'], $value['value']);
-                    if($i == 0) {
-                        $sql .= $key . ' = ' . $workingData;
-                    } else {
-                        $sql .= ', ' . $key . ' = ' . $workingData;
-                    }
-                    $i++;
-                }
-            }
-            //Where clause
-            $j = 0;
-            foreach($this->whereArgs as $whereField => $whereValue) {
-                if($j == 0) {
-                    $sql .= " WHERE $whereField = $whereValue";
-                } else {
-                    $sql .= " AND $whereField = $whereValue";
-                }
-                $sql .= " limit 1";
-                $j++;
-            }
-            $ret = $this->dbConnection->exec($sql);
-            if(!$ret) {
-                debug::err($sql, $this->dbConnection->errorInfo());
-                return false;
-            } else {
-                return $ret;
-            }        
+            debug::err('No record loaded');
+            return false;
         }
     }
 
     /**
-     * Get a column value to be displayed in the rendered HTML
-     * @param string $colName Name of the database column to return, if present.
-     * @return mixed value set in that column
+     * Write the record back to the to database as an update. It will used the stored keys to identify the previous record to update,
+     * even if the new data keys are different.
+     * @return void 
      */
-    public function getCol($colName) {
+    public function updateRecord($forcePrimaryKeyUpdate=false) {
+        if($this->isLoaded) {
+            $sql = 'UPDATE ' . $this->tableName . ' SET ';
+            
+            $i = count($this->tableRecord);
+            $j = 1;
+            foreach($this->tableRecord as $field => $params) {
+                $ignoreField = false;
 
+                //Do we need to ignore the primary key field?
+                if(isset($this->tableKeys[$field])) {
+                    if($forcePrimaryKeyUpdate) {
+                        $ignoreField = false;
+                    } else {
+                        $ignoreField = true;
+                    }
+                }
+
+                if(!$ignoreField) {
+                    $sql .= $field . " = " . $this->prepareValue($field, $params['value']); 
+                    if($j < $i) {
+                        $sql .= ', ';
+                    }
+                }
+                
+                $j++;
+            }
+
+            $sql .= ' WHERE ';
+
+            foreach($this->tableKeys as $key => $value) {
+                //There should only be one primary key... but it's got a name, so use a foreach to pull that identifiying key name
+                $primaryKey = $this->prepareValue($key, $value['value']); 
+                $sql .= $key . " = " . $primaryKey;
+            }
+
+            $this->dbConnection->execute($sql);
+            if($this->dbConnection->affectedRecords != 1) {
+                debug::err('Number of affected records not equal to 1: ' . $sql);
+                return false;
+            } else { 
+                return true;
+            }
+        } else {
+            debug::err('Cannot update a record that has not been loaded first');
+            return false;
+        }
     }
 
     /**
-     * Get the value of an enumeration and return it's selected state for a form
-     * @param mixed $enumName Name of the enumeration key
-     * @return string "SELECTED" if the enumeration value is selected, otherwise null
+     * Write a new record into the database as per the values set in the table record and taking into account any auto-increment keys that must be ignored as
+     * they are directly managed by the database. The table record will then be re-read into memory.
+     * @param mixed $autoIncrementKeys Array of fields that are auto increment. Even if these fields are set in the table record explicitly they will be ignored if they
+     * are noted in this argument, as this allows the database to manage the autoincrement field instead. If no array of auto increment keys is set, then all values
+     * in the table record will be used to make the insert.
+     * @return bool True on success, False on failure
      */
-    public function getEnumforOption($enumName) {
+    public function writeNewRecord() {
+        
+        $sql = 'INSERT INTO ' . $this->tableName . ' VALUES (';
+            
+        $i = count($this->tableRecord);
+        $j = 1;
 
-   }
-} 
+        foreach($this->tableRecord as $field => $params) {
+            if(isset($this->tableKeys[$field])) {
+                //We have auto increment fields to "ignore". Set the record values to the string 'null' before building the query.
+                $sql .= 'null'; 
+            } else {
+                $sql .= $this->prepareValue($field, $params['value']); 
+            }
+
+            if($j < $i) {
+                $sql .= ', ';
+            }
+            $j++;
+        }
+        $sql .= ")";
+
+        $this->dbConnection->execute($sql);
+
+        if(is_null($this->dbConnection->insertId)) {
+            debug::err('Null insert id returned ' . $sql);
+            return false;
+        } else {
+            return $this->dbConnection->insertId;
+        }
+    }
+}
 
 
 ?>

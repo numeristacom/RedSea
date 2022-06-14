@@ -388,5 +388,7 @@ RedSea\debug::flow("Hello World");
 /** Time page execution */
 echo "<hr>Page execution time: " . RedSea\timer::stopTimer() . "µsec";
 
+echo "<hr>Single Table database operations<br>";
+
 
 ?>
