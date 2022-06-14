@@ -226,9 +226,10 @@ class mariaDbTableRecord {
      * @return void 
      */
     public function __construct($pdoConnectionObject, $tableToWork) {
+        debug::flow();
         $this->dbConnection = $pdoConnectionObject;
         $this->tableName = str_replace("'", "''", str_replace("''", "'", $tableToWork));
-
+        debug::flow('Describing ' . $this->tableName);
         $ret = $this->dbConnection->query("DESCRIBE " . $this->tableName);
         //The query will return an object if it ran. Anything else is a problem.
         if(!is_object($ret)) {
@@ -265,6 +266,7 @@ class mariaDbTableRecord {
      * @return int 1 for numerical type, 0 for everything else (text, dates, spatial)
      */
     private function returnPrimitiveDataType($fieldDataType) {
+        debug::flow();
         if(stripos($fieldDataType, 'INT') !== FALSE) {
             return 1;
         } elseif(stripos($fieldDataType, 'DEC') !== FALSE) {
@@ -293,6 +295,7 @@ class mariaDbTableRecord {
      * @return mixed Quoted value for a string, unquoted for a numeric
      */
     public function prepareValue($field, $value) {
+        debug::flow();
         if($this->tableStructure[$field]['primitive'] == 1) {
             if(is_numeric($value)) {
                 return $value;
@@ -313,6 +316,7 @@ class mariaDbTableRecord {
      * @return boolean TRUE if the value was loaded, FALSE otherwise. 
      */
     public function getOneRecordByKeys($selectByKeyArray) {
+        debug::flow();
         // Example getRecordByKeys(array('id' => 1, 'something' => 'else'));
         $sql = "SELECT * FROM " . $this->tableName . " WHERE ";
         $i = 0;
@@ -325,11 +329,12 @@ class mariaDbTableRecord {
             $i++;
         }
         $sql .= ' LIMIT 1';
-
+        debug::flow($sql);
         $ret = $this->dbConnection->query($sql);
         if(!is_object($ret)) {
             debug::err($this->dbConnection->errorInfo(), $this->tableName);
         } else {
+            //Did we get a result? Maybe we need to check this in case we didn't match anything!
             while ($result = $ret->fetch(PDO::FETCH_ASSOC)) {
                 foreach($this->tableRecord as $field => $params) {
                     $this->tableRecord[$field]['value'] = $result[$field];
@@ -350,6 +355,7 @@ class mariaDbTableRecord {
      * @return mixed Value from the field, or === false if no record is set.
      */
     public function getField($fieldName) {
+        debug::flow();
         if($this->isLoaded) {
             if(array_key_exists($fieldName, $this->tableRecord)) {
                 return $this->tableRecord[$fieldName]['value'];
@@ -370,6 +376,7 @@ class mariaDbTableRecord {
      * @return bool True on success, False on error
      */
     public function setField($fieldName, $value) {
+        debug::flow();
         if($this->isLoaded) {
             if(array_key_exists($fieldName, $this->tableRecord)) {
                 $this->tableRecord[$fieldName]['value'] = $value;
@@ -390,6 +397,7 @@ class mariaDbTableRecord {
      * @return void 
      */
     public function updateRecord($forcePrimaryKeyUpdate=false) {
+        debug::flow();
         if($this->isLoaded) {
             $sql = 'UPDATE ' . $this->tableName . ' SET ';
             
@@ -424,7 +432,7 @@ class mariaDbTableRecord {
                 $primaryKey = $this->prepareValue($key, $value['value']); 
                 $sql .= $key . " = " . $primaryKey;
             }
-
+            debug::flow($sql);
             $this->dbConnection->execute($sql);
             if($this->dbConnection->affectedRecords != 1) {
                 debug::err('Number of affected records not equal to 1: ' . $sql);
@@ -447,6 +455,7 @@ class mariaDbTableRecord {
      * @return bool True on success, False on failure
      */
     public function writeNewRecord() {
+        debug::flow();
         
         $sql = 'INSERT INTO ' . $this->tableName . ' VALUES (';
             
@@ -467,7 +476,7 @@ class mariaDbTableRecord {
             $j++;
         }
         $sql .= ")";
-
+        debug::flow($sql);
         $this->dbConnection->execute($sql);
 
         if(is_null($this->dbConnection->insertId)) {
