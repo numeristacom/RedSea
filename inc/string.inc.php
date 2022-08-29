@@ -35,6 +35,15 @@ class str {
         }
     }
 
+    /**
+     * Remove URL specific characters (: / \ @ ) from a string to avoid HTTP string injection
+     * @param string $str String to clean
+     * @param string optional $replaceWith replace HTTP specific characters from a string with the provided value. By default: null and matching characters will be removed.
+     * @return string Cleaned string 
+     */
+    public static function neutraliseHTTPInjection($str, $replaceWith=null) {
+        return str_replace(":", $replaceWith, str_replace("\\", $replaceWith, str_replace("/", $replaceWith, str_replace("@", $replaceWith, $str))));
+    }
 
     /**
      * Get a specific number of characters from the left side of a string.

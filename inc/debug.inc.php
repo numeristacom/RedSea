@@ -109,7 +109,7 @@ class debug {
      * @param variant $optionalData Extra data of any sort that can be useful to debug program flow.
      * @return void 
      */
-    static function fatal($message, $optionalData) {
+    static function fatal($message, $optionalData=null) {
         self::$dieOnError = true;
         self::$debugLevel = 2;
         self::err($message, $optionalData);
@@ -121,7 +121,7 @@ class debug {
      * @return void
      * @internal
      */
-    protected function setLastError($err=null) {
+    static function setLastError($err=null) {
         self::$errorFlag = true;
         self::$lastErrorMessage = $err;
     }
