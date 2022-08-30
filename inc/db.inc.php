@@ -29,7 +29,7 @@ namespace RedSea;
 
 use PDO;
 
-class pdodb {
+class rsdb {
 
     /**
      * Contains the DSN string
@@ -201,8 +201,16 @@ class recordset {
             return $ret;
         }
     }
+
+    public function recordCount() {
+        return $this->result->rowCount();
+    }
 }
 
+/**
+ * 
+ * @package RedSea
+ */
 class singleRecordCommon {
     protected $dbCnx = null;
     protected $tableName = null;
@@ -217,39 +225,37 @@ class singleRecordCommon {
 
         if($this->describeTable($tableName) !== true) {     //Crash and burn.
             debug::fatal("Could not load table structure for table", $tableName);
+        } else {
+            $this->recordIsLoaded = true;
         }
     }
 
+    /**
+     * Describe the structure of a database table, and load it into the tableStructure array, including field names, values, auto increment, primary key and not null flags.
+     * @param mixed $table Table to describe 
+     * @return bool|void 
+     */
     protected function describeTable($table) {
         $table = str::sqlString($table);
         $sql = "show columns from " . $table;
-        $ret = $this->dbCnx->query($sql);
 
-        if(!is_object($ret)) {
-            debug::fatal($this->dbCnx->errorInfo(), $sql);
-            return false;
-       } else {
-           //Here we go. Return the result object.
-            $result = $this->result->fetch(PDO::FETCH_ASSOC);
-            if($result === false) {
-                debug::flow("End of Recordset");
-                return true;
-            } else {
+        $rs = new recordset($this->dbCnx->query($sql));
 
-                //Store the PK field if we find it. It will make our life easier later!
-                if($result['Key'] == 'PRI') {
-                    $this->pkField = $result['Field'];
-                }
-
-                $this->tableStructure[$result['Field']] = array(
-                    'primitive' => $this->returnPrimitiveDataType($result['Type']), //Primitive data type to counter sql injection. isString or isNumber
-                    'nullAllowed' => $result['Null'],   //Is null value allowed?
-                    'key' => $result['Key'],            //Is there a key or index here? (PRI = primary key. If auto increment, ignore this value in insert / update unless forced.)
-                    'ai' => $this->isAutoIncrement($result['Extra']),   //Is this an auto increment field?
-                    'fieldValue' => null                //Store the field value here when a value is loaded, or store values for an insert.
-                );
+        while ($result = $rs->fetchArray()) {
+            //Store the PK field if we find it. It will make our life easier later!
+            if($result['Key'] == 'PRI') {
+                $this->pkField = $result['Field'];
             }
-       }
+
+            $this->tableStructure[$result['Field']] = array(
+                'primitive' => $this->returnPrimitiveDataType($result['Type']), //Primitive data type to counter sql injection. isString or isNumber
+                'nullAllowed' => $result['Null'],   //Is null value allowed?
+                'key' => $result['Key'],            //Is there a key or index here? (PRI = primary key. If auto increment, ignore this value in insert / update unless forced.)
+                'ai' => $this->isAutoIncrement($result['Extra']),   //Is this an auto increment field?
+                'fieldValue' => null                //Store the field value here when a value is loaded, or store values for an insert.
+            );
+        }
+        return true;
     }
     
     /**
@@ -266,6 +272,12 @@ class singleRecordCommon {
             return 'NUM';
         } elseif(stripos($typeRecord, 'decimal') !== FALSE) {
             return 'NUM';
+        } elseif(stripos($typeRecord, 'double') !== FALSE) {
+            return 'NUM';
+        } elseif(stripos($typeRecord, 'decimal') !== FALSE) {
+            return 'NUM';
+        } elseif(stripos($typeRecord, 'bit') !== FALSE) {
+            return 'NUM';
         } else {
             return 'STR';
         }
@@ -277,7 +289,7 @@ class singleRecordCommon {
      * @return bool True if the field contains an auto_increment modifier, otherwise False.
      */
     private function isAutoIncrement($extraData) {
-        if(stripos($extraData, 'auto_increment') === TRUE) {
+        if(stripos($extraData, 'auto_increment') !== FALSE) {
             return true;
         } else {
             return false;
@@ -306,13 +318,69 @@ class singleRecordCommon {
      */
     protected function escapeQuoteValueByType($field, $value) {
         if($this->tableStructure[$field]['primitive'] == 'NUM') {
-            if(!is_numeric($value)) {
-                debug::fatal('Non-numeric data supplied. Numeric expected', array($field, $value));
-            } else {
+            if(is_null($value)) {
+                return 'NULL';
+            } else if(is_numeric($value)) {
                 return $value;
+            } else {
+                debug::fatal('Field value does not match field data type', array($field, $value));
             }
         } else {
             return "'" . str::sqlString($value) . "'";
+        }
+    }
+
+    /**
+     * Sets the value of the field of a loaded record for UPDATE, as long as it does not conflict with the loaded where list or auto_increment primary key.
+     * Text values set here will not be escaped at this level (this is done when the update method is called.)
+     * Note 1) MySQL/MariaDB could have case sensitive field names, so you MUST match the case of the loaded field names or the method will return a fatal error.
+     * Note 2) This method will set the data as it is provided, but escaping will only happen on update or insert for text values
+     * Note 3) The method will raise a fatal error if you attempt to:
+     * - Update the primary key value (if a primary key is present)
+     * - Update values that are set in the WHERE clause, as these are needed to identify the correct record to update
+     * - Set a value that does not match the field's type (numerical or text)
+     *  
+     * @param mixed $fieldName 
+     * @param mixed $fieldValue 
+     * @return void 
+     */
+    public function setField($fieldName, $fieldValue) {
+        if(array_key_exists($fieldName, $this->tableStructure)) {
+            //Is this a numerical field but a non numeric value?
+            if($this->tableStructure[$fieldName]['primitive'] == "NUM" && !is_numeric($fieldValue)) {
+                if(!is_null($fieldValue)) {
+                    debug::fatal('Field value does not match field data type', array($fieldName, $fieldValue));
+                }
+            }
+            
+            //Is there a primary key in the table? If so, we can ignore the where conditions. 
+            //If not, then we must rely on the where conditions to identify the unique record.
+
+            //Are we attempting to update the primary key?
+            if(!is_null($this->pkField)) {
+                //We have a primary key. We can ignore attempts to update on WHERE fields as the PK is enough to uniquely identify the record we want to update.
+                if($fieldName == $this->pkField) {
+                    debug::fatal('Attempting to update the primary key', $fieldName);
+                }
+            } else {
+                //No PK, so the only way to update a unique record is by the provided WHERE records, so we must reject any attempts to update a field that is used in the where condition.
+                if(array_key_exists($fieldName, $this->whereFields)) {
+                    //Is this field in the primary key list?
+                    debug::fatal('Attempting to update a field used in the WHERE condition and no table contains no primary key', $fieldName);
+                }
+            }
+            
+            //So... If we have not failed out... set the value!
+            $this->tableStructure[$fieldName]['fieldValue'] = $fieldValue;            
+        } else {
+            debug::fatal('Requested field to set does not exist in the table or does not match field name case sensitivity', $fieldName);
+        }
+    }
+
+    public function failIfTableStructureNotLoaded() {
+        if(!$this->recordIsLoaded) {
+            debug::fatal('No table structure loaded. Insert not possible');
+            return false;
         }
     }
 }
@@ -336,6 +404,8 @@ class readUpdateSingleRecord extends singleRecordCommon {
      * @return void Method will generate a fatal error if you try to set a where clause on a non existing field or use the incorrect data type.
      */
     public function addWhere($field, $whereValue) {
+        $this->failIfTableStructureNotLoaded();
+
         //Does the field even exist?
         if(array_key_exists($field, $this->tableStructure)) {
             //Is this field a numerical or text field?
@@ -356,58 +426,15 @@ class readUpdateSingleRecord extends singleRecordCommon {
     }
 
     /**
-     * Sets the value of the field of a loaded record for UPDATE, as long as it does not conflict with the loaded where list or auto_increment primary key.
-     * Text values set here will not be escaped at this level (this is done when the update method is called.)
-     * Note 1) MySQL/MariaDB could have case sensitive field names, so you MUST match the case of the loaded field names or the method will return a fatal error.
-     * Note 2) This method will set the data as it is provided, but escaping will only happen on update or insert for text values
-     * Note 3) The method will raise a fatal error if you attempt to:
-     * - Update the primary key value (if a primary key is present)
-     * - Update values that are set in the WHERE clause, as these are needed to identify the correct record to update
-     * - Set a value that does not match the field's type (numerical or text)
-     *  
-     * @param mixed $fieldName 
-     * @param mixed $fieldValue 
-     * @return void 
-     */
-    public function setField($fieldName, $fieldValue) {
-        if(array_key_exists($fieldName, $this->tableStructure)) {
-            //Is this a numerical field but a non numeric value?
-            if($this->tableStructure[$fieldName]['primitive'] == "NUM" && !is_numeric($fieldValue)) {
-                debug::fatal('Field value does not match field data type', array($fieldName, $fieldValue, $this->tableStructure[$fieldName]['primitive']));
-            }
-            
-            //Is there a primary key in the table? If so, we can ignore the where conditions. 
-            //If not, then we must rely on the where conditions to identify the unique record.
-
-            //Are we attempting to update the primary key?
-            if(!is_null($this->pkField)) {
-                //We have a primary key. We can ignore attempts to update on WHERE fields as the PK is enough to uniquely identify the record we want to update.
-                if($fieldName == $this->pkField) {
-                    debug::fatal('Attempting to update the primary key', $fieldName);
-                }
-            } else {
-                //No PK, so the only way to update a unique record is by the provided WHERE records, so we must reject any attempts to update a field that is used in the where condition.
-                if(array_key_exists($fieldName, $this->whereFields)) {
-                    //Is this field in the primary key list?
-                    debug::fatal('Attempting to update a field used in the WHERE condition and no table contains no primary key', $fieldName);
-                }
-            }
-            
-            //So... If we have not failed out... set the value!
-            $this->tableStructure[$fieldName]['fieldValue'] = $fieldValue;            
-        } else {
-            debug::fatal('Requested field to set does not exist in the table or does not match field name case sensitivity', $fieldName);
-        }
-    }
-
-    /**
      * Read a record from the database, taking the filter conditions into account that have been set through the addWhere method, if any.
      * If the query does not return EXACTLY one record from the system, there will be a fatal error: The method does not force a limit 1, as if more than
      * one record is returned, you have no guarantee that you are working on the correct record, and so the method will error out if your where conditions
      * are not sufficiently precise, and if you have zero records, then you have nothing to do and there is a problem with your query or your database table.
      * @return void 
      */
-    private function readRecord() {
+    public function loadOneRecord() {
+        $this->failIfTableStructureNotLoaded();
+
         $sql = "select * from " . $this->tableName;
         // Are there any where conditions? 
         $where = null;
@@ -415,41 +442,23 @@ class readUpdateSingleRecord extends singleRecordCommon {
         $and = null;
         foreach($this->whereFields as $field => $value) {
             if($i == 0) {
-                $where = " WHERE ";
+                $sql .= " WHERE ";
                 $i++;
+            } else {
+                $sql .= ", AND ";
             }
-
-            if($i > 0) {
-                $and = " AND ";
-            }
-
-            $where .= $and . $this->escapeQuoteValueByType($field, $value);
+            $sql .= $field . " = " . $this->escapeQuoteValueByType($field, $value);
         }
 
-        $sql .= $where;
-        $ret = $this->dbCnx->query($sql);
-
-        if(!is_object($ret)) {
-            debug::fatal($this->dbCnx->errorInfo(), $sql);
-            return false;
+        $rs = new recordset($this->dbCnx->query($sql));
+        $records = $rs->recordCount();
+        if($records != 1) {
+            debug::fatal('Query returned $records rows. Only 1 row is expected', $sql);
         } else {
-            //Did we only get one row?
-            $returnedRows = $this->result->rowCount();
-            if($returnedRows != 1) {
-                debug::fatal('Query returned $returnedRows rows. Only 1 row is expected', $sql);
-            }
-            //Here we go. Return the result object.
-            $result = $this->result->fetch(PDO::FETCH_ASSOC);
-            if($result === false) {
-                debug::flow("End of Recordset");
-                return true;
-            } else {
-                //Load each of the values for the fields defined in the the table structure into the corresponding table structure fieldValue element.
-                foreach($this->tableStructure[$field] as $fieldNames) {
-                    $this->tableStructure[$fieldNames]['fieldValue'] = $result[$fieldNames];
+            while ($result = $rs->fetchArray()) {
+                foreach($result as $field => $value) {
+                    $this->tableStructure[$field]['fieldValue'] = $value;
                 }
-                $this->recordIsLoaded = true;       // Set the flag so we can run other processes.
-                return true;
             }
         }
     }
@@ -458,25 +467,22 @@ class readUpdateSingleRecord extends singleRecordCommon {
      * Take the field values from the tableStructure array and update the values in the database, either from the PK or from the where condition.
      * @return void 
      */
-    public function update() {
+    public function updateRecord() {
 
-        if(!$this->recordIsLoaded) {
-            debug::setLastError('No record loaded to update');
-            return false;
-        }
+        $this->failIfTableStructureNotLoaded();
 
         $sql = "UPDATE " . $this->tableName . " SET ";
         $and = null;
         $i = 0;
         
-
         foreach($this->tableStructure as $field => $fieldData) {
             //Reset the skip flag
             $skipField = false;
 
+            
             if(!is_null($this->pkField)) {
                 //Update on the loaded PK
-                if($field = $this->pkField) {
+                if($field == $this->pkField) {
                     $skipField = true;
                 }
             } else {
@@ -486,22 +492,48 @@ class readUpdateSingleRecord extends singleRecordCommon {
                 }
             }
 
-            if(!$skipField) {
-                $sql .= $and . $field . " = " . $this->escapeQuoteValueByType($field, $fieldData['fieldValue']);
+            if(is_null($fieldData) && $this->tableStructure[$field]['nullAllowed'] == 'NO') {
+                debug::fatal('Attempting to insert null value into not null field', $field);
             }
 
-            $i++;
+            if(!$skipField) {
+                $sql .= $and . $field . " = " . $this->escapeQuoteValueByType($field, $fieldData['fieldValue']);
+            } else {
+                echo "skipping $field : " . $fieldData['fieldValue'] . "\n"; 
+            }
+
+            if(!$skipField) {
+                $i++;
+            }
             
             if($i > 0) {
-                $and = " AND ";
+                $and = ", ";
+            }
+        }
+
+        //Add in the WHERE conditions:
+        if(!is_null($this->pkField)) {
+            $sql .= " WHERE " . $this->pkField . " = " . $this->tableStructure[$this->pkField]['fieldValue'];
+        } else {
+            //We will have to use the where array.
+            $where = null;
+            $i = 0;
+            foreach($this->whereFields as $field => $value) {
+                if($i > 0) {
+                    $where .= ", ";
+                }
+                $where .= $field . " = " .  $this->escapeQuoteValueByType($field, $value);
+                $i++;
             }
         }
 
         //We can run the generated query.
-        $this->dbCnx->query($sql);
+        $affectedRecords = $this->dbCnx->execute($sql);
         // Get the number of affected rows. If 0: problem, if 1: ok, if more than one: WTF.
-        if($this->dbCnx->affectedRecords != 1) {
+        if($affectedRecords != 1) {
             debug::fatal('Update query did not match exactly 1 record', array($sql, $this->dbCnx->affectedRecords));
+        } else {
+            return true;
         }
     }
 }
@@ -513,58 +545,40 @@ class writeNewRecord extends singleRecordCommon {
         parent::__construct($cnx, $tableName);
     }
     
-    public function insert() {
-        if(!$this->recordIsLoaded) {
-            debug::fatal('No record loaded to update');
-            return false;
+    public function insertNewRecord() {
+
+        $this->failIfTableStructureNotLoaded();
+
+        if(!is_null($this->pkField) && $this->tableStructure[$this->pkField]['ai'] == TRUE && !is_null($this->tableStructure[$this->pkField]['fieldValue'])) {
+            debug::fatal("Attempting to insert defined value into auto increment primary key field. Null expected", $this->pkField);
         }
-    }
 
-    /**
-     * Sets the value of the field of a loaded record for INSERT, as long as it does not conflict with the loaded where list or auto_increment primary key.
-     * Text values set here will not be escaped at this level (this is done when the update method is called.)
-     * Note 1) MySQL/MariaDB could have case sensitive field names, so you MUST match the case of the loaded field names or the method will return a fatal error.
-     * Note 2) This method will set the data as it is provided, but escaping will only happen on update or insert for text values
-     * Note 3) The method will raise a fatal error if you attempt to:
-     * - Update the primary key value (if a primary key is present)
-     * - Update values that are set in the WHERE clause, as these are needed to identify the correct record to update
-     * - Set a value that does not match the field's type (numerical or text)
-     *  
-     * @param mixed $fieldName 
-     * @param mixed $fieldValue 
-     * @return void 
-     */
-    public function setField($fieldName, $fieldValue) {
-        if(array_key_exists($fieldName, $this->tableStructure)) {
-            //Is this a numerical field but a non numeric value?
-            if($this->tableStructure[$fieldName]['primitive'] == "NUM" && !is_numeric($fieldValue)) {
-                debug::fatal('Field value does not match field data type', array($fieldName, $fieldValue, $this->tableStructure[$fieldName]['primitive']));
-            }
-            
-            //Is there a primary key in the table? If so, we can ignore the where conditions. 
-            //If not, then we must rely on the where conditions to identify the unique record.
+        $sql = "INSERT INTO " . $this->tableName . " (";
+        $sqlValues = " VALUES (";
+        $sqlData = null;
+        $i = 0;
 
-            //Are we attempting to update the primary key?
-            if(!is_null($this->pkField)) {
-                //We have a primary key. We can ignore attempts to update on WHERE fields as the PK is enough to uniquely identify the record we want to update.
-                if($fieldName == $this->pkField) {
-                    debug::fatal('Attempting to update the primary key', $fieldName);
-                }
+        foreach($this->tableStructure as $field => $fieldArray) {
+
+            $escapedFieldValue = $this->escapeQuoteValueByType($field, $fieldArray['fieldValue']);
+
+            if($i == 0) {
+                $sql .= $field;
+                $sqlValues .= $escapedFieldValue;
             } else {
-                //No PK, so the only way to update a unique record is by the provided WHERE records, so we must reject any attempts to update a field that is used in the where condition.
-                if(array_key_exists($fieldName, $this->whereFields)) {
-                    //Is this field in the primary key list?
-                    debug::fatal('Attempting to update a field used in the WHERE condition and no table contains no primary key', $fieldName);
-                }
+                $sql .= ", " . $field;
+                $sqlValues .= ", " . $escapedFieldValue;
             }
-            
-            //So... If we have not failed out... set the value!
-            $this->tableStructure[$fieldName]['fieldValue'] = $fieldValue;            
-        } else {
-            debug::fatal('Requested field to set does not exist in the table or does not match field name case sensitivity', $fieldName);
-        }
-    }
 
+            $i++;
+        }
+
+        $sql .= ") ";
+        $sqlValues .= ")";
+        //We can run the generated query.
+
+        return $this->dbCnx->execute($sql . $sqlValues);
+    }
 }
 
 ?>

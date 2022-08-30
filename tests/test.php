@@ -320,7 +320,7 @@ echo "Time to generate HTML output " . RedSea\timer::getElapsedTime() . "<hr>";
 
 echo "Generating MariaDB output<br>";
 // PDO helper class - set database type, database, host, user, pass for type = mariadb
-$db = new RedSea\pdodb('mariadb', '', '', '', '');
+$db = new RedSea\rsdb('mariadb', '', '', '', '');
 
 $db->execute("drop table if exists contacts");
 $db->execute("CREATE TABLE IF NOT EXISTS contacts (
@@ -351,7 +351,7 @@ echo "Time to generate MariaDB output " . RedSea\timer::getElapsedTime() . "<hr>
 echo "Generating SQLite output<br>";
 
 // PDO helper class - set database type, and path to db file = mariadb
-$db = new RedSea\pdodb('sqlite', "helloworld.sqlite");
+$db = new RedSea\rsdb('sqlite', "helloworld.sqlite");
 
 //Create a table and add some data.
 $db->execute("drop table if exists contacts");
