@@ -109,11 +109,32 @@ class debug {
      * @param variant $optionalData Extra data of any sort that can be useful to debug program flow.
      * @return void 
      */
-    static function fatal($message, $optionalData=null) {
+    static function fatal2($message, $optionalData=null) {
         self::$dieOnError = true;
         self::$debugLevel = 2;
         self::err($message, $optionalData);
    }
+
+   /**
+     * Output a fatal error and stop program execution.
+     * @param string $message Message to display during program execution flow
+     * @param variant $optionalData Extra data of any sort that can be useful to debug program flow.
+     * @return void 
+     */
+    static function fatal($message, $optionalData=null) {
+        self::$debugLevel = 1;
+        echo RS_HR . "Fatal error: $message" . RS_EOL;
+        self::flow(null, null, 1);
+        if(!is_null($optionalData)) {
+            echo "Extra details:" . RS_EOL;
+            print(var_dump($optionalData));
+        }
+        die(RS_EOL . "Program halted" . RS_HR);
+   }
+
+   
+
+   
 
     /**
      * Set an error message.

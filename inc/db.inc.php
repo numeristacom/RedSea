@@ -142,6 +142,10 @@ class rsdb {
         }
     }
 
+    /**
+     * Return the currently opened DB connection as an object.
+     * @return PDO connection object
+     */
     public function getDBConnection() {
         return $this->dbConnection;
     }
@@ -202,13 +206,18 @@ class recordset {
         }
     }
 
+    /**
+     * Return the record count from a PDO result set
+     * @return mixed False if no records, otherwise the integer number of records queried.
+     */
     public function recordCount() {
         return $this->result->rowCount();
     }
 }
 
 /**
- * 
+ * Class that contains the common data and methods for full single record operations.
+ * This class requires a pre-opened RS DB object and the name of the table to describe as parameters to the constructor.
  * @package RedSea
  */
 class singleRecordCommon {
@@ -219,6 +228,12 @@ class singleRecordCommon {
     protected $pkField = null;                // If the table contains a primary key, we will store it, as this allows us to run an update only on the unique PK field as a key rather than relying on WHERE conditions.
     protected $recordIsLoaded = false;        // Set flag to true when a record is correctly loaded
     
+    /**
+     * Class constructor.
+     * @param mixed $cnx RS DB database connection
+     * @param string $tableName Name of the table accessible through the connection to describe and work on.
+     * @return void 
+     */
     public function __construct($cnx, $tableName) {
         $this->dbCnx = $cnx;
         $this->tableName = $tableName;
@@ -349,7 +364,7 @@ class singleRecordCommon {
             //Is this a numerical field but a non numeric value?
             if($this->tableStructure[$fieldName]['primitive'] == "NUM" && !is_numeric($fieldValue)) {
                 if(!is_null($fieldValue)) {
-                    debug::fatal('Field value does not match field data type', array($fieldName, $fieldValue));
+                    debug::fatal('Field value does not match field data type', array('Field' => $fieldName, "Value" => $fieldValue, "Type" => $this->tableStructure[$fieldName]['primitive']));
                 }
             }
             
@@ -377,10 +392,12 @@ class singleRecordCommon {
         }
     }
 
+    /**
+     * Check if there is a table described and loaded into the class, and fail with a fatal error if not.
+     */
     public function failIfTableStructureNotLoaded() {
         if(!$this->recordIsLoaded) {
             debug::fatal('No table structure loaded. Insert not possible');
-            return false;
         }
     }
 }
@@ -445,7 +462,7 @@ class readUpdateSingleRecord extends singleRecordCommon {
                 $sql .= " WHERE ";
                 $i++;
             } else {
-                $sql .= ", AND ";
+                $sql .= " AND ";
             }
             $sql .= $field . " = " . $this->escapeQuoteValueByType($field, $value);
         }
@@ -519,12 +536,17 @@ class readUpdateSingleRecord extends singleRecordCommon {
             $where = null;
             $i = 0;
             foreach($this->whereFields as $field => $value) {
-                if($i > 0) {
-                    $where .= ", ";
+                
+                if($i == 0) {
+                    $where .= " WHERE ";
+                } else {
+                    $where .= " AND ";
                 }
+
                 $where .= $field . " = " .  $this->escapeQuoteValueByType($field, $value);
                 $i++;
             }
+            $sql .= $where;
         }
 
         //We can run the generated query.
@@ -537,7 +559,11 @@ class readUpdateSingleRecord extends singleRecordCommon {
         }
     }
 }
-    
+
+/**
+ * @package RedSea
+ * Inserts a new record into the loaded table that must respect the table's data format.
+ */
 class writeNewRecord extends singleRecordCommon {
 
     // This class's constructor will call the parent constructor as it's inherited.
@@ -545,6 +571,13 @@ class writeNewRecord extends singleRecordCommon {
         parent::__construct($cnx, $tableName);
     }
     
+    /**
+     * Insert a new record into the loaded table with data added via the setField method. Data will be checked against
+     * the expected data type from the table, and returned escaped and quoted to build the insert query.
+     * If the class has identified a Primary Key Auto Increment, then this field will be automatically 
+     * ignored as the DB will auto-fill it
+     * @return mixed ID of the inserted auto-increment record if available.
+     */
     public function insertNewRecord() {
 
         $this->failIfTableStructureNotLoaded();
@@ -559,6 +592,11 @@ class writeNewRecord extends singleRecordCommon {
         $i = 0;
 
         foreach($this->tableStructure as $field => $fieldArray) {
+
+            //BUG - this is allowed if the key is a PK AI and a null value here can be ignored!
+            if(is_null($fieldArray['fieldValue']) && $fieldArray['nullAllowed'] == 'NO') {
+                debug::fatal('Attempting to insert null value into not null field', $field);
+            }
 
             $escapedFieldValue = $this->escapeQuoteValueByType($field, $fieldArray['fieldValue']);
 
@@ -577,7 +615,8 @@ class writeNewRecord extends singleRecordCommon {
         $sqlValues .= ")";
         //We can run the generated query.
 
-        return $this->dbCnx->execute($sql . $sqlValues);
+        $this->dbCnx->execute($sql . $sqlValues);
+        return $this->dbCnx->insertId;
     }
 }
 

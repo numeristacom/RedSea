@@ -19,3 +19,11 @@ create table upsert_test2 (ut_id integer not null primary key auto_increment,
  three text not null,
  four text null,
  five datetime);
+
+ create table ut3 (one integer not null,
+ two integer null,
+ three text not null,
+ four text null,
+ five datetime);
+
+ 
