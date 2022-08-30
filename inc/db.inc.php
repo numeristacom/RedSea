@@ -590,31 +590,34 @@ class writeNewRecord extends singleRecordCommon {
         $sqlValues = " VALUES (";
         $sqlData = null;
         $i = 0;
-
         foreach($this->tableStructure as $field => $fieldArray) {
+            $skipRecord = false;
+            if($field == $this->pkField && $fieldArray['ai'] == true) {
+                $skipRecord = true;
+            }
 
-            //BUG - this is allowed if the key is a PK AI and a null value here can be ignored!
             if(is_null($fieldArray['fieldValue']) && $fieldArray['nullAllowed'] == 'NO') {
                 debug::fatal('Attempting to insert null value into not null field', $field);
             }
+            
+            if(!$skipRecord) {
+                $escapedFieldValue = $this->escapeQuoteValueByType($field, $fieldArray['fieldValue']);
 
-            $escapedFieldValue = $this->escapeQuoteValueByType($field, $fieldArray['fieldValue']);
-
-            if($i == 0) {
-                $sql .= $field;
-                $sqlValues .= $escapedFieldValue;
-            } else {
-                $sql .= ", " . $field;
-                $sqlValues .= ", " . $escapedFieldValue;
+                if($i == 0) {
+                    $sql .= $field;
+                    $sqlValues .= $escapedFieldValue;
+                } else {
+                    $sql .= ", " . $field;
+                    $sqlValues .= ", " . $escapedFieldValue;
+                }
+                $i++;
             }
-
-            $i++;
         }
 
         $sql .= ") ";
         $sqlValues .= ")";
+        
         //We can run the generated query.
-
         $this->dbCnx->execute($sql . $sqlValues);
         return $this->dbCnx->insertId;
     }
