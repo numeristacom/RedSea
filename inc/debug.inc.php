@@ -58,7 +58,7 @@ class debug {
      * function that called this function, and 2 is another level back, if another function is used to call flow (such as the err method of the debug class) 
      * @return void 
      */
-    static function flow($message=null, $optionalData=null, $backUpTraceLevels = 0) {
+    static function flow($message=null, $optionalData=null, $backUpTraceLevels = 0, $returnFlow=false) {
 
         if(self::$debugLevel > 0) {
             //App flow
@@ -70,17 +70,25 @@ class debug {
                 //Call from some nested function
                 $traceIndex = 1 + $backUpTraceLevels;
             }
-            print($backTrace[$traceIndex]['function'] . '() - ' . $backTrace[$traceIndex]['file'] . ':' . $backTrace[$traceIndex]['line'] . RS_EOL);
+            $backTraceMessage = $backTrace[$traceIndex]['function'] . '() - ' . $backTrace[$traceIndex]['file'] . ':' . $backTrace[$traceIndex]['line'] . RS_EOL;
             if(self::$debugLevel > 1) {
                 // App flow and flow state
                 if(!is_null($message)) {
-                    print($message . RS_HR);
+                    $backTraceMessage .= $message . RS_EOL;
+                    //print($message . RS_HR);
                 }
                 if(!is_null($optionalData)) {
-                    print(var_dump($optionalData) . RS_HR);
+                    $backTraceMessage = var_export($optionalData, true) . RS_EOL;
+                    //print(var_dump($optionalData) . RS_HR);
                 }
             }
         }
+        if($returnFlow) {
+            return $backTraceMessage;
+        } else {
+            echo $backTraceMessage;
+        }
+
     }
 
 
@@ -103,18 +111,6 @@ class debug {
         }
     }
 
-    /**
-     * Output a fatal error and stop program execution.
-     * @param string $message Message to display during program execution flow
-     * @param variant $optionalData Extra data of any sort that can be useful to debug program flow.
-     * @return void 
-     */
-    static function fatal2($message, $optionalData=null) {
-        self::$dieOnError = true;
-        self::$debugLevel = 2;
-        self::err($message, $optionalData);
-   }
-
    /**
      * Output a fatal error and stop program execution.
      * @param string $message Message to display during program execution flow
@@ -122,17 +118,29 @@ class debug {
      * @return void 
      */
     static function fatal($message, $optionalData=null) {
-        self::$debugLevel = 1;
-        echo RS_HR . "Fatal error: $message" . RS_EOL;
-        self::flow(null, null, 1);
-        if(!is_null($optionalData)) {
-            echo "Extra details:" . RS_EOL;
-            print(var_dump($optionalData));
-        }
-        die(RS_EOL . "Program halted" . RS_HR);
-   }
+        $errorCode = "FATAL-" . microtime(true);
+        $fatalMessage = RS_HR . $errorCode . " - Fatal error: $message" . RS_EOL;
 
-   
+        $currentDebugLevel = debug::$debugLevel;
+        debug::$debugLevel = 1;
+        $fatalMessage .= self::flow(null, null, 1, true);
+        debug::$debugLevel = $currentDebugLevel;
+        
+        $fatalMessage .= "Extra details:" . RS_EOL . var_export($optionalData, true);
+      
+        if(self::$debugLevel == 0) {
+            //We are in normal execution mode. Log the message
+            if(RS_CLI) {
+                error_log($fatalMessage, 3, "./debug.log");
+            } else {
+                error_log($fatalMessage, 0);
+            }
+            die($errorCode);
+        } else {
+            //Print it. We are in visible debug mode.
+            print($fatalMessage . RS_EOL . "Program halted" . RS_HR);
+        }
+   }
 
    
 

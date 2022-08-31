@@ -1,0 +1,48 @@
+
+----------------------------------------------------------------------
+FATAL-1661985152.4529 - Fatal error: Fatal error test
+Extra details:
+array (
+  0 => 1,
+  1 => 2,
+)
+----------------------------------------------------------------------
+FATAL-1661985254.4618 - Fatal error: Fatal error test
+f() - /Users/danielpage/Documents/GitHub/RedSea-Lite/tests/fatal.php:9
+Extra details:
+array (
+  0 => 1,
+  1 => 2,
+)
+----------------------------------------------------------------------
+FATAL-1661985261.6538 - Fatal error: Fatal error test
+f() - /Users/danielpage/Documents/GitHub/RedSea-Lite/tests/fatal.php:9
+Extra details:
+array (
+  0 => 1,
+  1 => 2,
+)
+----------------------------------------------------------------------
+FATAL-1661985382.7709 - Fatal error: Fatal error test
+f() - /Users/danielpage/Documents/GitHub/RedSea-Lite/tests/fatal.php:9
+Extra details:
+array (
+  0 => 1,
+  1 => 2,
+)
+----------------------------------------------------------------------
+FATAL-1661985503.5398 - Fatal error: Fatal error test
+f() - /Users/danielpage/Documents/GitHub/RedSea-Lite/tests/fatal.php:9
+Extra details:
+array (
+  0 => 1,
+  1 => 2,
+)
+----------------------------------------------------------------------
+FATAL-1661985518.7523 - Fatal error: Fatal error test
+f() - /Users/danielpage/Documents/GitHub/RedSea-Lite/tests/fatal.php:9
+Extra details:
+array (
+  0 => 1,
+  1 => 2,
+)
