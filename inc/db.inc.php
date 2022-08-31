@@ -48,6 +48,8 @@ class rsdb {
      */
     public $insertId = null; 
 
+    public $selectedDbType = null;
+
     /**
      * Opens a connection to MariaDB.
      * @param string $dbtype Database type to connect to: mariadb or sqlite
@@ -66,9 +68,11 @@ class rsdb {
         switch ($dbtype) {
             case "mariadb":
                 $this->DSN = "mysql:dbname=$dbname;host=$host;port=$port;charset=utf8";
+                $this->selectedDbType = "mariadb";
                 break;
             case "sqlite":
                 $this->DSN = "sqlite:$dbname";
+                $this->selectedDbType = "sqlite";
                 break;
             default:
                 debug::fatal('Database type not recognised', $dbtype);
@@ -218,6 +222,7 @@ class recordset {
 /**
  * Class that contains the common data and methods for full single record operations.
  * This class requires a pre-opened RS DB object and the name of the table to describe as parameters to the constructor.
+ * Note: Your table may have a unique fields. This class does not manage these. It will only manage data types, pk ai and not null
  * @package RedSea
  */
 class singleRecordCommon {
@@ -252,29 +257,94 @@ class singleRecordCommon {
      */
     protected function describeTable($table) {
         $table = str::sqlString($table);
-        $sql = "show columns from " . $table;
 
-        $rs = new recordset($this->dbCnx->query($sql));
+        // MariaDB or SQLite? We need to run different types of queries to get the same information.
+        switch ($this->dbCnx->selectedDbType) {
+            case "mariadb":
+                //Easy with MariaDB/MySql
+                $sql = "show columns from " . $table;
 
-        while ($result = $rs->fetchArray()) {
-            //Store the PK field if we find it. It will make our life easier later!
-            if($result['Key'] == 'PRI') {
-                $this->pkField = $result['Field'];
-            }
+                $rs = new recordset($this->dbCnx->query($sql));
+        
+                while ($result = $rs->fetchArray()) {
+                    //Store the PK field if we find it. It will make our life easier later!
+                    if($result['Key'] == 'PRI') {
+                        $this->pkField = $result['Field'];
+                    }
+        
+                    $this->tableStructure[$result['Field']] = array(
+                        'primitive' => $this->returnPrimitiveDataType($result['Type']), //Primitive data type to counter sql injection. isString or isNumber
+                        'nullAllowed' => $result['Null'],   //Is null value allowed?
+                        'key' => $result['Key'],            //Is there a key or index here? (PRI = primary key. If auto increment, ignore this value in insert / update unless forced.)
+                        'ai' => $this->isAutoIncrement($result['Extra']),   //Is this an auto increment field?
+                        'fieldValue' => null                //Store the field value here when a value is loaded, or store values for an insert.
+                    );
+                }
+                break;
+            case "sqlite":
+                //Not as easy with SQLite unfortunately. We need 2 queries. One for the structure,
+                //another for auto inc.
+                $sql = "pragma table_info('$table')";   // Describes PK and not null
+                $rs = new recordset($this->dbCnx->query($sql));
+        
+                while ($result = $rs->fetchArray()) {
+                    
+                    $sqlitepk = false;
+                    if($result['pk'] == 1) { //Store the PK field if we find it. It will make our life easier later!
+                        $this->pkField = $result['name'];
+                        // Does this PK field have an auto increment? 
+                        $sqlpk = "SELECT COUNT(*) as num FROM sqlite_sequence WHERE name='$table'";
+                        $rspk = new recordset($this->dbCnx->query($sql));
+                        while ($resultpk = $rspk->fetchArray()) {
+                            if($resultpk['num'] == 1) {
+                                // The pk field is auto increment.
+                                $sqlitepk = true;
+                            }
+                        }
+                        unset($rspk);
+                    }
 
-            $this->tableStructure[$result['Field']] = array(
-                'primitive' => $this->returnPrimitiveDataType($result['Type']), //Primitive data type to counter sql injection. isString or isNumber
-                'nullAllowed' => $result['Null'],   //Is null value allowed?
-                'key' => $result['Key'],            //Is there a key or index here? (PRI = primary key. If auto increment, ignore this value in insert / update unless forced.)
-                'ai' => $this->isAutoIncrement($result['Extra']),   //Is this an auto increment field?
-                'fieldValue' => null                //Store the field value here when a value is loaded, or store values for an insert.
-            );
+                    $this->tableStructure[$result['Field']] = array(
+                        'primitive' => $this->returnSqlitePrimitiveDataType($result['Type']), //Primitive data type to counter sql injection. isString or isNumber
+                        'nullAllowed' => $this->sqliteNotnull($result['notnull']),   //Is null value allowed?
+                        'key' => $this->sqlitePk($result['Key']),            //We will only look for PK's here.
+                        'ai' => $sqlitepk,
+                        'fieldValue' => null   //Store the field value here when a value is loaded, or store values for an insert.
+                    );
+                } 
+                break;
+            default:
+                debug::fatal('Database type not recognised', $this->dbCnx->selectedDbType);
         }
-        return true;
+        unset($rs);
     }
-    
+
     /**
-     * Return the field's primitive data type (string or number) for a given field's set data type.
+     * Takes the notnull field from the pragma table_info command from sqlite and returns the expected not null value
+     * @param mixed $result notnull value (0 or 1)
+     * @return string YES if null is allowed, NO if not.
+     */
+    private function sqliteNotnull($result) {
+        if($result == 1) {
+            return 'YES';
+        } else {
+            return 'NO';
+        }
+    }
+
+    /**
+     * Takes the PK field and checks if it's set to 1 (PK) or not.
+     */
+    private function sqlitePk($result) {
+        if($result == 1) {
+            return 'PRI';
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Return a MariaDB field's primitive data type (string or number) for a given field's set data type.
      * These data types are taken from https://mariadb.com/kb/en/data-types/ valid as of 10.3
      * Known numerical values will be returned as numerical, all others will be returned as text.
      * Dates will be considered text types.
@@ -292,6 +362,28 @@ class singleRecordCommon {
         } elseif(stripos($typeRecord, 'decimal') !== FALSE) {
             return 'NUM';
         } elseif(stripos($typeRecord, 'bit') !== FALSE) {
+            return 'NUM';
+        } else {
+            return 'STR';
+        }
+    }
+
+    /**
+     * Return an SQLite field's primitive data type (string or number) for a given field's set data type.
+     * This library expects STRICT tables, where the value actually does match the column's data type.
+     * - or at least where the table users respect these types.
+     * These data types are taken from https://www.sqlite.org/datatype3.html valid as of 3
+     * Known numerical values will be returned as numerical, all others will be returned as text.
+     * Dates will be considered text types.
+     * BLOB's are undefined... but will best be considered text, and insert hex strings into them rather than raw binary!
+     * @param mixed $fieldDataType Database data type to check
+     * @return int 1 for numerical type, 0 for everything else (text, dates, spatial)
+     */
+    private function returnSqlitePrimitiveDataType($typeRecord) {
+        debug::flow();
+        if(stripos($typeRecord, 'int') !== FALSE) {
+            return 'NUM';
+        } elseif(stripos($typeRecord, 'real') !== FALSE) {
             return 'NUM';
         } else {
             return 'STR';
