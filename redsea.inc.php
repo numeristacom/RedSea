@@ -17,47 +17,39 @@
  * - In a web/non-CLI environment, it will use the HTML Horizontal Rule <hr> 
 */
 
-// Setup:
-
 /**
- * Define end of line and horizontal rule constants depending on execution context (CLI or web)
+ * Define constants depending on the execution environment (command line or "other" such as webserver usage)
  */
 
 if(php_sapi_name() === 'cli') {
     /**
      * Set End of line constant to PHP_EOL when running on the command line
-     * @internal
      */
     define("RS_EOL", PHP_EOL);
     
     /**
      * Set Horizonal Rule constant to 70 hypens when running on the command line
-     * @internal
      */
     define("RS_HR", RS_EOL . "----------------------------------------------------------------------" . RS_EOL);
     
     /**
      * Set a constant to identify execution context as Command Line Interface.
-     * @internal
      */
     define("RS_CLI", true);
 
 } else {
     /**
      * Set End Of Line constant to HTML <br>
-     * @internal
      */
     define("RS_EOL", "<br>");
 
     /**
      * Set Horizonal Rule constant to HTML <hr>
-     * @internal
      */ 
     define("RS_HR", "<hr>");
 
 /**
      * Set a constant to identify execution context as not CLI.
-     * @internal
      */
     define("RS_CLI", false);
 }
@@ -69,15 +61,17 @@ if(php_sapi_name() === 'cli') {
 define("RS_CACHE", __DIR__ . DIRECTORY_SEPARATOR);
 
 //Library autoloader
-// debug.inc.php must be set first as all other objects depend on it for debug and execution flow services
+
+/* debug.inc.php must be set first as all other objects depend on it for debug and execution flow services */
 include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "debug.inc.php");
 
 //cache.inc.php is a dependancy of template.inc.php. 
 include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "cache.inc.php");
 include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "template.inc.php");
 include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "form.inc.php");
-include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "db.inc.php");
 include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "string.inc.php");
+/** Including db.inc.php requires string.inc.php in addition to debug.inc.php */
+include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "db.inc.php");
 include(__DIR__ . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "timer.inc.php");
 
 ?> 

@@ -8,26 +8,29 @@
  * The MySQL classes don't add much visible differences to stock MySQL PDO php functions, but they do add
  * debug services to the objects that can be activated on demand along with error notification in line with
  * the other classes in RedSea.
- */
-
-/** Usage example
-* $db = new mariadb(localhost, 'mydb', 'user', 'password');
-* $rs = new recordset($db->query('select count(*) as cnt from myTable'));
-* while ($ret = $rs->fetchArray()) {
-*    echo($ret['cnt']);
-* }
+ * 
 */
 
 /**
  * MariaDB wrapper. This class wraps the PHP functions, integrating error control and
  * reporting through the static debug class and allowing handling errors through the debug class
  * in a consistant way.
- * @package RedSea
+ * Usage example
+ * 
+ * $db = new mariadb(localhost, 'mydb', 'user', 'password');
+ * $rs = new recordset($db->query('select count(*) as cnt from myTable'));
+ * while ($ret = $rs->fetchArray()) {
+ *    echo($ret['cnt']);
+ * }
  */
-
 namespace RedSea;
 
 use PDO;
+
+
+/**
+ * 
+ */
 
 class rsdb {
 
@@ -223,7 +226,6 @@ class recordset {
  * Class that contains the common data and methods for full single record operations.
  * This class requires a pre-opened RS DB object and the name of the table to describe as parameters to the constructor.
  * Note: Your table may have a unique fields. This class does not manage these. It will only manage data types, pk ai and not null
- * @package RedSea
  */
 class singleRecordCommon {
     protected $dbCnx = null;
@@ -495,7 +497,6 @@ class singleRecordCommon {
 }
 
 /**
- * @package RedSea
  * Loads a known record from the database into the tableStructure array for reading and updating.
  */
 class readUpdateSingleRecord extends singleRecordCommon {
@@ -653,7 +654,6 @@ class readUpdateSingleRecord extends singleRecordCommon {
 }
 
 /**
- * @package RedSea
  * Inserts a new record into the loaded table that must respect the table's data format.
  */
 class writeNewRecord extends singleRecordCommon {

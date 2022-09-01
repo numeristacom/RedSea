@@ -19,12 +19,6 @@ class debug {
      * If False: There is no error to read.
      */
     public static $errorFlag = false;
-
-    /**
-     * Stop script execution and display error details even if the debug state is 0 (unset);
-     * @var false
-     */
-    public static $dieOnError = false;
     
     /** 
      * Stores the state of the debug class. If set to TRUE, then the dbg function will generate output
@@ -99,16 +93,8 @@ class debug {
      * @return void 
      */
     static function err($message, $optionalData=null) {
-        
         self::$lastErrorMessage = $message;
-        debug::flow($message, $optionalData, 1);
-
-        if(self::$dieOnError) {
-            //Output a stacktrace and die.
-            die(RS_HR . var_dump(debug_backtrace()) . RS_HR . "Die On Error flag set. Program halted.");
-        } else {
-            self::$lastErrorMessage = $message;
-        }
+        $flowDetails = debug::flow($message, $optionalData, 1@);
     }
 
    /**
@@ -123,7 +109,7 @@ class debug {
 
         $currentDebugLevel = debug::$debugLevel;
         debug::$debugLevel = 1;
-        $fatalMessage .= self::flow(null, null, 1, true);
+        $fatalMessage . = self::flow(null, null, 1, true);
         debug::$debugLevel = $currentDebugLevel;
         
         $fatalMessage .= "Extra details:" . RS_EOL . var_export($optionalData, true);

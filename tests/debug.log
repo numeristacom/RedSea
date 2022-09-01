@@ -46,3 +46,24 @@ array (
   0 => 1,
   1 => 2,
 )
+----------------------------------------------------------------------
+FATAL-1662067057.6844 - Fatal error: Something went wrong
+myFunction() - /Users/danielpage/Documents/GitHub/RedSea-Lite/tests/test.php:9
+Extra details:
+NULL
+----------------------------------------------------------------------
+FATAL-1662067329.0471 - Fatal error: Something went wrong
+myFunction() - /Users/danielpage/Documents/GitHub/RedSea-Lite/tests/test.php:10
+Extra details:
+array (
+  'key1' => 1,
+  'key2' => 'value 2',
+)
+----------------------------------------------------------------------
+FATAL-1662067391.957 - Fatal error: Something went wrong
+myFunction() - /Users/danielpage/Documents/GitHub/RedSea-Lite/tests/test.php:10
+Extra details:
+array (
+  'key1' => 1,
+  'key2' => 'value 2',
+)
