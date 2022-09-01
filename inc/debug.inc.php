@@ -94,7 +94,7 @@ class debug {
      */
     static function err($message, $optionalData=null) {
         self::$lastErrorMessage = $message;
-        $flowDetails = debug::flow($message, $optionalData, 1@);
+        $flowDetails = debug::flow($message, $optionalData, 1);
     }
 
    /**
@@ -109,7 +109,7 @@ class debug {
 
         $currentDebugLevel = debug::$debugLevel;
         debug::$debugLevel = 1;
-        $fatalMessage . = self::flow(null, null, 1, true);
+        $fatalMessage .= self::flow(null, null, 1, true);
         debug::$debugLevel = $currentDebugLevel;
         
         $fatalMessage .= "Extra details:" . RS_EOL . var_export($optionalData, true);
