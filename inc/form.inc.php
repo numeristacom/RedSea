@@ -11,13 +11,9 @@
 
  namespace RedSea;
 
-/** The HTML input tag is one of the most complex given it has multiple uses and can display in multiple ways and
- * has multiple uses.
- * As such, a lot of this classe's methods will use a factory method to validate the values expected for the
- * different attributes.
- * The render method will take the string, int and boolean values set by the setter methods and generate HTML
- * output. Almost every setter has a corresponding getter, except for the input type attribute, as this is
- * specified directly to the constructor when the class is instanciated.
+/** 
+The HTML form linked tags can be quite complex, and as such this library contains multiple classes,
+and one common PHP trait to enable non-inheritance based inclusion of common code into each class.
  */
 class input {
     
@@ -65,7 +61,8 @@ class input {
     /** 
      * Valid values for the "type" attributes
     */
-    protected $inputTypeArray = array('button',
+    protected $inputTypeArray = array(
+    'button',
     'checkbox',
     'color',
     'date',
