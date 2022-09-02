@@ -40,12 +40,6 @@ class template {
     private $TemplateContent = null;
 
     /**
-     * Stores external HTML ressource files in an array element.
-     * @internal
-     */
-    private $externalRessourceContent = array();
-
-    /**
      * Stores the value used to encapsulate template variables.
      * @internal
     */
@@ -203,7 +197,7 @@ class template {
     }
 
     /**
-     * Render the HTML template, replacing set placeholder values set by the var() method.
+     * Render the HTML template, replacing set placeholder values set by the set() method.
      * @param bool $clearUnusedPlaceholders Remove any placeholders from the template at render time that may not have been set. Default: False
      * @return string HTML output 
      * @see template::var()
@@ -217,7 +211,8 @@ class template {
         }
 
         if($clearUnusedPlaceholders) {          
-            $htmlOutput = preg_replace('/\*.*[a-z]\*/', '', $htmlOutput);
+            //$htmlOutput = preg_replace('/\*.*[a-z]\*/', '', $htmlOutput);
+            $htmlOutput = preg_replace('/\\' . $this->templateVariableDelimiter . '.*[a-z]\\' . $this->templateVariableDelimiter  . '/', '', $htmlOutput);
         }
 
         return $htmlOutput;
