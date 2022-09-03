@@ -824,19 +824,16 @@ trait commonHtmlProperties {
 
     /**
      * Some tags can display text. This will be generally set by the class constructor.
-     * @internal
      */
     protected $tagDisplayValue = null;
 
     /**
      * Array containing all set attributes to render.
-     * @internal
      */
     private $RenderAttributeArray = array();
 
     /**
      * Array containing all set Events to render
-     * @internal
      */
     private $RenderEventArray = array();
 
@@ -875,7 +872,8 @@ trait commonHtmlProperties {
      * If an attribute name is set but not the event value, the method will return the current attribute value, if set.
      * If there is no attribute set, the method will return FALSE.
      * This is set as a trait as it requires direct access to the object's own internal structure to avoid code duplication.
-     * @todo We have boolean values set as values: This is going to be a problem with the getters as you will not know if a value is supposed to be boolean or if it's not set at all!
+     * @todo We have boolean values set as values: This is going to be a problem with the getters as you will not know if a value 
+     * is supposed to be boolean or if it's not set at all!
      * To unset an attribute, send an empty string (not a null string) as the event value. Given that empty attributes will not do
      * anything on a tag, they will be removed from the list and will not be rendered.
      * @param string $attributeName Name of the attribute to get, set or unset. The event name must already exist as a valid event name as 

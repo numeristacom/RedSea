@@ -29,19 +29,16 @@ class template {
 
     /**
      * Stores the variables and values in memory until they are rendered into the template.
-     * @internal
      */
     private $variableArray = array();
 
     /** 
      * Stores HTML template data set by the constructor. This is what will end up being rendered.
-     * @internal
-     * */
+     */
     private $TemplateContent = null;
 
     /**
      * Stores the value used to encapsulate template variables.
-     * @internal
     */
     private $templateVariableDelimiter = null;
 
@@ -84,7 +81,6 @@ class template {
      * @param string $variableValue Value to be set.
      * @param bool $appendValue If FALSE, the placeholder will be set to the value of the
      * variable value. If TRUE, the new value will be appended to the current placeholder value
-     * @return void.
      */
     public function set($variableName, $variableValue=null, $appendValue=false) {
         if($appendValue) {

@@ -29,13 +29,15 @@ use PDO;
 
 
 /**
- * 
+ * RedSea Database helper class. Based on PDO, this class simplifies connections to SQLite, 
+ * and provides methods to execute direct SQL queries without returning a result, return a result set for parsing, and
+ * can return the current PDO connection as a standalone object.
  */
 
 class rsdb {
 
     /**
-     * Contains the DSN string
+     * Contains the DSN connection string
      * @internal 
      */
     protected $DSN = null;
@@ -47,14 +49,18 @@ class rsdb {
     protected $dbConnection = null;
 
     /**
-     * Contains the last inserted id
+     * Contains the last inserted id that is updated after a query that adds a record into a table with an auto-number primary key
      */
     public $insertId = null; 
 
+    /**
+     * Contains the database type as used when creating the DSN, used by other classes to adapt to database differences between MariaDB and SQLite.
+     * @var string
+     */
     public $selectedDbType = null;
 
     /**
-     * Opens a connection to MariaDB.
+     * Opens a connection to MariaDB or SQLite
      * @param string $dbtype Database type to connect to: mariadb or sqlite
      * @param string $dbname Name of the data base to open. For an SQLite database, it will
      * be the path and name of the SQLite database file. 
@@ -159,7 +165,8 @@ class rsdb {
 }
 
 /**
- * wrapper for result sets, including consistant error reporting through the debug class
+ * wrapper for result sets, including consistant error reporting through the debug class, allows counting the number of results returned in a query result
+ * and avoids script overloading when working on a large result set by returning data record by record.
  * */
 class recordset {    
 
@@ -224,6 +231,7 @@ class recordset {
 
 /**
  * Class that contains the common data and methods for full single record operations.
+ * Single Record Operations are defined as full record inserts, or full record updates to a specific table, generally based of form entered data.
  * This class requires a pre-opened RS DB object and the name of the table to describe as parameters to the constructor.
  * Note: Your table may have a unique fields. This class does not manage these. It will only manage data types, pk ai and not null
  */
@@ -497,9 +505,15 @@ class singleRecordCommon {
 }
 
 /**
- * Loads a known record from the database into the tableStructure array for reading and updating.
+ * Loads a known record from the database, and makes it available for reading, field by field, but also allows for updating those loaded fields which
+ * can then be written back to the database.
+ * with the new values.
+ * Note that if the record is read from a table with a Primary Key, then all the fields can be updated except the Primary Key as it allows for atomic updating
+ * with only one identification key.
+ * If the record does not have a Primary Key, then the update will need to be based from the WHERE conditions used to read that unique record,
+ * and those fields will not be updatable.
  */
-class readUpdateSingleRecord extends singleRecordCommon {
+class recordReadUpdate extends singleRecordCommon {
     
     // This class's constructor will call the parent constructor as it's inherited.
     public function __construct($cnx, $tableName) {
@@ -654,9 +668,9 @@ class readUpdateSingleRecord extends singleRecordCommon {
 }
 
 /**
- * Inserts a new record into the loaded table that must respect the table's data format.
+ * Inserts a new record into the loaded table, that must respect the table's data format.
  */
-class writeNewRecord extends singleRecordCommon {
+class recordNew extends singleRecordCommon {
 
     // This class's constructor will call the parent constructor as it's inherited.
     public function __construct($cnx, $tableName) {
