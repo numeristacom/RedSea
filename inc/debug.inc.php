@@ -76,13 +76,12 @@ class debug {
                     //print(var_dump($optionalData) . RS_HR);
                 }
             }
+            if($returnFlow) {
+                return $backTraceMessage;
+            } else {
+                echo $backTraceMessage;
+            }
         }
-        if($returnFlow) {
-            return $backTraceMessage;
-        } else {
-            echo $backTraceMessage;
-        }
-
     }
 
 

@@ -123,6 +123,7 @@ class rsdb {
                 return false;
             } else {
                 $this->affectedRecords = $ret;
+                
                 $this->insertId = $this->dbConnection->lastInsertId();
                 return true;
             }

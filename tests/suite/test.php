@@ -1,10 +1,10 @@
 <?php
 
-include("../redsea.inc.php");
+//Go and load the setup file that loads the rest.
+include("../../redsea.inc.php");
 
 /** Time page execution */
 RedSea\timer::startTimer();
-
 
 /** Load the template that will be used by this code to insert all PHP generated content. */
 $template = new RedSea\template('test.html');
@@ -318,6 +318,8 @@ echo "<hr>";
 /** Time page execution */
 echo "Time to generate HTML output " . RedSea\timer::getElapsedTime() . "<hr>";
 
+// Commenting this out as it needs a MariaDB connection, and for pure local use, we cannot use it.
+/*
 echo "Generating MariaDB output<br>";
 // PDO helper class - set database type, database, host, user, pass for type = mariadb
 $db = new RedSea\rsdb('mariadb', '', '', '', '');
@@ -347,6 +349,7 @@ while ($ret = $rs->fetchArray()) {
 }
 
 echo "Time to generate MariaDB output " . RedSea\timer::getElapsedTime() . "<hr>";
+*/
 
 echo "Generating SQLite output<br>";
 
