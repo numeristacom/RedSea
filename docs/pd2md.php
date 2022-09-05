@@ -1,7 +1,19 @@
 <?php
 
 /**
- * Get the file from the command line, and generate the md file in the target path.
+ * Generates a basic outline of PHP file documentation converting phpdoc to markdown.
+ * The file will make a markdown version of the file using the following hierarchy:
+ * - File (from the document header block - if it contains a @package tag)
+ * - Class
+ *   - For each class:
+ *      - Tagged class properties
+ *      - Methods (taking the defined "function" declaration but stripping any { from the list.
+ *          tagged method properties
+ * 
+ * @package pd2md.php
+ * @author Daniel Page <daniel@danielpage.com>
+ * @copyright Copyright (c) 2021, Daniel Page
+ * @license Licensed under the EUPL v1.2 - https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
  */
 
 class makedoc {
@@ -15,7 +27,13 @@ class makedoc {
     public $blockStarts = null;    //On what line does a block start?
     public $blockEnds = null;      //On what line does a block end?
     public $element = null;        //On what line is the element that matches the block?
-    public $blocksInFile = 0;      //How many blocks overall in the file?
+    public $blocksInFile = 0;       //How many blocks overall in the file?
+    public $inClass = false;        //Have we entered a class?
+    public $inClassMethod = false;  //Have we entered a method in a class?
+    public $lastClass = null;       //What was the last class we saw?
+    public $lastMethod = null;      //What was the last method we saw?
+    public $nameSpace = null;       //Did we see a namespace?
+    public $useArray = array();     //Did we see a use command?
 
 
     public function __construct($pathToInputFile, $pathToOutputFile) {
@@ -65,7 +83,7 @@ class makedoc {
                         $endLine = $this->blockEnds + 1;
                         $elementLine = $this->element +1;
                         //Send it to the block converter
-                        die("Comment block #{$this->blocksInFile} starts on line {$startLine} and ends on line {$endLine} and is linked to an element on line {$elementLine}\n");
+                        //die("Comment block #{$this->blocksInFile} starts on line {$startLine} and ends on line {$endLine} and is linked to an element on line {$elementLine}\n");
                         $this->mdMaker($this->blockStarts, $this->blockEnds, $this->element, $this->blocksInFile);
                     }
                 }
@@ -74,9 +92,62 @@ class makedoc {
     }
 
     public function mdMaker($from, $to, $element, $blockNumber) {
-        if($blockNumber == 1) {
-            //Check if we find "@package" in this block. If so, it's a page level doc block. If not, then raise that error.
+
+        $subset = array();
+        $output = array();
+        $tmpArray = array();
+
+        //Load the identified block into a smaller array.
+        $lastElement = null;
+        $lastParam = null;
+        for($i = $from; $i<= $to; $i++) {
+            if(trim($this->lineArray[$i]) != '/**' && trim($this->lineArray[$i]) != '*/') { //ignore starting and ending of the block.
+                
+                $workingstring = substr(trim($this->lineArray[$i]), 2, strlen(trim($this->lineArray[$i])));    //Get the trimmed string...
+                if(substr($workingstring, 0,1) == "@") {    //We have a tag
+                    $tmpArray = explode(' ', $workingstring, 2);
+                    $lastElement = str_replace('@', '', $tmpArray[0]);    //We have the tag
+                    if($lastElement == 'param') {
+                        //We need the next element for a unique key
+                        $tmpArray2 = explode(' ', $tmpArray[1], 3);
+                        $paramName = $tmpArray2[0] . ' ' . $tmpArray2[1]; 
+                        $lastParam = $paramName;
+                        $output['param'][$paramName] = $tmpArray2[2] . ' ';
+                    } else {
+                        $lastParam = null;
+                        $output[$lastElement] = $tmpArray[1] . ' ';
+                    }
+                } else {
+                    if(is_null($lastElement)) {
+                        //We are in the description element.
+                        if(trim($workingstring) == "") {
+                            //Newline
+                            $output['description'] .= "\n\n";
+                        } else {
+                            //append.
+                            if(!array_key_exists('description', $output)) {
+                                $output['description'] = $workingstring . ' ';
+                            } else {
+                                $output['description'] .= $workingstring . ' ';
+                            }
+                        }
+                    } else {
+                        if(trim($workingstring) == "") {
+                            $workingstring = "\n\n";
+                        }
+                        //We are still in the previously defined element.
+                        if($lastElement == 'param') {
+                            $output['param'][$lastParam] .= $workingstring;
+                        } else {
+                            $output[$lastElement] .= $workingstring;
+                        }
+                    }
+                }
+            }
         }
+
+        die(var_dump($output));
+    
     }
 }
 
