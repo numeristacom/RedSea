@@ -11,18 +11,6 @@
  * 
 */
 
-/**
- * MariaDB wrapper. This class wraps the PHP functions, integrating error control and
- * reporting through the static debug class and allowing handling errors through the debug class
- * in a consistant way.
- * Usage example
- * 
- * $db = new mariadb(localhost, 'mydb', 'user', 'password');
- * $rs = new recordset($db->query('select count(*) as cnt from myTable'));
- * while ($ret = $rs->fetchArray()) {
- *    echo($ret['cnt']);
- * }
- */
 namespace RedSea;
 
 use PDO;
