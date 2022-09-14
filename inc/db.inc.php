@@ -42,6 +42,11 @@ class rsdb {
     public $insertId = null; 
 
     /**
+     * Contains the number of affected records
+     */
+    public $affectedRecords = null;
+
+    /**
      * Contains the database type as used when creating the DSN, used by other classes to adapt to database differences between MariaDB and SQLite.
      * @var string
      */
@@ -91,7 +96,7 @@ class rsdb {
     
     /**
      * Executes a single query on the database that does not return a result object.
-     * @param string $sqlQry SQL query to execute.
+     * @param string $sql SQL query to execute.
      * @return bool TRUE on success, FALSE on failure.
      * In case of error, in addition to the above:
      * - The method itself will return FALSE

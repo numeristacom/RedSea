@@ -282,7 +282,7 @@ class select {
     {
         debug::flow();
         $this->type('select');
-        $this->outputFullTag = true;
+        $this->outputFullTag = $outputFullTag;
         if(!$outputFullTag) {
             $this->outputFullTag = false;
         }
@@ -297,7 +297,7 @@ class select {
      * or "disabled".
      * It is also more memory friendly as it does not store a complete object but a
      * simple HTML string.
-     * @param string $label Text label to display in the option tag
+     * @param string $label Text label to display in the option tag.
      * @param string $value Value to be set in the tag's value attribute. 
      * @param bool $isSelected If TRUE, the tag's selected attribute will be set. 
      * @param bool $isDisabled If TRUE, the tag's disabled attribute will be set
@@ -578,12 +578,6 @@ class button {
 class GlobalPropertiesAndAttributes { 
 
     /**
-     * Last error returned by this class. This is different to the getLastError method in the debug class.
-     * As a static class, this does not use the debug service trait.
-     */
-    public static $lastError = null;
-
-    /**
      * Array of common standard HTML attributes with their expected data types.
      * This is used internally by the library.
      * @internal
@@ -700,7 +694,7 @@ class GlobalPropertiesAndAttributes {
      * @param string $name Attribute name to set. This attribute must be in the global attribute list or in
      * the tag specific array if set.
      * @param mixed $value Value to set. The value must match the type set in the tag global or specific array list
-     * @param array|null Tag specific array if the tag has specific attributes in addition to the global ones.
+     * @param array|null $tagSpecificArray Tag specific array if the tag has specific attributes in addition to the global ones.
      * @return array|bool Array containing the set value or false if the array element is not found or not valid.
      * In case of error, in addition to the above:
      * - The method itself will return FALSE
@@ -975,7 +969,6 @@ trait commonHtmlProperties {
                     return true;
                 } else {
                     //Something went wrong.
-                    debug::err(GlobalPropertiesAndAttributes::$lastError);
                     return false;
                 }
             }

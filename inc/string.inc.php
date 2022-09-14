@@ -24,7 +24,7 @@ class str {
 
     /**
      * Check that provided value is numerical or boolean for use in an SQL query, and replace by null if not
-     * @param string $num Number data to be used in an SQL statement
+     * @param numeric $num Number data to be used in an SQL statement
      * @return string Number if numerical, or null if not.
      */
     public static function sqlNumber($num) {
@@ -51,12 +51,8 @@ class str {
      * @param string $len Number of characters to return from the left of the string
      * @return bool|string On success, returns the specified left part of the string
      * On error, returns false.
-     * In case of error, in addition to the above:
-     * - The method itself will return FALSE
-     * - The object's $errorFlag flag will be set to TRUE
-     * - Error details can be obtained by calling the object's getLastError() method.
      */
-    static function left($str="", $len="") {
+    static function left($str, $len = 0) {
 
         if(strlen($len) == 0) {
             return false;
@@ -121,7 +117,7 @@ class str {
      * @return bool True if the variable is set and optionaly is also numerical if requested, otherwise false.
      */
 
-     static function isget($variableName, $checkNumeric=false) {
+     static function isGet($variableName, $checkNumeric=false) {
         if(isset($_GET[$variableName])) {
             $varToCheck = $_GET[$variableName];
             if($checkNumeric == true) {
@@ -145,7 +141,7 @@ class str {
      * @return bool True if the variable is set and optionaly is also numerical if requested, otherwise false.
      */
 
-    static function ispost($variableName, $checkNumeric=false) {
+    static function isPost($variableName, $checkNumeric=false) {
         if(isset($_POST[$variableName])) {
             $varToCheck = $_POST[$variableName];
             if($checkNumeric == true) {

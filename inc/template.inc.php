@@ -91,7 +91,7 @@ class template {
     }
 
     /**
-     * Get the current value set in a template placeholder variable
+     * Get the current value set for a template placeholder variable
      * @param string $variableName Name of the placeholder to return
      * @return mixed current value of the placeholder. If False then the placeholder is not set
      * You can check the debug::getLastError() static method to get more details.
