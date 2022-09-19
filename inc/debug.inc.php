@@ -9,30 +9,28 @@
 namespace RedSea;
 
 /**
-* Static class providing debug reporting services to the RedSea library and usable in any custom 
-* code that implements this class library
+ * # Class ``debug``
+ * Static class providing debug reporting services to the RedSea library and usable in any custom code
+ * that implements this class library.
+ * 
+ * ## Properties
+ * 
+ * - public static ``$errorFlag``: Flag is set if an error message has been set and is waiting to be read.
+ *  - If True: There is a pending error.
+ *  - If False: There is no error to read.
+ * 
+ * - public static ``$debugLevel``: Stores the state of the debug class. If set to TRUE, then the dbg function will generate output
+ * It is set by the setDebugLevel method.
+ * Possible values are:
+ *  - 0: No debug (off)
+ *  - 1: Application flow: Display notifications as long as there is no other details to display. This is the equivalent of calling d:dbg();
+ *  - 2: Display message (if set), method name, file and line but not method argument
+ *  - 3 Same as 2 but adding calling function arguments.
 */
 class debug {
-    /**
-     * This public flag is set if an error message has been set and is waiting to be read.
-     * If True: There is a pending error.
-     * If False: There is no error to read.
-     */
-    public static $errorFlag = false;
-    
-    /** 
-     * Stores the state of the debug class. If set to TRUE, then the dbg function will generate output
-     * It is set by the setDebugLevel method.
-     * Possible values are:
-     * - 0: No debug (off)
-     * - 1: Application flow: Display notifications as long as there is no other details to display.
-     * This is the equivalent of calling d:dbg();
-     * - 2: Display message (if set), method name, file and line but not method argument
-     * - 3 Same as 2 but adding calling function arguments.
-     * @see rsDebug::setDebugLevel()
-     * @internal
-     */
-    public static $debugLevel = 0;
+
+    public static $errorFlag = false;   //Error flag property    
+    public static $debugLevel = 0;  //debug level property
 
     /**
      * Stores the last error message in case of errors.
