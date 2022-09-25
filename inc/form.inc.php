@@ -19,14 +19,12 @@ class input {
     
     /**
     * Defines a trait that is used by all HTML classes working around inheritance problems
-    * @internal
     */
     use commonHtmlProperties;
 
     /**
      * This is the list of tag specific attributes with their corresponding expected data types.
      * This is used internally by the library.
-     * @internal
      */
     protected $tagAttrArray = array(
         'accept' => array( 0 => null, 1 => 'str'),

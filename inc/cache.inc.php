@@ -8,10 +8,11 @@
 
 namespace RedSea;
 
+/**
+ * Stores the internal status of the template caching state. Default: True. Can be accessed directly from out side
+ */
 class cache {   
-    /**
-     * Stores the internal status of the template caching state. Default: True. Can be accessed directly from out side
-     */
+    
     public static $enableContentCaching = true;
 
     static function makeElementByIdCacheName($PathToFileContainingElementID, $elementID, $onlyInnerHTML) {

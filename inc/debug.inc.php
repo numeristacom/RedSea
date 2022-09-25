@@ -12,44 +12,38 @@ namespace RedSea;
  * # Class ``debug``
  * Static class providing debug reporting services to the RedSea library and usable in any custom code
  * that implements this class library.
- * 
- * @properties
- * - ``public static $errorFlag``: Flag is set if an error message has been set and is waiting to be read.
- *  - If True: There is a pending error.
- *  - If False: There is no error to read.
- * 
- * - ``public static $debugLevel``: Stores the state of the debug class. If set to TRUE, then the dbg function will generate output
- * It is set by the setDebugLevel method.
- * Possible values are:
- *  - 0: No debug (off)
- *  - 1: Application flow: Display notifications as long as there is no other details to display. This is the equivalent of calling d:dbg();
- *  - 2: Display message (if set), method name, file and line but not method argument
- *  - 3 Same as 2 but adding calling function arguments.
- * 
- * - ``public static $lastErrorMessage``: Stores the last error message in case of errors. Despite being a public property,
- * it should only be accessed by the ``debug::getLastError()`` method.
- * 
 */
 class debug {
 
-    public static $errorFlag = false;   //Error flag property    
+    /**
+    * Flag is set if an error message has been set and is waiting to be read.
+    * - If True: There is a pending error.
+    * - If False: There is no error to read.
+    */
+    public static $errorFlag = false;   //Error flag property   
+    
+    /**
+     * Stores the state of the debug class. If set to TRUE, then the dbg function will generate output
+     * It is set by the setDebugLevel method.
+     * Possible values are:
+     *  - 0: No debug (off)
+     *  - 1: Application flow: Display notifications as long as there is no other details to display. This is the equivalent of calling d:dbg();
+     *  - 2: Display message (if set), method name, file and line but not method argument
+     *  - 3 Same as 2 but adding calling function arguments.
+     */
     public static $debugLevel = 0;  //debug level property
 
     /*
-     * Stores the last error message in case of errors.
-     * It should only be accessed by dbg or getLastError
-     * @internal
-     * */
+    * Stores the last error message in case of errors.
+    * Despite being a public property, it should only be accessed by the ``debug::getLastError()`` method.
+    */
     public static $lastErrorMessage = null;
 
 
     /**
-     * @method flow()
-     * @prototype debug::flow($message=null, $optionalData=null, $backUpTraceLevels = 0, $returnFlow=false)
      * Displays program flow. When no arguments are provided, it can be used to trace through program execution by outputting the 
      * calling function/method's name, file and line number.
      * If parameters are set then these details will be output too.
-     * @parameters
      * @param string $message Message to display during program execution flow
      * @param variant $optionalData Extra data of any sort that can be useful to debug program flow.
      * @param integer $backUpTraceLevels = The backtrace index to display. 0 is the function itself. 1 (default) is the
@@ -90,10 +84,7 @@ class debug {
 
 
     /**
-     * @method err()
      * This is a wrapper to the flow method, but will set the class error flag and store it for future processing.
-     * @prototype debug::err($message, $optionalData=null)
-     * @parameters
      * @param mixed|null $message 
      * @param mixed|null $optionalData 
      * @return void
@@ -106,8 +97,6 @@ class debug {
    /**
     * @method fatal()
     * Output a fatal error and stop program execution.
-    * @prototype fatal($message, $optionalData=null)
-    * @parameters
     * @param string $message Message to display during program execution flow
     * @param variant $optionalData Extra data of any sort that can be useful to debug program flow.
     * @return void 
@@ -140,10 +129,7 @@ class debug {
    
 
     /**
-     * @method setLastError()
      * Set an error message.
-     * @prototype setLastError($err=null)
-     * @parameters
      * @param string $err Error to store in the class.
      * @return void
      */
@@ -153,10 +139,7 @@ class debug {
     }
 
     /**
-     * @method getLastError()
      * Return the last set error message. If no error message is set, NULL will be returned.
-     * @prototype getLastError($preserveErrorMessage=false)
-     * @parameters
      * @param bool $preserveErrorMessage Optional. If TRUE, the error message will not be wiped after returning and will stay in the object.
      * If FALSE the value will be reset to NULL after returning. Default FALSE.
      * @return string
