@@ -19,7 +19,7 @@ The RedSea Monster. A complete refactoring of v2 to be fully object oriented, re
 - 2021 - v4  
 The Re-Write. Taking the original ideas of using placeholder variables and template ressources, fully Object Oriented, but with a simpler internal design, no interfaces as redundant for the current needs, dropping the database abstraction layer, and adding in direct creation of server-side HTML components, especially form components with methods that aid the creation of selection boxes & content. Requires the PHP DOM module.
 
-- 2022 - Lite  
+- 2022 - v5  
 Having everything was too much and needed to be pruned.  
 For personal projects, having getters and setters integrated in one overloaded function was not as elegant in the code as it could have been, and added complexity, the template function with the possibility of loading subtemplates to extract headers on the fly has been simplified, and the debug static class was simplfied.
 
@@ -29,8 +29,7 @@ The RedSea Lite library itself comprises of the following components:
 - *`debug.inc.php`* Debug and execution flow services. All the components use debug services here, either to denote program flow, report on errors or die horribly, but providing you hopefully with enough information to debug your application. A debug level can be progressively increased to show more program details.
 - *`form.inc.php`* HTML form management. Allows the definition of form elements, attributes and events in PHP.
 - *`html.inc.php`* HTML (non form) tag management, allowing for the generation of any HTML tags with associated events, modifiers and attributes in PHP.
-- *`mariadb.inc.php`* MariaDB PDO helper, easing connection and basic query management.
-- *`sqlite3.inc.php`* Sqlite3 PDO helper.
+- *`db.inc.php`* PDO helper, easing connection and basic query management, and includes a recordset library and classes to manage single record update and insert
 - *`string.inc.php`* Static string helper classes, including SQL text and numerical vetting on data to be used in SQL queries to mitigate SQL injection.
 - *`template.inc.php`* Template engine, allowing to load a defined HTML file, set values for placeholders, and render the completed page.
 - *`timer.inc.php`* Simple static timer class to record a time duration between start and end events.
@@ -44,7 +43,9 @@ Unzip the code unto a folder. As long as the code is in the unzipped folders, ju
 Each class and method are documented with PHPDoc, similar to javadoc. In short, a comment block before each method, with a description of the method, the description of the arguments and the return values, if any. Long variable names are used to assist in understanding program flow, and if debug mode is set to 1, then the library will output debug details on called functions and logic decisions live.
 
 ## Test Suite
-Apart from the MariaDB examples that need to connect to a MariaDB database, the other examples can run stand alone. The test suite is in the `tests` directory where each function in the library is tested out and should work on any PHP 8.x capable web server.
+### Standalone suite with SQLite 
+The stand alone test suite uses all the classes and methods of the RedSea class library, but does not require the use of a MariaDB database. 
 
-## Examples
+### MariaDB-specific tests
+To be announced.
 
