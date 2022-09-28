@@ -322,7 +322,7 @@ echo "Time to generate HTML output " . RedSea\timer::getElapsedTime() . "<hr>";
 Work on SQLite db manipulation
 */
 
-echo "Generating SQLite output from classic query<br>";
+echo __line__ . " Generating SQLite output from classic query<br>";
 
 // PDO helper class - set database type, and path to db file = mariadb
 $db = new RedSea\rsdb('sqlite', "helloworld.sqlite");
@@ -356,7 +356,7 @@ echo "Time taken to generate SQLite output from standard queries: " . RedSea\tim
 
 
 //Using static debug reporting:
-RedSea\debug::$debugLevel = 3;
+RedSea\debug::$debugLevel = 0;
 RedSea\debug::flow("Hello World");
 
 /** Time page execution */
@@ -365,43 +365,49 @@ echo "<hr>Page execution time: " . RedSea\timer::stopTimer() . "µsec";
 echo "<hr>Single Table database operations on SQLite<br>";
 $db = new RedSea\rsdb('sqlite', 'helloworld.sqlite');
 
-echo 'Creating read/update object<br>';
+echo __line__ . ' Creating read/update object<br>';
 $srReadUpdate = new RedSea\recordReadUpdate($db->getDBConnection(), 'contacts');
 
+echo __line__ . ' Loading a known record<br>';
 
-$srReadUpdate->addWhere('firstname', 'Emmanuel');
+$srReadUpdate->addWhere('first_name', 'Emmanuel');
 $srReadUpdate->loadOneRecord();
 
 // We should have the record loaded:
+echo __line__ . ' Display the results from the query<br>';
 echo 'Contact ID:' . $srReadUpdate->getField('contact_id') . '<br>';
 echo 'Firstname:' . $srReadUpdate->getField('first_name') . '<br>';
 echo 'Lastname:' . $srReadUpdate->getField('last_name') . '<hr>';
 
 // Add a new record into the table on the same connection and table we just read from:
+echo __line__ . ' Update the current record<br>';
 echo "We read the following details:<br>";
 $srReadUpdate->setField('first_name', 'Jacques');
 $srReadUpdate->setField('last_name', 'Chirac');
 $srReadUpdate->updateRecord();
 
+echo __line__ . ' Read the record back<br>';
 // Close the connection and read the new connection back:
 $srReadUpdate = new RedSea\recordReadUpdate($db->getDBConnection(), 'contacts');
-$srReadUpdate->addWhere('firstname', 'Jacques');
+$srReadUpdate->addWhere('first_name', 'Jacques');
 $srReadUpdate->loadOneRecord();
 
 // We should have the record loaded:
+echo __line__ . ' Display the results of the read back<br>';
 echo "We read the following details that we just updated:<br>";
 echo 'Contact ID:' . $srReadUpdate->getField('contact_id') . '<br>';
 echo 'Firstname:' . $srReadUpdate->getField('first_name') . '<br>';
 echo 'Lastname:' . $srReadUpdate->getField('last_name') . '<hr>';
 
+echo __line__ . ' Insert a new record<br>';
 //Now go insert another record:
 $srInsert = new RedSea\recordNew($db->getDBConnection(), 'contacts');
 $srInsert->setField('contact_id', 100);
 $srInsert->setField('first_name', "Emmanuel");
 $srInsert->setField('last_name', 'Macron');
-$srInsert->insertNewRecord();
+echo $srInsert->insertNewRecord() . " - last insert id<br>";
 
-echo "Now read the full table: <hr>";
+echo __line__ . ' Now read back the full table<br>';
 $sql = "SELECT * FROM contacts";
 
 $rs = new RedSea\recordset($db->query($sql));
@@ -411,6 +417,5 @@ while ($ret = $rs->fetchArray()) {
 }
 
 echo '<hr><b>End of process</b>';
-
 
 ?>

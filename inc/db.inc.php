@@ -168,6 +168,7 @@ class recordset {
      */
     public $end = false;
     private $result = null;
+    protected $InsertOrReadUpdate = null;
     
     /**
      * Set a local object for procesing by passing an SQLite result set to the class.
@@ -218,6 +219,7 @@ class recordset {
      * @return mixed False if no records, otherwise the integer number of records queried.
      */
     public function recordCount() {
+        die(var_dump($this->result->rowCount()));
         return $this->result->rowCount();
     }
 }
@@ -259,13 +261,12 @@ class singleRecordCommon {
      */
     protected function describeTable($table) {
         $table = str::sqlString($table);
-
+        $ret = false;
         // MariaDB or SQLite? We need to run different types of queries to get the same information.
         switch ($this->dbCnx->getAttribute(PDO::ATTR_DRIVER_NAME)) {
             case "mariadb":
                 //Easy with MariaDB/MySql
                 $sql = "show columns from " . $table;
-
                 $rs = new recordset($this->dbCnx->query($sql));
         
                 while ($result = $rs->fetchArray()) {
@@ -282,6 +283,7 @@ class singleRecordCommon {
                         'fieldValue' => null                //Store the field value here when a value is loaded, or store values for an insert.
                     );
                 }
+                $ret = true;
                 break;
             case "sqlite":
                 //Not as easy with SQLite unfortunately. We need 2 queries. One for the structure,
@@ -313,19 +315,22 @@ class singleRecordCommon {
                         unset($rspk);
                     }
 
-                    $this->tableStructure[$result['Field']] = array(
-                        'primitive' => $this->returnSqlitePrimitiveDataType($result['Type']), //Primitive data type to counter sql injection. isString or isNumber
+                    $this->tableStructure[$result['name']] = array(
+                        'primitive' => $this->returnSqlitePrimitiveDataType($result['type']), //Primitive data type to counter sql injection. isString or isNumber
                         'nullAllowed' => $this->sqliteNotnull($result['notnull']),   //Is null value allowed?
-                        'key' => $this->sqlitePk($result['Key']),            //We will only look for PK's here.
+                        'key' => $this->sqlitePk($result['pk']),            //We will only look for PK's here.
                         'ai' => $sqlitepk,
                         'fieldValue' => null   //Store the field value here when a value is loaded, or store values for an insert.
                     );
-                } 
+                }
+                $ret = true;
                 break;
             default:
                 debug::fatal('Database type not recognised', $this->dbCnx->selectedDbType);
         }
         unset($rs);
+
+        return $ret;
     }
 
     /**
@@ -475,7 +480,7 @@ class singleRecordCommon {
             //Are we attempting to update the primary key?
             if(!is_null($this->pkField)) {
                 //We have a primary key. We can ignore attempts to update on WHERE fields as the PK is enough to uniquely identify the record we want to update.
-                if($fieldName == $this->pkField) {
+                if($fieldName == $this->pkField && $this->InsertOrReadUpdate == 'ReadUpdate') {
                     debug::fatal('Attempting to update the primary key', $fieldName);
                 }
             } else {
@@ -517,6 +522,7 @@ class recordReadUpdate extends singleRecordCommon {
     // This class's constructor will call the parent constructor as it's inherited.
     public function __construct($cnx, $tableName) {
         parent::__construct($cnx, $tableName);
+        $this->InsertOrReadUpdate = 'ReadUpdate';
     }
 
     /**
@@ -558,25 +564,34 @@ class recordReadUpdate extends singleRecordCommon {
     public function loadOneRecord() {
         $this->failIfTableStructureNotLoaded();
 
-        $sql = "select * from " . $this->tableName;
+        $sqlHead = "select * from " . $this->tableName;
+        $sqlExtra = '';
         // Are there any where conditions? 
         $where = null;
         $i = 0;
         $and = null;
         foreach($this->whereFields as $field => $value) {
             if($i == 0) {
-                $sql .= " WHERE ";
+                $sqlExtra .= " WHERE ";
                 $i++;
             } else {
-                $sql .= " AND ";
+                $sqlExtra .= " AND ";
             }
-            $sql .= $field . " = " . $this->escapeQuoteValueByType($field, $value);
+            $sqlExtra .= $field . " = " . $this->escapeQuoteValueByType($field, $value);
         }
 
-        $rs = new recordset($this->dbCnx->query($sql));
-        $records = $rs->recordCount();
+        $rs = new recordset($this->dbCnx->query($sqlHead . $sqlExtra));
+        if($this->dbCnx->getAttribute(PDO::ATTR_DRIVER_NAME) == 'sqlite') {
+            //We have to do a select count(*) on sqlite, as recordCount does not work on selects... :(
+            foreach ($this->dbCnx->query('select count(*) as num from ' . $this->tableName . $sqlExtra) as $row) {
+                $records = $row['num'];
+            }
+        } else {
+            $records = $rs->recordCount();
+        }
+        
         if($records != 1) {
-            debug::fatal('Query returned $records rows. Only 1 row is expected', $sql);
+            debug::fatal("Query returned $records rows. Only 1 row is expected", $sql);
         } else {
             while ($result = $rs->fetchArray()) {
                 foreach($result as $field => $value) {
@@ -656,7 +671,7 @@ class recordReadUpdate extends singleRecordCommon {
         }
 
         //We can run the generated query.
-        $affectedRecords = $this->dbCnx->execute($sql);
+        $affectedRecords = $this->dbCnx->exec($sql);
         // Get the number of affected rows. If 0: problem, if 1: ok, if more than one: WTF.
         if($affectedRecords != 1) {
             debug::fatal('Update query did not match exactly 1 record', array($sql, $this->dbCnx->affectedRecords));
@@ -674,6 +689,7 @@ class recordNew extends singleRecordCommon {
     // This class's constructor will call the parent constructor as it's inherited.
     public function __construct($cnx, $tableName) {
         parent::__construct($cnx, $tableName);
+        $this->InsertOrReadUpdate = 'Insert';
     }
     
     /**
@@ -723,8 +739,8 @@ class recordNew extends singleRecordCommon {
         $sqlValues .= ")";
         
         //We can run the generated query.
-        $this->dbCnx->execute($sql . $sqlValues);
-        return $this->dbCnx->insertId;
+        $this->dbCnx->exec($sql . $sqlValues);
+        return $this->dbCnx->lastInsertId();
     }
 }
 
