@@ -121,8 +121,7 @@ class debug {
             }
             die($errorCode);
         } else {
-            //Print it. We are in visible debug mode.
-            print($fatalMessage . RS_EOL . "Program halted" . RS_HR);
+            die($fatalMessage . RS_EOL . "Program halted" . RS_HR);
         }
    }
 

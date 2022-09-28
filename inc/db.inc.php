@@ -116,7 +116,6 @@ class rsdb {
                 return false;
             } else {
                 $this->affectedRecords = $ret;
-                
                 $this->insertId = $this->dbConnection->lastInsertId();
                 return true;
             }
@@ -246,7 +245,6 @@ class singleRecordCommon {
     public function __construct($cnx, $tableName) {
         $this->dbCnx = $cnx;
         $this->tableName = $tableName;
-
         if($this->describeTable($tableName) !== true) {     //Crash and burn.
             debug::fatal("Could not load table structure for table", $tableName);
         } else {
@@ -263,7 +261,7 @@ class singleRecordCommon {
         $table = str::sqlString($table);
 
         // MariaDB or SQLite? We need to run different types of queries to get the same information.
-        switch ($this->dbCnx->selectedDbType) {
+        switch ($this->dbCnx->getAttribute(PDO::ATTR_DRIVER_NAME)) {
             case "mariadb":
                 //Easy with MariaDB/MySql
                 $sql = "show columns from " . $table;
@@ -296,13 +294,20 @@ class singleRecordCommon {
                     $sqlitepk = false;
                     if($result['pk'] == 1) { //Store the PK field if we find it. It will make our life easier later!
                         $this->pkField = $result['name'];
-                        // Does this PK field have an auto increment? 
-                        $sqlpk = "SELECT COUNT(*) as num FROM sqlite_sequence WHERE name='$table'";
-                        $rspk = new recordset($this->dbCnx->query($sql));
+                        //Is any auto increment set at all?
+                        $sqlpk = "SELECT count(*) as num FROM sqlite_master WHERE type='table' AND name='sqlite_sequence'";
+                        $rspk = new recordset($this->dbCnx->query($sqlpk));
                         while ($resultpk = $rspk->fetchArray()) {
                             if($resultpk['num'] == 1) {
-                                // The pk field is auto increment.
-                                $sqlitepk = true;
+                                // Does this PK field have an auto increment? 
+                                $sqlpk = "SELECT COUNT(*) as num FROM sqlite_sequence WHERE name='$table'";
+                                $rspk1 = new recordset($this->dbCnx->query($sqlpk));
+                                while ($resultpk1 = $rspk1->fetchArray()) {
+                                    if($resultpk1['num'] == 1) {
+                                        // The pk field is auto increment.
+                                        $sqlitepk = true;
+                                    }
+                                }
                             }
                         }
                         unset($rspk);

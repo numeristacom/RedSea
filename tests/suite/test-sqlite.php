@@ -318,40 +318,11 @@ echo "<hr>";
 /** Time page execution */
 echo "Time to generate HTML output " . RedSea\timer::getElapsedTime() . "<hr>";
 
-// Commenting this out as it needs a MariaDB connection, and for pure local use, we cannot use it.
 /*
-echo "Generating MariaDB output<br>";
-// PDO helper class - set database type, database, host, user, pass for type = mariadb
-$db = new RedSea\rsdb('mariadb', '', '', '', '');
-
-$db->execute("drop table if exists contacts");
-$db->execute("CREATE TABLE IF NOT EXISTS contacts (
-    contact_id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    first_name TEXT NOT NULL,
-    last_name TEXT NOT NULL)");
-$db->execute("insert into contacts values (1, 'Joe', 'Biden')");
-echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->lastInsertID}<hr>";
-$db->execute("insert into contacts values (2, 'Emmanuel', 'Macaron')");
-echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->lastInsertID}<hr>";
-$db->execute("insert into contacts values (3, 'Vladimir', 'Putin')");
-echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->lastInsertID}<hr>";
-$db->execute("insert into contacts values (4, 'Xi', 'Jinping')");
-echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->lastInsertID}<hr>";
-$db->execute("insert into contacts values (5, 'Imran', 'Khan')");
-echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->lastInsertID}<hr>";
-
-$sql = "SELECT * FROM contacts";
-
-$rs = new RedSea\recordset($db->query($sql));
-
-while ($ret = $rs->fetchArray()) {
-    echo($ret['first_name'] . ' ' . $ret['last_name'] . '<br>');
-}
-
-echo "Time to generate MariaDB output " . RedSea\timer::getElapsedTime() . "<hr>";
+Work on SQLite db manipulation
 */
 
-echo "Generating SQLite output<br>";
+echo "Generating SQLite output from classic query<br>";
 
 // PDO helper class - set database type, and path to db file = mariadb
 $db = new RedSea\rsdb('sqlite', "helloworld.sqlite");
@@ -363,15 +334,15 @@ $db->execute("CREATE TABLE IF NOT EXISTS contacts (
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL)");
 $db->execute("insert into contacts values (1, 'Joe', 'Biden')");
-echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->lastInsertID}<hr>";
+echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->insertId}<hr>";
 $db->execute("insert into contacts values (2, 'Emmanuel', 'Macaron')");
-echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->lastInsertID}<hr>";
+echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->insertId}<hr>";
 $db->execute("insert into contacts values (3, 'Vladimir', 'Putin')");
-echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->lastInsertID}<hr>";
+echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->insertId}<hr>";
 $db->execute("insert into contacts values (4, 'Xi', 'Jinping')");
-echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->lastInsertID}<hr>";
+echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->insertId}<hr>";
 $db->execute("insert into contacts values (5, 'Imran', 'Khan')");
-echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->lastInsertID}<hr>";
+echo "Affected records: {$db->affectedRecords} - Last inserted ID: {$db->insertId}<hr>";
 
 $sql = "SELECT * FROM contacts";
 
@@ -381,7 +352,7 @@ while ($ret = $rs->fetchArray()) {
     echo($ret['first_name'] . ' ' . $ret['last_name'] . '<br>');
 }
 
-echo "Time to generate SQLite output " . RedSea\timer::getElapsedTime() . "<hr>";
+echo "Time taken to generate SQLite output from standard queries: " . RedSea\timer::getElapsedTime() . "<hr>";
 
 
 //Using static debug reporting:
@@ -391,7 +362,55 @@ RedSea\debug::flow("Hello World");
 /** Time page execution */
 echo "<hr>Page execution time: " . RedSea\timer::stopTimer() . "µsec";
 
-echo "<hr>Single Table database operations<br>";
+echo "<hr>Single Table database operations on SQLite<br>";
+$db = new RedSea\rsdb('sqlite', 'helloworld.sqlite');
+
+echo 'Creating read/update object<br>';
+$srReadUpdate = new RedSea\recordReadUpdate($db->getDBConnection(), 'contacts');
+
+
+$srReadUpdate->addWhere('firstname', 'Emmanuel');
+$srReadUpdate->loadOneRecord();
+
+// We should have the record loaded:
+echo 'Contact ID:' . $srReadUpdate->getField('contact_id') . '<br>';
+echo 'Firstname:' . $srReadUpdate->getField('first_name') . '<br>';
+echo 'Lastname:' . $srReadUpdate->getField('last_name') . '<hr>';
+
+// Add a new record into the table on the same connection and table we just read from:
+echo "We read the following details:<br>";
+$srReadUpdate->setField('first_name', 'Jacques');
+$srReadUpdate->setField('last_name', 'Chirac');
+$srReadUpdate->updateRecord();
+
+// Close the connection and read the new connection back:
+$srReadUpdate = new RedSea\recordReadUpdate($db->getDBConnection(), 'contacts');
+$srReadUpdate->addWhere('firstname', 'Jacques');
+$srReadUpdate->loadOneRecord();
+
+// We should have the record loaded:
+echo "We read the following details that we just updated:<br>";
+echo 'Contact ID:' . $srReadUpdate->getField('contact_id') . '<br>';
+echo 'Firstname:' . $srReadUpdate->getField('first_name') . '<br>';
+echo 'Lastname:' . $srReadUpdate->getField('last_name') . '<hr>';
+
+//Now go insert another record:
+$srInsert = new RedSea\recordNew($db->getDBConnection(), 'contacts');
+$srInsert->setField('contact_id', 100);
+$srInsert->setField('first_name', "Emmanuel");
+$srInsert->setField('last_name', 'Macron');
+$srInsert->insertNewRecord();
+
+echo "Now read the full table: <hr>";
+$sql = "SELECT * FROM contacts";
+
+$rs = new RedSea\recordset($db->query($sql));
+
+while ($ret = $rs->fetchArray()) {
+    echo('ID ' . $ret['contact_id'] . ': ' . $ret['first_name'] . ' ' . $ret['last_name'] . '<br>');
+}
+
+echo '<hr><b>End of process</b>';
 
 
 ?>
