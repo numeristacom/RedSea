@@ -740,7 +740,7 @@ class recordNew extends singleRecordCommon {
         
         //We can run the generated query.
         $this->dbCnx->exec($sql . $sqlValues);
-        return $this->dbCnx->lastInsertId();
+        $this->dbCnx->lastInsertId();
     }
 }
 
