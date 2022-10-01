@@ -591,7 +591,7 @@ class recordReadUpdate extends singleRecordCommon {
         }
         
         if($records != 1) {
-            debug::fatal("Query returned $records rows. Only 1 row is expected", $sql);
+            debug::fatal("Query returned $records rows. Only 1 row is expected", 'select count(*) as num from ' . $this->tableName . $sqlExtra);
         } else {
             while ($result = $rs->fetchArray()) {
                 foreach($result as $field => $value) {
