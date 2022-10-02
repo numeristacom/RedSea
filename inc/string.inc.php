@@ -7,7 +7,6 @@
  */
 
 namespace RedSea;
-
 /**
 * Static string helper class & db functions
 */
