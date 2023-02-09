@@ -1,5 +1,5 @@
 # RedSea
-PHP/HTML content separation and templating library
+PHP/HTML content separation and templating library.
 
 This PHP library allows the use of external HTML files to design and display a template that includes blocks of code from other HTML files and replace variable placeholders in the HTML code by calculated content (for example, results of a database query) either as text, or into HTML tags such as form elements.
 

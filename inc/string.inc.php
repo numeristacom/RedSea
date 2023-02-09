@@ -18,7 +18,11 @@ class str {
      * @return string SQL quoted string.
      */
     public static function sqlString($stringToEscape) {
-        return str_replace("'", "''", str_replace("'", "''", $stringToEscape));
+        if(!is_null($stringToEscape)) {
+            return str_replace("'", "''", str_replace("'", "''", $stringToEscape));
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -31,6 +35,14 @@ class str {
             return $num;
         } else {
             return null;
+        }
+    }
+
+    public static function sqlUpsertValue($value, $primitive) {
+        if($primitive == RS_NUM) {
+            return str::sqlNumber($value);
+        } else {
+            return "'" . str::sqlString($value) . "'";
         }
     }
 
@@ -110,51 +122,128 @@ class str {
     }
 
     /**
-     * Check if a GET value exists and optionally if it is a numerical value.
-     * @param string $variableName Name of the GET variable to check.
-     * @param bool $checkNumeric If true, check if the supplied value is numerical. Default: False
-     * @return bool True if the variable is set and optionaly is also numerical if requested, otherwise false.
+     * @param string $varName Name of the variable to get from the superglobal
+     * @param const $GetOrPost Define the superglobal to check: RS_GET or RS_POST
+     * @param const $expectedDataType What is the expected data type: RS_NUM or RS_STR. If the data type is numerical but does not match
+     * the method will generate a fatal error.
+     * @param bool $FailIfMissing If true, fatal error if the variable is not present in the defined data type. If false, then the 
+     * @return mixed Corresponding value 
      */
-
-     static function isGet($variableName, $checkNumeric=false) {
-        if(isset($_GET[$variableName])) {
-            $varToCheck = $_GET[$variableName];
-            if($checkNumeric == true) {
-                if(is_numeric($varToCheck)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return true;
+    static function getSuperGlobal($varName, $GetOrPost, $expectedDataType, $FailIfMissing=true) {
+        $superGlobalValue = null;
+        $varFound = false;
+        if($GetOrPost == RS_GET) {
+            if(isset($_GET[$varName])) {
+                $superGlobalValue = $_GET[$varName];
+                $varFound = true;
             }
+        } else if($GetOrPost == RS_POST) {
+            if(isset($_POST[$varName])) {
+                $superGlobalValue = $_POST[$varName];
+                $varFound = true;
+            }
+        } else {
+            debug::fatal("Unexpected primitive data type provided. Should Be RS_STR or RS_NUM", $expectedDataType);
+        }
+        
+        
+        if(!$varFound && $FailIfMissing) { //Die if we didn't find the key in the specified array and FailIfMissing enabled
+            debug::fatal("Value not found in specified array matching the specified data type", array($varName, $GetOrPost, $expectedDataType));
+        } else if(!$varFound) { // FailIfMissing disabled, but no value. Return null.
+            return null;
+        } else if($varFound) {    //We have a value
+            return $superGlobalValue;
+        } else {
+            debug::fatal("Something bad happened detecting the value to return or error to handle");
+        }
+        
+    }
+
+    /**
+     * @param string $varName Name of the variable to get from the superglobal
+     * @param const $GetOrPost Define the superglobal to check: RS_GET or RS_POST
+     * @param const $expectedDataType What is the expected data type: RS_NUM or RS_STR. If the data type is numerical but does not match
+     * the method will generate a fatal error.
+     * @return bool True if the value is present in the superglobal and is of the correct data type, otherwise false.
+     */
+    static function isSuperGlobal($varName, $GetOrPost, $expectedDataType) {
+        $superGlobalValue = null;
+        if($GetOrPost == RS_GET) {
+            if(isset($_GET[$varName])) {
+                $superGlobalValue = $_GET[$varName];
+            }
+        } else if($GetOrPost == RS_POST) {
+            if(isset($_POST[$varName])) {
+                $superGlobalValue = $_POST[$varName];
+            }
+        }
+        
+        if(($expectedDataType == RS_NUM && is_numeric($superGlobalValue)) || ($expectedDataType == RS_STR && is_string($superGlobalValue))) {
+            return true;
         } else {
             return false;
         }
-     }
+    }
 
-     /**
-     * Check if a POST value exists and optionally if it is a numerical value.
-     * @param string $variableName Name of the GET variable to check.
-     * @param bool $checkNumeric If true, check if the supplied value is numerical. Default: False
-     * @return bool True if the variable is set and optionaly is also numerical if requested, otherwise false.
-     */
+    //Create a quick hidden form element
+    static function formHiddenInput($name, $value) {
+        return "<input type=\"hidden\" name=\"$name\" value=\"$value\">\n";
+    }
+}
 
-    static function isPost($variableName, $checkNumeric=false) {
-        if(isset($_POST[$variableName])) {
-            $varToCheck = $_POST[$variableName];
-            if($checkNumeric == true) {
-                if(is_numeric($varToCheck)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return true;
-            }
+/**
+ * Simple class to help build a basic table.
+ */
+class qTable {
+
+    private $tableCode = null;
+    private $cellList = null;
+
+    public function __construct($id=null, $class=null) {
+        $this->tableCode = '<table';
+        $this->tableCode .= $this->makeId($id);
+        $this->tableCode .= $this->makeClass($class);
+        $this->tableCode .= ">\n";
+    }
+
+    public function addCell($cellData, $id=null, $class=null, $isTableHeader=false) {
+        if($isTableHeader) {
+            $tagType = 'th';
         } else {
-            return false;
+            $tagType = 'td';
         }
-     }
+        $this->cellList .= "\t\t<$tagType";
+        $this->cellList .= $this->makeId($id);
+        $this->cellList .= $this->makeClass($class);
+        $this->cellList .= '>' . $cellData . "</$tagType>\n";
+    }
+
+    public function appendToRow($id=null, $class=null) {
+        $this->tableCode .= "\t<tr";
+        $this->tableCode .= $this->makeId($id);
+        $this->tableCode .= $this->makeClass($class);
+        $this->tableCode .= ">\n" . $this->cellList . "\t</tr>\n";
+        $this->cellList = null;
+    }
+
+    public function render() {
+        return $this->tableCode . "</table>\n";
+    }
+
+    private function makeId($id) {
+        if(!is_null($id)) {
+            return ' id="' . $id . '"';
+        } else {
+            return null;
+        }
+    }
+
+    private function makeClass($class) {
+        if(!is_null($class)) {
+            return ' class="' . $class . '"';
+        } else {
+            return null;
+        }
+    }
 }
 ?>

@@ -110,7 +110,15 @@ class debug {
         $fatalMessage .= self::flow(null, null, 1, true);
         debug::$debugLevel = $currentDebugLevel;
         
-        $fatalMessage .= "Extra details:" . RS_EOL . var_export($optionalData, true);
+        if(RS_CLI) {
+            $startOD = '';
+            $endOD = '';
+        } else {
+            $startOD = '<PRE>';
+            $endOD = '</PRE>';
+        }
+
+        $fatalMessage .= "Extra details:" . RS_EOL . $startOD . var_export($optionalData, true) . $endOD;
       
         if(self::$debugLevel == 0) {
             //We are in normal execution mode. Log the message

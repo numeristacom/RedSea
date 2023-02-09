@@ -1,0 +1,1452 @@
+stripLine:166:* This file defines some basic DB libraries.
+stripLine:175:This file defines some basic DB libraries.
+isAtTag:This file defines some basic DB libraries.
+68:adding This file defines some basic DB libraries. to @description...
+
+Warning: Undefined array key 0 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* @author Daniel Page <daniel@danielpage.com>
+stripLine:175:@author Daniel Page <daniel@danielpage.com>
+isAtTag:@author Daniel Page <daniel@danielpage.com>
+55:adding Daniel Page <daniel@danielpage.com> ==> to @author...
+stripLine:166:* @copyright Copyright (c) 2021, Daniel Page
+stripLine:175:@copyright Copyright (c) 2021, Daniel Page
+isAtTag:@copyright Copyright (c) 2021, Daniel Page
+55:adding Copyright (c) 2021, Daniel Page ==> to @copyright...
+stripLine:166:* @license Licensed under the EUPL v1.2 - https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+stripLine:175:@license Licensed under the EUPL v1.2 - https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+isAtTag:@license Licensed under the EUPL v1.2 - https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+55:adding Licensed under the EUPL v1.2 - https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12 ==> to @license...
+stripLine:166:*
+stripLine:175:*
+isAtTag:*
+72:adding * ==> to last known @license...
+stripLine:166:* The MySQL classes don't add much visible differences to stock MySQL PDO php functions, but they do add
+stripLine:175:The MySQL classes don't add much visible differences to stock MySQL PDO php functions, but they do add
+isAtTag:The MySQL classes don't add much visible differences to stock MySQL PDO php functions, but they do add
+72:adding The MySQL classes don't add much visible differences to stock MySQL PDO php functions, but they do add ==> to last known @license...
+stripLine:166:* debug services to the objects that can be activated on demand along with error notification in line with
+stripLine:175:debug services to the objects that can be activated on demand along with error notification in line with
+isAtTag:debug services to the objects that can be activated on demand along with error notification in line with
+72:adding debug services to the objects that can be activated on demand along with error notification in line with ==> to last known @license...
+stripLine:166:* the other classes in RedSea.
+stripLine:175:the other classes in RedSea.
+isAtTag:the other classes in RedSea.
+72:adding the other classes in RedSea. ==> to last known @license...
+stripLine:166:*
+stripLine:175:*
+isAtTag:*
+72:adding * ==> to last known @license...
+92:adding namespace RedSea; to prototype...
+stripLine:166:* RedSea Database helper class. Based on PDO, this class simplifies connections to SQLite,
+stripLine:175:RedSea Database helper class. Based on PDO, this class simplifies connections to SQLite,
+isAtTag:RedSea Database helper class. Based on PDO, this class simplifies connections to SQLite,
+68:adding RedSea Database helper class. Based on PDO, this class simplifies connections to SQLite, to @description...
+
+Warning: Undefined array key 1 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* and provides methods to execute direct SQL queries without returning a result, return a result set for parsing, and
+stripLine:175:and provides methods to execute direct SQL queries without returning a result, return a result set for parsing, and
+isAtTag:and provides methods to execute direct SQL queries without returning a result, return a result set for parsing, and
+72:adding and provides methods to execute direct SQL queries without returning a result, return a result set for parsing, and ==> to last known @description...
+stripLine:166:* can return the current PDO connection as a standalone object.
+stripLine:175:can return the current PDO connection as a standalone object.
+isAtTag:can return the current PDO connection as a standalone object.
+72:adding can return the current PDO connection as a standalone object. ==> to last known @description...
+92:adding class rsdb { to prototype...
+stripLine:166:* Contains the DSN connection string
+stripLine:175:Contains the DSN connection string
+isAtTag:Contains the DSN connection string
+68:adding Contains the DSN connection string to @description...
+
+Warning: Undefined array key 2 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* @internal
+stripLine:175:@internal
+isAtTag:@internal
+55:adding  ==> to @internal...
+92:adding protected $DSN = null; to prototype...
+stripLine:166:* Contains the database connection object
+stripLine:175:Contains the database connection object
+isAtTag:Contains the database connection object
+68:adding Contains the database connection object to @description...
+
+Warning: Undefined array key 3 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* @internal
+stripLine:175:@internal
+isAtTag:@internal
+55:adding  ==> to @internal...
+92:adding protected $dbConnection = null; to prototype...
+stripLine:166:* Contains the last inserted id that is updated after a query that adds a record into a table with an auto-number primary key
+stripLine:175:Contains the last inserted id that is updated after a query that adds a record into a table with an auto-number primary key
+isAtTag:Contains the last inserted id that is updated after a query that adds a record into a table with an auto-number primary key
+68:adding Contains the last inserted id that is updated after a query that adds a record into a table with an auto-number primary key to @description...
+
+Warning: Undefined array key 4 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+92:adding public $insertId = null; to prototype...
+stripLine:166:* Contains the number of affected records
+stripLine:175:Contains the number of affected records
+isAtTag:Contains the number of affected records
+68:adding Contains the number of affected records to @description...
+
+Warning: Undefined array key 5 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+92:adding public $affectedRecords = null; to prototype...
+stripLine:166:* Contains the database type as used when creating the DSN, used by other classes to adapt to database differences between MariaDB and SQLite.
+stripLine:175:Contains the database type as used when creating the DSN, used by other classes to adapt to database differences between MariaDB and SQLite.
+isAtTag:Contains the database type as used when creating the DSN, used by other classes to adapt to database differences between MariaDB and SQLite.
+68:adding Contains the database type as used when creating the DSN, used by other classes to adapt to database differences between MariaDB and SQLite. to @description...
+
+Warning: Undefined array key 6 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* @var string
+stripLine:175:@var string
+isAtTag:@var string
+55:adding string ==> to @var...
+92:adding public $selectedDbType = null; to prototype...
+stripLine:166:* Opens a connection to MariaDB or SQLite
+stripLine:175:Opens a connection to MariaDB or SQLite
+isAtTag:Opens a connection to MariaDB or SQLite
+68:adding Opens a connection to MariaDB or SQLite to @description...
+
+Warning: Undefined array key 7 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* @param string $dbtype Database type to connect to: mariadb or sqlite
+stripLine:175:@param string $dbtype Database type to connect to: mariadb or sqlite
+isAtTag:@param string $dbtype Database type to connect to: mariadb or sqlite
+55:adding string $dbtype Database type to connect to: mariadb or sqlite ==> to @param...
+counter / current tag / current param / line : 7 / @param / param633a90ff6769c7.88722681 / string $dbtype Database type to connect to: mariadb or sqlitestripLine:166:* @param string $dbname Name of the data base to open. For an SQLite database, it will
+stripLine:175:@param string $dbname Name of the data base to open. For an SQLite database, it will
+isAtTag:@param string $dbname Name of the data base to open. For an SQLite database, it will
+55:adding string $dbname Name of the data base to open. For an SQLite database, it will ==> to @param...
+counter / current tag / current param / line : 7 / @param / param633a90ff676b15.38283490 / string $dbname Name of the data base to open. For an SQLite database, it willstripLine:166:* be the path and name of the SQLite database file.
+stripLine:175:be the path and name of the SQLite database file.
+isAtTag:be the path and name of the SQLite database file.
+72:adding be the path and name of the SQLite database file. ==> to last known @param...
+stripLine:166:* @param string $host Hostname or IP address of the database server to connect to. Not required for SQLite database.
+stripLine:175:@param string $host Hostname or IP address of the database server to connect to. Not required for SQLite database.
+isAtTag:@param string $host Hostname or IP address of the database server to connect to. Not required for SQLite database.
+55:adding string $host Hostname or IP address of the database server to connect to. Not required for SQLite database. ==> to @param...
+counter / current tag / current param / line : 7 / @param / param633a90ff676d00.63570612 / string $host Hostname or IP address of the database server to connect to. Not required for SQLite database.stripLine:166:* @param string $username Username credential for the database. Not required for SQLite database.
+stripLine:175:@param string $username Username credential for the database. Not required for SQLite database.
+isAtTag:@param string $username Username credential for the database. Not required for SQLite database.
+55:adding string $username Username credential for the database. Not required for SQLite database. ==> to @param...
+counter / current tag / current param / line : 7 / @param / param633a90ff676e03.92265430 / string $username Username credential for the database. Not required for SQLite database.stripLine:166:* @param string $password Password credential for the database. Not required for SQLite database.
+stripLine:175:@param string $password Password credential for the database. Not required for SQLite database.
+isAtTag:@param string $password Password credential for the database. Not required for SQLite database.
+55:adding string $password Password credential for the database. Not required for SQLite database. ==> to @param...
+counter / current tag / current param / line : 7 / @param / param633a90ff676f09.41795695 / string $password Password credential for the database. Not required for SQLite database.stripLine:166:* @param int $port If not specified, the MariaDB default port 3306 will be used, but can be specified to any other number.
+stripLine:175:@param int $port If not specified, the MariaDB default port 3306 will be used, but can be specified to any other number.
+isAtTag:@param int $port If not specified, the MariaDB default port 3306 will be used, but can be specified to any other number.
+55:adding int $port If not specified, the MariaDB default port 3306 will be used, but can be specified to any other number. ==> to @param...
+counter / current tag / current param / line : 7 / @param / param633a90ff677018.51687864 / int $port If not specified, the MariaDB default port 3306 will be used, but can be specified to any other number.stripLine:166:* @return void
+stripLine:175:@return void
+isAtTag:@return void
+55:adding void ==> to @return...
+stripLine:166:* In case of error, the method will raise a fatal error to output.
+stripLine:175:In case of error, the method will raise a fatal error to output.
+isAtTag:In case of error, the method will raise a fatal error to output.
+72:adding In case of error, the method will raise a fatal error to output. ==> to last known @return...
+92:adding public function __construct($dbtype, $dbname, $host=null, $username=null, $password=null, $port=3306)  { to prototype...
+stripLine:166:* Executes a single query on the database that does not return a result object.
+stripLine:175:Executes a single query on the database that does not return a result object.
+isAtTag:Executes a single query on the database that does not return a result object.
+68:adding Executes a single query on the database that does not return a result object. to @description...
+
+Warning: Undefined array key 8 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* @param string $sql SQL query to execute.
+stripLine:175:@param string $sql SQL query to execute.
+isAtTag:@param string $sql SQL query to execute.
+55:adding string $sql SQL query to execute. ==> to @param...
+counter / current tag / current param / line : 8 / @param / param633a90ff6774f7.56198479 / string $sql SQL query to execute.stripLine:166:* @return bool TRUE on success, FALSE on failure.
+stripLine:175:@return bool TRUE on success, FALSE on failure.
+isAtTag:@return bool TRUE on success, FALSE on failure.
+55:adding bool TRUE on success, FALSE on failure. ==> to @return...
+stripLine:166:* In case of error, in addition to the above:
+stripLine:175:In case of error, in addition to the above:
+isAtTag:In case of error, in addition to the above:
+72:adding In case of error, in addition to the above: ==> to last known @return...
+stripLine:166:* - The method itself will return FALSE
+stripLine:175:
+- The method itself will return FALSE
+isAtTag:
+- The method itself will return FALSE
+72:adding 
+- The method itself will return FALSE ==> to last known @return...
+stripLine:166:* - The object's $errorFlag flag will be set to TRUE
+stripLine:175:
+- The object's $errorFlag flag will be set to TRUE
+isAtTag:
+- The object's $errorFlag flag will be set to TRUE
+72:adding 
+- The object's $errorFlag flag will be set to TRUE ==> to last known @return...
+stripLine:166:* - Error details can be obtained by calling the object's getLastError() method.
+stripLine:175:
+- Error details can be obtained by calling the object's getLastError() method.
+isAtTag:
+- Error details can be obtained by calling the object's getLastError() method.
+72:adding 
+- Error details can be obtained by calling the object's getLastError() method. ==> to last known @return...
+stripLine:166:* On success, the system will set the parameters affected Records and lastInsertID
+stripLine:175:On success, the system will set the parameters affected Records and lastInsertID
+isAtTag:On success, the system will set the parameters affected Records and lastInsertID
+72:adding On success, the system will set the parameters affected Records and lastInsertID ==> to last known @return...
+92:adding public function execute($sql) { to prototype...
+stripLine:166:* Runs a query on the database that returns a result set.
+stripLine:175:Runs a query on the database that returns a result set.
+isAtTag:Runs a query on the database that returns a result set.
+68:adding Runs a query on the database that returns a result set. to @description...
+
+Warning: Undefined array key 9 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* @param string $sql
+stripLine:175:@param string $sql
+isAtTag:@param string $sql
+55:adding string $sql ==> to @param...
+counter / current tag / current param / line : 9 / @param / param633a90ff677ca0.99354352 / string $sqlstripLine:166:* @return false|object On success, an SQLite result set is returned, otherwise FALSE.
+stripLine:175:@return false|object On success, an SQLite result set is returned, otherwise FALSE.
+isAtTag:@return false|object On success, an SQLite result set is returned, otherwise FALSE.
+55:adding false|object On success, an SQLite result set is returned, otherwise FALSE. ==> to @return...
+stripLine:166:* In case of error, in addition to the above:
+stripLine:175:In case of error, in addition to the above:
+isAtTag:In case of error, in addition to the above:
+72:adding In case of error, in addition to the above: ==> to last known @return...
+stripLine:166:* - The method itself will return FALSE
+stripLine:175:
+- The method itself will return FALSE
+isAtTag:
+- The method itself will return FALSE
+72:adding 
+- The method itself will return FALSE ==> to last known @return...
+stripLine:166:* - The object's $errorFlag flag will be set to TRUE
+stripLine:175:
+- The object's $errorFlag flag will be set to TRUE
+isAtTag:
+- The object's $errorFlag flag will be set to TRUE
+72:adding 
+- The object's $errorFlag flag will be set to TRUE ==> to last known @return...
+stripLine:166:* - Error details can be obtained by calling the object's getLastError() method.
+stripLine:175:
+- Error details can be obtained by calling the object's getLastError() method.
+isAtTag:
+- Error details can be obtained by calling the object's getLastError() method.
+72:adding 
+- Error details can be obtained by calling the object's getLastError() method. ==> to last known @return...
+92:adding public function query($sql) { to prototype...
+stripLine:166:* Return the currently opened DB connection as an object.
+stripLine:175:Return the currently opened DB connection as an object.
+isAtTag:Return the currently opened DB connection as an object.
+68:adding Return the currently opened DB connection as an object. to @description...
+
+Warning: Undefined array key 10 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* @return PDO connection object
+stripLine:175:@return PDO connection object
+isAtTag:@return PDO connection object
+55:adding PDO connection object ==> to @return...
+92:adding public function getDBConnection() { to prototype...
+stripLine:166:* wrapper for result sets, including consistant error reporting through the debug class, allows counting the number of results returned in a query result
+stripLine:175:wrapper for result sets, including consistant error reporting through the debug class, allows counting the number of results returned in a query result
+isAtTag:wrapper for result sets, including consistant error reporting through the debug class, allows counting the number of results returned in a query result
+68:adding wrapper for result sets, including consistant error reporting through the debug class, allows counting the number of results returned in a query result to @description...
+
+Warning: Undefined array key 11 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* and avoids script overloading when working on a large result set by returning data record by record.
+stripLine:175:and avoids script overloading when working on a large result set by returning data record by record.
+isAtTag:and avoids script overloading when working on a large result set by returning data record by record.
+72:adding and avoids script overloading when working on a large result set by returning data record by record. ==> to last known @description...
+stripLine:166:* */
+stripLine:175:*/
+isAtTag:*/
+72:adding */ ==> to last known @description...
+stripLine:166:class recordset {
+stripLine:175:class recordset {
+isAtTag:class recordset {
+72:adding class recordset { ==> to last known @description...
+stripLine:166:* If TRUE, the recordset has reached the end.
+stripLine:175:If TRUE, the recordset has reached the end.
+isAtTag:If TRUE, the recordset has reached the end.
+68:adding If TRUE, the recordset has reached the end. to @description...
+92:adding public $end = false; to prototype...
+stripLine:166:* Set a local object for procesing by passing an SQLite result set to the class.
+stripLine:175:Set a local object for procesing by passing an SQLite result set to the class.
+isAtTag:Set a local object for procesing by passing an SQLite result set to the class.
+68:adding Set a local object for procesing by passing an SQLite result set to the class. to @description...
+
+Warning: Undefined array key 12 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* @param object $sqliteObject SQLIte result object
+stripLine:175:@param object $sqliteObject SQLIte result object
+isAtTag:@param object $sqliteObject SQLIte result object
+55:adding object $sqliteObject SQLIte result object ==> to @param...
+counter / current tag / current param / line : 12 / @param / param633a90ff678986.25933625 / object $sqliteObject SQLIte result objectstripLine:166:* @return mixed|bool Ifsuccessful, the method will return TRUE, otherwise FALSE.
+stripLine:175:@return mixed|bool Ifsuccessful, the method will return TRUE, otherwise FALSE.
+isAtTag:@return mixed|bool Ifsuccessful, the method will return TRUE, otherwise FALSE.
+55:adding mixed|bool Ifsuccessful, the method will return TRUE, otherwise FALSE. ==> to @return...
+stripLine:166:* In case of error, in addition to the above:
+stripLine:175:In case of error, in addition to the above:
+isAtTag:In case of error, in addition to the above:
+72:adding In case of error, in addition to the above: ==> to last known @return...
+stripLine:166:* - The method itself will return FALSE
+stripLine:175:
+- The method itself will return FALSE
+isAtTag:
+- The method itself will return FALSE
+72:adding 
+- The method itself will return FALSE ==> to last known @return...
+stripLine:166:* - The object's $errorFlag property will be set to TRUE
+stripLine:175:
+- The object's $errorFlag property will be set to TRUE
+isAtTag:
+- The object's $errorFlag property will be set to TRUE
+72:adding 
+- The object's $errorFlag property will be set to TRUE ==> to last known @return...
+stripLine:166:* - Error details can be obtained by calling the object's getLastError() method.
+stripLine:175:
+- Error details can be obtained by calling the object's getLastError() method.
+isAtTag:
+- Error details can be obtained by calling the object's getLastError() method.
+72:adding 
+- Error details can be obtained by calling the object's getLastError() method. ==> to last known @return...
+92:adding public function __construct($dbResult=null) { to prototype...
+stripLine:166:* Controls how the next row of the result set be returned to the caller
+stripLine:175:Controls how the next row of the result set be returned to the caller
+isAtTag:Controls how the next row of the result set be returned to the caller
+68:adding Controls how the next row of the result set be returned to the caller to @description...
+
+Warning: Undefined array key 13 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* @param mixed|null $recordType Default MYSQLI_ASSOC.
+stripLine:175:@param mixed|null $recordType Default MYSQLI_ASSOC.
+isAtTag:@param mixed|null $recordType Default MYSQLI_ASSOC.
+55:adding mixed|null $recordType Default MYSQLI_ASSOC. ==> to @param...
+counter / current tag / current param / line : 13 / @param / param633a90ff678f45.09782683 / mixed|null $recordType Default MYSQLI_ASSOC.stripLine:166:* This value must be one of either PDO::FETCH_ASSOC, PDO::FETCH_NUM, or PDO::FETCH_BOTH.
+stripLine:175:This value must be one of either PDO::FETCH_ASSOC, PDO::FETCH_NUM, or PDO::FETCH_BOTH.
+isAtTag:This value must be one of either PDO::FETCH_ASSOC, PDO::FETCH_NUM, or PDO::FETCH_BOTH.
+72:adding This value must be one of either PDO::FETCH_ASSOC, PDO::FETCH_NUM, or PDO::FETCH_BOTH. ==> to last known @param...
+stripLine:166:* - SQLITE3_ASSOC: returns an array indexed by column name as returned in the corresponding result set
+stripLine:175:
+- SQLITE3_ASSOC: returns an array indexed by column name as returned in the corresponding result set
+isAtTag:
+- SQLITE3_ASSOC: returns an array indexed by column name as returned in the corresponding result set
+72:adding 
+- SQLITE3_ASSOC: returns an array indexed by column name as returned in the corresponding result set ==> to last known @param...
+stripLine:166:* - SQLITE3_NUM: returns an array indexed by column number as returned in the corresponding result set, starting at column 0
+stripLine:175:
+- SQLITE3_NUM: returns an array indexed by column number as returned in the corresponding result set, starting at column 0
+isAtTag:
+- SQLITE3_NUM: returns an array indexed by column number as returned in the corresponding result set, starting at column 0
+72:adding 
+- SQLITE3_NUM: returns an array indexed by column number as returned in the corresponding result set, starting at column 0 ==> to last known @param...
+stripLine:166:* - SQLITE3_BOTH: returns an array indexed by both column name and number as returned in the corresponding result set, starting at column 0
+stripLine:175:
+- SQLITE3_BOTH: returns an array indexed by both column name and number as returned in the corresponding result set, starting at column 0
+isAtTag:
+- SQLITE3_BOTH: returns an array indexed by both column name and number as returned in the corresponding result set, starting at column 0
+72:adding 
+- SQLITE3_BOTH: returns an array indexed by both column name and number as returned in the corresponding result set, starting at column 0 ==> to last known @param...
+stripLine:166:* @return array Contents of the current record or false if there is nothing to return.
+stripLine:175:@return array Contents of the current record or false if there is nothing to return.
+isAtTag:@return array Contents of the current record or false if there is nothing to return.
+55:adding array Contents of the current record or false if there is nothing to return. ==> to @return...
+stripLine:166:* In case of error, in addition to the above:
+stripLine:175:In case of error, in addition to the above:
+isAtTag:In case of error, in addition to the above:
+72:adding In case of error, in addition to the above: ==> to last known @return...
+stripLine:166:* - The method itself will return FALSE
+stripLine:175:
+- The method itself will return FALSE
+isAtTag:
+- The method itself will return FALSE
+72:adding 
+- The method itself will return FALSE ==> to last known @return...
+stripLine:166:* - The object's $errorFlag property will be set to TRUE
+stripLine:175:
+- The object's $errorFlag property will be set to TRUE
+isAtTag:
+- The object's $errorFlag property will be set to TRUE
+72:adding 
+- The object's $errorFlag property will be set to TRUE ==> to last known @return...
+stripLine:166:* - Error details can be obtained by calling the object's getLastError() method.
+stripLine:175:
+- Error details can be obtained by calling the object's getLastError() method.
+isAtTag:
+- Error details can be obtained by calling the object's getLastError() method.
+72:adding 
+- Error details can be obtained by calling the object's getLastError() method. ==> to last known @return...
+92:adding public function fetchArray($recordType=PDO::FETCH_ASSOC) { to prototype...
+stripLine:166:* Return the record count from a PDO result set
+stripLine:175:Return the record count from a PDO result set
+isAtTag:Return the record count from a PDO result set
+68:adding Return the record count from a PDO result set to @description...
+
+Warning: Undefined array key 14 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* @return mixed False if no records, otherwise the integer number of records queried.
+stripLine:175:@return mixed False if no records, otherwise the integer number of records queried.
+isAtTag:@return mixed False if no records, otherwise the integer number of records queried.
+55:adding mixed False if no records, otherwise the integer number of records queried. ==> to @return...
+92:adding public function recordCount() { to prototype...
+stripLine:166:* Class that contains the common data and methods for full single record operations.
+stripLine:175:Class that contains the common data and methods for full single record operations.
+isAtTag:Class that contains the common data and methods for full single record operations.
+68:adding Class that contains the common data and methods for full single record operations. to @description...
+
+Warning: Undefined array key 15 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* Single Record Operations are defined as full record inserts, or full record updates to a specific table, generally based of form entered data.
+stripLine:175:Single Record Operations are defined as full record inserts, or full record updates to a specific table, generally based of form entered data.
+isAtTag:Single Record Operations are defined as full record inserts, or full record updates to a specific table, generally based of form entered data.
+72:adding Single Record Operations are defined as full record inserts, or full record updates to a specific table, generally based of form entered data. ==> to last known @description...
+stripLine:166:* This class requires a pre-opened RS DB object and the name of the table to describe as parameters to the constructor.
+stripLine:175:This class requires a pre-opened RS DB object and the name of the table to describe as parameters to the constructor.
+isAtTag:This class requires a pre-opened RS DB object and the name of the table to describe as parameters to the constructor.
+72:adding This class requires a pre-opened RS DB object and the name of the table to describe as parameters to the constructor. ==> to last known @description...
+stripLine:166:* Note: Your table may have a unique fields. This class does not manage these. It will only manage data types, pk ai and not null
+stripLine:175:Note: Your table may have a unique fields. This class does not manage these. It will only manage data types, pk ai and not null
+isAtTag:Note: Your table may have a unique fields. This class does not manage these. It will only manage data types, pk ai and not null
+72:adding Note: Your table may have a unique fields. This class does not manage these. It will only manage data types, pk ai and not null ==> to last known @description...
+92:adding class singleRecordCommon { to prototype...
+stripLine:166:* Class constructor.
+stripLine:175:Class constructor.
+isAtTag:Class constructor.
+68:adding Class constructor. to @description...
+
+Warning: Undefined array key 16 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* @param mixed $cnx RS DB database connection
+stripLine:175:@param mixed $cnx RS DB database connection
+isAtTag:@param mixed $cnx RS DB database connection
+55:adding mixed $cnx RS DB database connection ==> to @param...
+counter / current tag / current param / line : 16 / @param / param633a90ff679ea4.68671742 / mixed $cnx RS DB database connectionstripLine:166:* @param string $tableName Name of the table accessible through the connection to describe and work on.
+stripLine:175:@param string $tableName Name of the table accessible through the connection to describe and work on.
+isAtTag:@param string $tableName Name of the table accessible through the connection to describe and work on.
+55:adding string $tableName Name of the table accessible through the connection to describe and work on. ==> to @param...
+counter / current tag / current param / line : 16 / @param / param633a90ff67a011.69955285 / string $tableName Name of the table accessible through the connection to describe and work on.stripLine:166:* @return void
+stripLine:175:@return void
+isAtTag:@return void
+55:adding void ==> to @return...
+92:adding public function __construct($cnx, $tableName) { to prototype...
+stripLine:166:* Describe the structure of a database table, and load it into the tableStructure array, including field names, values, auto increment, primary key and not null flags.
+stripLine:175:Describe the structure of a database table, and load it into the tableStructure array, including field names, values, auto increment, primary key and not null flags.
+isAtTag:Describe the structure of a database table, and load it into the tableStructure array, including field names, values, auto increment, primary key and not null flags.
+68:adding Describe the structure of a database table, and load it into the tableStructure array, including field names, values, auto increment, primary key and not null flags. to @description...
+
+Warning: Undefined array key 17 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* @param mixed $table Table to describe
+stripLine:175:@param mixed $table Table to describe
+isAtTag:@param mixed $table Table to describe
+55:adding mixed $table Table to describe ==> to @param...
+counter / current tag / current param / line : 17 / @param / param633a90ff67a341.18187420 / mixed $table Table to describestripLine:166:* @return bool|void
+stripLine:175:@return bool|void
+isAtTag:@return bool|void
+55:adding bool|void ==> to @return...
+92:adding protected function describeTable($table) { to prototype...
+stripLine:166:* Takes the notnull field from the pragma table_info command from sqlite and returns the expected not null value
+stripLine:175:Takes the notnull field from the pragma table_info command from sqlite and returns the expected not null value
+isAtTag:Takes the notnull field from the pragma table_info command from sqlite and returns the expected not null value
+68:adding Takes the notnull field from the pragma table_info command from sqlite and returns the expected not null value to @description...
+
+Warning: Undefined array key 18 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* @param mixed $result notnull value (0 or 1)
+stripLine:175:@param mixed $result notnull value (0 or 1)
+isAtTag:@param mixed $result notnull value (0 or 1)
+55:adding mixed $result notnull value (0 or 1) ==> to @param...
+counter / current tag / current param / line : 18 / @param / param633a90ff67a6c8.96690691 / mixed $result notnull value (0 or 1)stripLine:166:* @return string YES if null is allowed, NO if not.
+stripLine:175:@return string YES if null is allowed, NO if not.
+isAtTag:@return string YES if null is allowed, NO if not.
+55:adding string YES if null is allowed, NO if not. ==> to @return...
+92:adding private function sqliteNotnull($result) { to prototype...
+stripLine:166:* Takes the PK field and checks if it's set to 1 (PK) or not.
+stripLine:175:Takes the PK field and checks if it's set to 1 (PK) or not.
+isAtTag:Takes the PK field and checks if it's set to 1 (PK) or not.
+68:adding Takes the PK field and checks if it's set to 1 (PK) or not. to @description...
+
+Warning: Undefined array key 19 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+92:adding private function sqlitePk($result) { to prototype...
+stripLine:166:* Return a MariaDB field's primitive data type (string or number) for a given field's set data type.
+stripLine:175:Return a MariaDB field's primitive data type (string or number) for a given field's set data type.
+isAtTag:Return a MariaDB field's primitive data type (string or number) for a given field's set data type.
+68:adding Return a MariaDB field's primitive data type (string or number) for a given field's set data type. to @description...
+
+Warning: Undefined array key 20 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* These data types are taken from https://mariadb.com/kb/en/data-types/ valid as of 10.3
+stripLine:175:These data types are taken from https://mariadb.com/kb/en/data-types/ valid as of 10.3
+isAtTag:These data types are taken from https://mariadb.com/kb/en/data-types/ valid as of 10.3
+72:adding These data types are taken from https://mariadb.com/kb/en/data-types/ valid as of 10.3 ==> to last known @description...
+stripLine:166:* Known numerical values will be returned as numerical, all others will be returned as text.
+stripLine:175:Known numerical values will be returned as numerical, all others will be returned as text.
+isAtTag:Known numerical values will be returned as numerical, all others will be returned as text.
+72:adding Known numerical values will be returned as numerical, all others will be returned as text. ==> to last known @description...
+stripLine:166:* Dates will be considered text types.
+stripLine:175:Dates will be considered text types.
+isAtTag:Dates will be considered text types.
+72:adding Dates will be considered text types. ==> to last known @description...
+stripLine:166:* @param mixed $fieldDataType Database data type to check
+stripLine:175:@param mixed $fieldDataType Database data type to check
+isAtTag:@param mixed $fieldDataType Database data type to check
+55:adding mixed $fieldDataType Database data type to check ==> to @param...
+counter / current tag / current param / line : 20 / @param / param633a90ff67ade1.53521454 / mixed $fieldDataType Database data type to checkstripLine:166:* @return int 1 for numerical type, 0 for everything else (text, dates, spatial)
+stripLine:175:@return int 1 for numerical type, 0 for everything else (text, dates, spatial)
+isAtTag:@return int 1 for numerical type, 0 for everything else (text, dates, spatial)
+55:adding int 1 for numerical type, 0 for everything else (text, dates, spatial) ==> to @return...
+92:adding private function returnPrimitiveDataType($typeRecord) { to prototype...
+stripLine:166:* Return an SQLite field's primitive data type (string or number) for a given field's set data type.
+stripLine:175:Return an SQLite field's primitive data type (string or number) for a given field's set data type.
+isAtTag:Return an SQLite field's primitive data type (string or number) for a given field's set data type.
+68:adding Return an SQLite field's primitive data type (string or number) for a given field's set data type. to @description...
+
+Warning: Undefined array key 21 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* This library expects STRICT tables, where the value actually does match the column's data type.
+stripLine:175:This library expects STRICT tables, where the value actually does match the column's data type.
+isAtTag:This library expects STRICT tables, where the value actually does match the column's data type.
+72:adding This library expects STRICT tables, where the value actually does match the column's data type. ==> to last known @description...
+stripLine:166:* - or at least where the table users respect these types.
+stripLine:175:
+- or at least where the table users respect these types.
+isAtTag:
+- or at least where the table users respect these types.
+72:adding 
+- or at least where the table users respect these types. ==> to last known @description...
+stripLine:166:* These data types are taken from https://www.sqlite.org/datatype3.html valid as of 3
+stripLine:175:These data types are taken from https://www.sqlite.org/datatype3.html valid as of 3
+isAtTag:These data types are taken from https://www.sqlite.org/datatype3.html valid as of 3
+72:adding These data types are taken from https://www.sqlite.org/datatype3.html valid as of 3 ==> to last known @description...
+stripLine:166:* Known numerical values will be returned as numerical, all others will be returned as text.
+stripLine:175:Known numerical values will be returned as numerical, all others will be returned as text.
+isAtTag:Known numerical values will be returned as numerical, all others will be returned as text.
+72:adding Known numerical values will be returned as numerical, all others will be returned as text. ==> to last known @description...
+stripLine:166:* Dates will be considered text types.
+stripLine:175:Dates will be considered text types.
+isAtTag:Dates will be considered text types.
+72:adding Dates will be considered text types. ==> to last known @description...
+stripLine:166:* BLOB's are undefined... but will best be considered text, and insert hex strings into them rather than raw binary!
+stripLine:175:BLOB's are undefined... but will best be considered text, and insert hex strings into them rather than raw binary!
+isAtTag:BLOB's are undefined... but will best be considered text, and insert hex strings into them rather than raw binary!
+72:adding BLOB's are undefined... but will best be considered text, and insert hex strings into them rather than raw binary! ==> to last known @description...
+stripLine:166:* @param mixed $fieldDataType Database data type to check
+stripLine:175:@param mixed $fieldDataType Database data type to check
+isAtTag:@param mixed $fieldDataType Database data type to check
+55:adding mixed $fieldDataType Database data type to check ==> to @param...
+counter / current tag / current param / line : 21 / @param / param633a90ff67b566.95007678 / mixed $fieldDataType Database data type to checkstripLine:166:* @return int 1 for numerical type, 0 for everything else (text, dates, spatial)
+stripLine:175:@return int 1 for numerical type, 0 for everything else (text, dates, spatial)
+isAtTag:@return int 1 for numerical type, 0 for everything else (text, dates, spatial)
+55:adding int 1 for numerical type, 0 for everything else (text, dates, spatial) ==> to @return...
+92:adding private function returnSqlitePrimitiveDataType($typeRecord) { to prototype...
+stripLine:166:* Check if the Extra column contains an auto_increment modifier
+stripLine:175:Check if the Extra column contains an auto_increment modifier
+isAtTag:Check if the Extra column contains an auto_increment modifier
+68:adding Check if the Extra column contains an auto_increment modifier to @description...
+
+Warning: Undefined array key 22 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* @param mixed $extraData Value from the Extra column from a show columns from table statement
+stripLine:175:@param mixed $extraData Value from the Extra column from a show columns from table statement
+isAtTag:@param mixed $extraData Value from the Extra column from a show columns from table statement
+55:adding mixed $extraData Value from the Extra column from a show columns from table statement ==> to @param...
+counter / current tag / current param / line : 22 / @param / param633a90ff67b885.56871524 / mixed $extraData Value from the Extra column from a show columns from table statementstripLine:166:* @return bool True if the field contains an auto_increment modifier, otherwise False.
+stripLine:175:@return bool True if the field contains an auto_increment modifier, otherwise False.
+isAtTag:@return bool True if the field contains an auto_increment modifier, otherwise False.
+55:adding bool True if the field contains an auto_increment modifier, otherwise False. ==> to @return...
+92:adding private function isAutoIncrement($extraData) { to prototype...
+stripLine:166:* Get the value from a loaded record if the field exists.
+stripLine:175:Get the value from a loaded record if the field exists.
+isAtTag:Get the value from a loaded record if the field exists.
+68:adding Get the value from a loaded record if the field exists. to @description...
+
+Warning: Undefined array key 23 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* Note 1) MySQL/MariaDB could have case sensitive field names, so you MUST match the case of the loaded field names or the method will raise a fatal error.
+stripLine:175:Note 1) MySQL/MariaDB could have case sensitive field names, so you MUST match the case of the loaded field names or the method will raise a fatal error.
+isAtTag:Note 1) MySQL/MariaDB could have case sensitive field names, so you MUST match the case of the loaded field names or the method will raise a fatal error.
+72:adding Note 1) MySQL/MariaDB could have case sensitive field names, so you MUST match the case of the loaded field names or the method will raise a fatal error. ==> to last known @description...
+stripLine:166:* Note 2) This method will return the data as it is stored in the database, unescaped.
+stripLine:175:Note 2) This method will return the data as it is stored in the database, unescaped.
+isAtTag:Note 2) This method will return the data as it is stored in the database, unescaped.
+72:adding Note 2) This method will return the data as it is stored in the database, unescaped. ==> to last known @description...
+stripLine:166:* @param string $fieldName Case sensitive name of the loaded field containing the value you want to return
+stripLine:175:@param string $fieldName Case sensitive name of the loaded field containing the value you want to return
+isAtTag:@param string $fieldName Case sensitive name of the loaded field containing the value you want to return
+55:adding string $fieldName Case sensitive name of the loaded field containing the value you want to return ==> to @param...
+counter / current tag / current param / line : 23 / @param / param633a90ff67bd72.81361793 / string $fieldName Case sensitive name of the loaded field containing the value you want to return92:adding public function getField($fieldName) { to prototype...
+stripLine:166:* Escape and quote a value for a specific field according to it's type
+stripLine:175:Escape and quote a value for a specific field according to it's type
+isAtTag:Escape and quote a value for a specific field according to it's type
+68:adding Escape and quote a value for a specific field according to it's type to @description...
+
+Warning: Undefined array key 24 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* @param mixed $field Name of the field to check
+stripLine:175:@param mixed $field Name of the field to check
+isAtTag:@param mixed $field Name of the field to check
+55:adding mixed $field Name of the field to check ==> to @param...
+counter / current tag / current param / line : 24 / @param / param633a90ff67bfd9.28419318 / mixed $field Name of the field to checkstripLine:166:* @param mixed $value Value of the field that may need escaping
+stripLine:175:@param mixed $value Value of the field that may need escaping
+isAtTag:@param mixed $value Value of the field that may need escaping
+55:adding mixed $value Value of the field that may need escaping ==> to @param...
+counter / current tag / current param / line : 24 / @param / param633a90ff67c0b1.41146879 / mixed $value Value of the field that may need escapingstripLine:166:* @return mixed If the expected type is numerical, then the value will be returned as is. If it is a string, it will be quoted and escaped.
+stripLine:175:@return mixed If the expected type is numerical, then the value will be returned as is. If it is a string, it will be quoted and escaped.
+isAtTag:@return mixed If the expected type is numerical, then the value will be returned as is. If it is a string, it will be quoted and escaped.
+55:adding mixed If the expected type is numerical, then the value will be returned as is. If it is a string, it will be quoted and escaped. ==> to @return...
+92:adding protected function escapeQuoteValueByType($field, $value) { to prototype...
+stripLine:166:* Sets the value of the field of a loaded record for UPDATE, as long as it does not conflict with the loaded where list or auto_increment primary key.
+stripLine:175:Sets the value of the field of a loaded record for UPDATE, as long as it does not conflict with the loaded where list or auto_increment primary key.
+isAtTag:Sets the value of the field of a loaded record for UPDATE, as long as it does not conflict with the loaded where list or auto_increment primary key.
+68:adding Sets the value of the field of a loaded record for UPDATE, as long as it does not conflict with the loaded where list or auto_increment primary key. to @description...
+
+Warning: Undefined array key 25 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* Text values set here will not be escaped at this level (this is done when the update method is called.)
+stripLine:175:Text values set here will not be escaped at this level (this is done when the update method is called.)
+isAtTag:Text values set here will not be escaped at this level (this is done when the update method is called.)
+72:adding Text values set here will not be escaped at this level (this is done when the update method is called.) ==> to last known @description...
+stripLine:166:* Note 1) MySQL/MariaDB could have case sensitive field names, so you MUST match the case of the loaded field names or the method will return a fatal error.
+stripLine:175:Note 1) MySQL/MariaDB could have case sensitive field names, so you MUST match the case of the loaded field names or the method will return a fatal error.
+isAtTag:Note 1) MySQL/MariaDB could have case sensitive field names, so you MUST match the case of the loaded field names or the method will return a fatal error.
+72:adding Note 1) MySQL/MariaDB could have case sensitive field names, so you MUST match the case of the loaded field names or the method will return a fatal error. ==> to last known @description...
+stripLine:166:* Note 2) This method will set the data as it is provided, but escaping will only happen on update or insert for text values
+stripLine:175:Note 2) This method will set the data as it is provided, but escaping will only happen on update or insert for text values
+isAtTag:Note 2) This method will set the data as it is provided, but escaping will only happen on update or insert for text values
+72:adding Note 2) This method will set the data as it is provided, but escaping will only happen on update or insert for text values ==> to last known @description...
+stripLine:166:* Note 3) The method will raise a fatal error if you attempt to:
+stripLine:175:Note 3) The method will raise a fatal error if you attempt to:
+isAtTag:Note 3) The method will raise a fatal error if you attempt to:
+72:adding Note 3) The method will raise a fatal error if you attempt to: ==> to last known @description...
+stripLine:166:* - Update the primary key value (if a primary key is present)
+stripLine:175:
+- Update the primary key value (if a primary key is present)
+isAtTag:
+- Update the primary key value (if a primary key is present)
+72:adding 
+- Update the primary key value (if a primary key is present) ==> to last known @description...
+stripLine:166:* - Update values that are set in the WHERE clause, as these are needed to identify the correct record to update
+stripLine:175:
+- Update values that are set in the WHERE clause, as these are needed to identify the correct record to update
+isAtTag:
+- Update values that are set in the WHERE clause, as these are needed to identify the correct record to update
+72:adding 
+- Update values that are set in the WHERE clause, as these are needed to identify the correct record to update ==> to last known @description...
+stripLine:166:* - Set a value that does not match the field's type (numerical or text)
+stripLine:175:
+- Set a value that does not match the field's type (numerical or text)
+isAtTag:
+- Set a value that does not match the field's type (numerical or text)
+72:adding 
+- Set a value that does not match the field's type (numerical or text) ==> to last known @description...
+stripLine:166:*
+stripLine:175:*
+isAtTag:*
+72:adding * ==> to last known @description...
+stripLine:166:* @param mixed $fieldName
+stripLine:175:@param mixed $fieldName
+isAtTag:@param mixed $fieldName
+55:adding mixed $fieldName ==> to @param...
+counter / current tag / current param / line : 25 / @param / param633a90ff67ca24.37853885 / mixed $fieldNamestripLine:166:* @param mixed $fieldValue
+stripLine:175:@param mixed $fieldValue
+isAtTag:@param mixed $fieldValue
+55:adding mixed $fieldValue ==> to @param...
+counter / current tag / current param / line : 25 / @param / param633a90ff67cb06.79317418 / mixed $fieldValuestripLine:166:* @return void
+stripLine:175:@return void
+isAtTag:@return void
+55:adding void ==> to @return...
+92:adding public function setField($fieldName, $fieldValue) { to prototype...
+stripLine:166:* Check if there is a table described and loaded into the class, and fail with a fatal error if not.
+stripLine:175:Check if there is a table described and loaded into the class, and fail with a fatal error if not.
+isAtTag:Check if there is a table described and loaded into the class, and fail with a fatal error if not.
+68:adding Check if there is a table described and loaded into the class, and fail with a fatal error if not. to @description...
+
+Warning: Undefined array key 26 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+92:adding public function failIfTableStructureNotLoaded() { to prototype...
+stripLine:166:* Loads a known record from the database, and makes it available for reading, field by field, but also allows for updating those loaded fields which
+stripLine:175:Loads a known record from the database, and makes it available for reading, field by field, but also allows for updating those loaded fields which
+isAtTag:Loads a known record from the database, and makes it available for reading, field by field, but also allows for updating those loaded fields which
+68:adding Loads a known record from the database, and makes it available for reading, field by field, but also allows for updating those loaded fields which to @description...
+
+Warning: Undefined array key 27 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* can then be written back to the database.
+stripLine:175:can then be written back to the database.
+isAtTag:can then be written back to the database.
+72:adding can then be written back to the database. ==> to last known @description...
+stripLine:166:* with the new values.
+stripLine:175:with the new values.
+isAtTag:with the new values.
+72:adding with the new values. ==> to last known @description...
+stripLine:166:* Note that if the record is read from a table with a Primary Key, then all the fields can be updated except the Primary Key as it allows for atomic updating
+stripLine:175:Note that if the record is read from a table with a Primary Key, then all the fields can be updated except the Primary Key as it allows for atomic updating
+isAtTag:Note that if the record is read from a table with a Primary Key, then all the fields can be updated except the Primary Key as it allows for atomic updating
+72:adding Note that if the record is read from a table with a Primary Key, then all the fields can be updated except the Primary Key as it allows for atomic updating ==> to last known @description...
+stripLine:166:* with only one identification key.
+stripLine:175:with only one identification key.
+isAtTag:with only one identification key.
+72:adding with only one identification key. ==> to last known @description...
+stripLine:166:* If the record does not have a Primary Key, then the update will need to be based from the WHERE conditions used to read that unique record,
+stripLine:175:If the record does not have a Primary Key, then the update will need to be based from the WHERE conditions used to read that unique record,
+isAtTag:If the record does not have a Primary Key, then the update will need to be based from the WHERE conditions used to read that unique record,
+72:adding If the record does not have a Primary Key, then the update will need to be based from the WHERE conditions used to read that unique record, ==> to last known @description...
+stripLine:166:* and those fields will not be updatable.
+stripLine:175:and those fields will not be updatable.
+isAtTag:and those fields will not be updatable.
+72:adding and those fields will not be updatable. ==> to last known @description...
+92:adding class recordReadUpdate extends singleRecordCommon { to prototype...
+stripLine:166:* Generate "field = value" pairs to be used in an SQL "where" clause. The field must exist, and the value must match the field's datatype.
+stripLine:175:Generate "field = value" pairs to be used in an SQL "where" clause. The field must exist, and the value must match the field's datatype.
+isAtTag:Generate "field = value" pairs to be used in an SQL "where" clause. The field must exist, and the value must match the field's datatype.
+68:adding Generate "field = value" pairs to be used in an SQL "where" clause. The field must exist, and the value must match the field's datatype. to @description...
+
+Warning: Undefined array key 28 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* Strings sent will be automatically sql escapaed.
+stripLine:175:Strings sent will be automatically sql escapaed.
+isAtTag:Strings sent will be automatically sql escapaed.
+72:adding Strings sent will be automatically sql escapaed. ==> to last known @description...
+stripLine:166:* @param mixed $field Field to be used as a condition in a where clause
+stripLine:175:@param mixed $field Field to be used as a condition in a where clause
+isAtTag:@param mixed $field Field to be used as a condition in a where clause
+55:adding mixed $field Field to be used as a condition in a where clause ==> to @param...
+counter / current tag / current param / line : 28 / @param / param633a90ff67d6a1.10487794 / mixed $field Field to be used as a condition in a where clausestripLine:166:* @param mixed $whereValue Value linked to the field in the where clause. Text data will be escaped automatically.
+stripLine:175:@param mixed $whereValue Value linked to the field in the where clause. Text data will be escaped automatically.
+isAtTag:@param mixed $whereValue Value linked to the field in the where clause. Text data will be escaped automatically.
+55:adding mixed $whereValue Value linked to the field in the where clause. Text data will be escaped automatically. ==> to @param...
+counter / current tag / current param / line : 28 / @param / param633a90ff67d782.26549013 / mixed $whereValue Value linked to the field in the where clause. Text data will be escaped automatically.stripLine:166:* @return void Method will generate a fatal error if you try to set a where clause on a non existing field or use the incorrect data type.
+stripLine:175:@return void Method will generate a fatal error if you try to set a where clause on a non existing field or use the incorrect data type.
+isAtTag:@return void Method will generate a fatal error if you try to set a where clause on a non existing field or use the incorrect data type.
+55:adding void Method will generate a fatal error if you try to set a where clause on a non existing field or use the incorrect data type. ==> to @return...
+92:adding public function addWhere($field, $whereValue) { to prototype...
+stripLine:166:* Read a record from the database, taking the filter conditions into account that have been set through the addWhere method, if any.
+stripLine:175:Read a record from the database, taking the filter conditions into account that have been set through the addWhere method, if any.
+isAtTag:Read a record from the database, taking the filter conditions into account that have been set through the addWhere method, if any.
+68:adding Read a record from the database, taking the filter conditions into account that have been set through the addWhere method, if any. to @description...
+
+Warning: Undefined array key 29 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* If the query does not return EXACTLY one record from the system, there will be a fatal error: The method does not force a limit 1, as if more than
+stripLine:175:If the query does not return EXACTLY one record from the system, there will be a fatal error: The method does not force a limit 1, as if more than
+isAtTag:If the query does not return EXACTLY one record from the system, there will be a fatal error: The method does not force a limit 1, as if more than
+72:adding If the query does not return EXACTLY one record from the system, there will be a fatal error: The method does not force a limit 1, as if more than ==> to last known @description...
+stripLine:166:* one record is returned, you have no guarantee that you are working on the correct record, and so the method will error out if your where conditions
+stripLine:175:one record is returned, you have no guarantee that you are working on the correct record, and so the method will error out if your where conditions
+isAtTag:one record is returned, you have no guarantee that you are working on the correct record, and so the method will error out if your where conditions
+72:adding one record is returned, you have no guarantee that you are working on the correct record, and so the method will error out if your where conditions ==> to last known @description...
+stripLine:166:* are not sufficiently precise, and if you have zero records, then you have nothing to do and there is a problem with your query or your database table.
+stripLine:175:are not sufficiently precise, and if you have zero records, then you have nothing to do and there is a problem with your query or your database table.
+isAtTag:are not sufficiently precise, and if you have zero records, then you have nothing to do and there is a problem with your query or your database table.
+72:adding are not sufficiently precise, and if you have zero records, then you have nothing to do and there is a problem with your query or your database table. ==> to last known @description...
+stripLine:166:* @return void
+stripLine:175:@return void
+isAtTag:@return void
+55:adding void ==> to @return...
+92:adding public function loadOneRecord() { to prototype...
+stripLine:166:* Take the field values from the tableStructure array and update the values in the database, either from the PK or from the where condition.
+stripLine:175:Take the field values from the tableStructure array and update the values in the database, either from the PK or from the where condition.
+isAtTag:Take the field values from the tableStructure array and update the values in the database, either from the PK or from the where condition.
+68:adding Take the field values from the tableStructure array and update the values in the database, either from the PK or from the where condition. to @description...
+
+Warning: Undefined array key 30 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* @return void
+stripLine:175:@return void
+isAtTag:@return void
+55:adding void ==> to @return...
+92:adding public function updateRecord() { to prototype...
+stripLine:166:* Inserts a new record into the loaded table, that must respect the table's data format.
+stripLine:175:Inserts a new record into the loaded table, that must respect the table's data format.
+isAtTag:Inserts a new record into the loaded table, that must respect the table's data format.
+68:adding Inserts a new record into the loaded table, that must respect the table's data format. to @description...
+
+Warning: Undefined array key 31 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+92:adding class recordNew extends singleRecordCommon { to prototype...
+stripLine:166:* Insert a new record into the loaded table with data added via the setField method. Data will be checked against
+stripLine:175:Insert a new record into the loaded table with data added via the setField method. Data will be checked against
+isAtTag:Insert a new record into the loaded table with data added via the setField method. Data will be checked against
+68:adding Insert a new record into the loaded table with data added via the setField method. Data will be checked against to @description...
+
+Warning: Undefined array key 32 in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+
+Warning: Undefined array key "@description" in /Users/danielpage/Documents/GitHub/RedSea/docs/makedoc.php on line 69
+stripLine:166:* the expected data type from the table, and returned escaped and quoted to build the insert query.
+stripLine:175:the expected data type from the table, and returned escaped and quoted to build the insert query.
+isAtTag:the expected data type from the table, and returned escaped and quoted to build the insert query.
+72:adding the expected data type from the table, and returned escaped and quoted to build the insert query. ==> to last known @description...
+stripLine:166:* If the class has identified a Primary Key Auto Increment, then this field will be automatically
+stripLine:175:If the class has identified a Primary Key Auto Increment, then this field will be automatically
+isAtTag:If the class has identified a Primary Key Auto Increment, then this field will be automatically
+72:adding If the class has identified a Primary Key Auto Increment, then this field will be automatically ==> to last known @description...
+stripLine:166:* ignored as the DB will auto-fill it
+stripLine:175:ignored as the DB will auto-fill it
+isAtTag:ignored as the DB will auto-fill it
+72:adding ignored as the DB will auto-fill it ==> to last known @description...
+stripLine:166:* @return mixed ID of the inserted auto-increment record if available.
+stripLine:175:@return mixed ID of the inserted auto-increment record if available.
+isAtTag:@return mixed ID of the inserted auto-increment record if available.
+55:adding mixed ID of the inserted auto-increment record if available. ==> to @return...
+92:adding public function insertNewRecord() { to prototype...
+array(33) {
+  [0]=>
+  array(6) {
+    ["@description"]=>
+    string(42) "This file defines some basic DB libraries."
+    ["@author"]=>
+    string(35) "Daniel Page <daniel@danielpage.com>"
+    ["@copyright"]=>
+    string(31) "Copyright (c) 2021, Daniel Page"
+    ["@license"]=>
+    string(328) "Licensed under the EUPL v1.2 - https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12*The MySQL classes don't add much visible differences to stock MySQL PDO php functions, but they do adddebug services to the objects that can be activated on demand along with error notification in line withthe other classes in RedSea.*"
+    ["@prototype"]=>
+    string(17) "namespace RedSea;"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(7) "nothing"
+      ["visibility"]=>
+      string(7) "nothing"
+    }
+  }
+  [1]=>
+  array(3) {
+    ["@description"]=>
+    string(264) "RedSea Database helper class. Based on PDO, this class simplifies connections to SQLite,and provides methods to execute direct SQL queries without returning a result, return a result set for parsing, andcan return the current PDO connection as a standalone object."
+    ["@prototype"]=>
+    string(12) "class rsdb {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(5) "class"
+      ["visibility"]=>
+      string(7) "nothing"
+    }
+  }
+  [2]=>
+  array(4) {
+    ["@description"]=>
+    string(34) "Contains the DSN connection string"
+    ["@internal"]=>
+    string(0) ""
+    ["@prototype"]=>
+    string(22) "protected $DSN = null;"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(8) "property"
+      ["visibility"]=>
+      string(9) "protected"
+    }
+  }
+  [3]=>
+  array(4) {
+    ["@description"]=>
+    string(39) "Contains the database connection object"
+    ["@internal"]=>
+    string(0) ""
+    ["@prototype"]=>
+    string(31) "protected $dbConnection = null;"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(8) "property"
+      ["visibility"]=>
+      string(9) "protected"
+    }
+  }
+  [4]=>
+  array(3) {
+    ["@description"]=>
+    string(123) "Contains the last inserted id that is updated after a query that adds a record into a table with an auto-number primary key"
+    ["@prototype"]=>
+    string(24) "public $insertId = null;"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(8) "property"
+      ["visibility"]=>
+      string(6) "public"
+    }
+  }
+  [5]=>
+  array(3) {
+    ["@description"]=>
+    string(39) "Contains the number of affected records"
+    ["@prototype"]=>
+    string(31) "public $affectedRecords = null;"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(8) "property"
+      ["visibility"]=>
+      string(6) "public"
+    }
+  }
+  [6]=>
+  array(4) {
+    ["@description"]=>
+    string(140) "Contains the database type as used when creating the DSN, used by other classes to adapt to database differences between MariaDB and SQLite."
+    ["@var"]=>
+    string(6) "string"
+    ["@prototype"]=>
+    string(30) "public $selectedDbType = null;"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(8) "property"
+      ["visibility"]=>
+      string(6) "public"
+    }
+  }
+  [7]=>
+  array(5) {
+    ["@description"]=>
+    string(39) "Opens a connection to MariaDB or SQLite"
+    ["@param"]=>
+    array(6) {
+      ["param633a90ff6769c7.88722681"]=>
+      string(61) "string $dbtype Database type to connect to: mariadb or sqlite"
+      ["param633a90ff676b15.38283490"]=>
+      string(126) "string $dbname Name of the data base to open. For an SQLite database, it willbe the path and name of the SQLite database file."
+      ["param633a90ff676d00.63570612"]=>
+      string(107) "string $host Hostname or IP address of the database server to connect to. Not required for SQLite database."
+      ["param633a90ff676e03.92265430"]=>
+      string(88) "string $username Username credential for the database. Not required for SQLite database."
+      ["param633a90ff676f09.41795695"]=>
+      string(88) "string $password Password credential for the database. Not required for SQLite database."
+      ["param633a90ff677018.51687864"]=>
+      string(113) "int $port If not specified, the MariaDB default port 3306 will be used, but can be specified to any other number."
+    }
+    ["@return"]=>
+    string(68) "voidIn case of error, the method will raise a fatal error to output."
+    ["@prototype"]=>
+    string(104) "public function __construct($dbtype, $dbname, $host=null, $username=null, $password=null, $port=3306)  {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(6) "public"
+    }
+  }
+  [8]=>
+  array(5) {
+    ["@description"]=>
+    string(77) "Executes a single query on the database that does not return a result object."
+    ["@param"]=>
+    array(1) {
+      ["param633a90ff6774f7.56198479"]=>
+      string(33) "string $sql SQL query to execute."
+    }
+    ["@return"]=>
+    string(330) "bool TRUE on success, FALSE on failure.In case of error, in addition to the above:
+- The method itself will return FALSE
+- The object's $errorFlag flag will be set to TRUE
+- Error details can be obtained by calling the object's getLastError() method.On success, the system will set the parameters affected Records and lastInsertID"
+    ["@prototype"]=>
+    string(31) "public function execute($sql) {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(6) "public"
+    }
+  }
+  [9]=>
+  array(5) {
+    ["@description"]=>
+    string(55) "Runs a query on the database that returns a result set."
+    ["@param"]=>
+    array(1) {
+      ["param633a90ff677ca0.99354352"]=>
+      string(11) "string $sql"
+    }
+    ["@return"]=>
+    string(286) "false|object On success, an SQLite result set is returned, otherwise FALSE.In case of error, in addition to the above:
+- The method itself will return FALSE
+- The object's $errorFlag flag will be set to TRUE
+- Error details can be obtained by calling the object's getLastError() method."
+    ["@prototype"]=>
+    string(29) "public function query($sql) {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(6) "public"
+    }
+  }
+  [10]=>
+  array(4) {
+    ["@description"]=>
+    string(55) "Return the currently opened DB connection as an object."
+    ["@return"]=>
+    string(21) "PDO connection object"
+    ["@prototype"]=>
+    string(35) "public function getDBConnection() {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(6) "public"
+    }
+  }
+  [11]=>
+  array(3) {
+    ["@description"]=>
+    string(313) "wrapper for result sets, including consistant error reporting through the debug class, allows counting the number of results returned in a query resultand avoids script overloading when working on a large result set by returning data record by record.*/class recordset {If TRUE, the recordset has reached the end."
+    ["@prototype"]=>
+    string(20) "public $end = false;"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(8) "property"
+      ["visibility"]=>
+      string(6) "public"
+    }
+  }
+  [12]=>
+  array(5) {
+    ["@description"]=>
+    string(78) "Set a local object for procesing by passing an SQLite result set to the class."
+    ["@param"]=>
+    array(1) {
+      ["param633a90ff678986.25933625"]=>
+      string(41) "object $sqliteObject SQLIte result object"
+    }
+    ["@return"]=>
+    string(285) "mixed|bool Ifsuccessful, the method will return TRUE, otherwise FALSE.In case of error, in addition to the above:
+- The method itself will return FALSE
+- The object's $errorFlag property will be set to TRUE
+- Error details can be obtained by calling the object's getLastError() method."
+    ["@prototype"]=>
+    string(45) "public function __construct($dbResult=null) {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(6) "public"
+    }
+  }
+  [13]=>
+  array(5) {
+    ["@description"]=>
+    string(69) "Controls how the next row of the result set be returned to the caller"
+    ["@param"]=>
+    array(1) {
+      ["param633a90ff678f45.09782683"]=>
+      string(492) "mixed|null $recordType Default MYSQLI_ASSOC.This value must be one of either PDO::FETCH_ASSOC, PDO::FETCH_NUM, or PDO::FETCH_BOTH.
+- SQLITE3_ASSOC: returns an array indexed by column name as returned in the corresponding result set
+- SQLITE3_NUM: returns an array indexed by column number as returned in the corresponding result set, starting at column 0
+- SQLITE3_BOTH: returns an array indexed by both column name and number as returned in the corresponding result set, starting at column 0"
+    }
+    ["@return"]=>
+    string(291) "array Contents of the current record or false if there is nothing to return.In case of error, in addition to the above:
+- The method itself will return FALSE
+- The object's $errorFlag property will be set to TRUE
+- Error details can be obtained by calling the object's getLastError() method."
+    ["@prototype"]=>
+    string(58) "public function fetchArray($recordType=PDO::FETCH_ASSOC) {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(6) "public"
+    }
+  }
+  [14]=>
+  array(4) {
+    ["@description"]=>
+    string(45) "Return the record count from a PDO result set"
+    ["@return"]=>
+    string(75) "mixed False if no records, otherwise the integer number of records queried."
+    ["@prototype"]=>
+    string(31) "public function recordCount() {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(6) "public"
+    }
+  }
+  [15]=>
+  array(3) {
+    ["@description"]=>
+    string(468) "Class that contains the common data and methods for full single record operations.Single Record Operations are defined as full record inserts, or full record updates to a specific table, generally based of form entered data.This class requires a pre-opened RS DB object and the name of the table to describe as parameters to the constructor.Note: Your table may have a unique fields. This class does not manage these. It will only manage data types, pk ai and not null"
+    ["@prototype"]=>
+    string(26) "class singleRecordCommon {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(5) "class"
+      ["visibility"]=>
+      string(7) "nothing"
+    }
+  }
+  [16]=>
+  array(5) {
+    ["@description"]=>
+    string(18) "Class constructor."
+    ["@param"]=>
+    array(2) {
+      ["param633a90ff679ea4.68671742"]=>
+      string(36) "mixed $cnx RS DB database connection"
+      ["param633a90ff67a011.69955285"]=>
+      string(94) "string $tableName Name of the table accessible through the connection to describe and work on."
+    }
+    ["@return"]=>
+    string(4) "void"
+    ["@prototype"]=>
+    string(47) "public function __construct($cnx, $tableName) {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(6) "public"
+    }
+  }
+  [17]=>
+  array(5) {
+    ["@description"]=>
+    string(165) "Describe the structure of a database table, and load it into the tableStructure array, including field names, values, auto increment, primary key and not null flags."
+    ["@param"]=>
+    array(1) {
+      ["param633a90ff67a341.18187420"]=>
+      string(30) "mixed $table Table to describe"
+    }
+    ["@return"]=>
+    string(9) "bool|void"
+    ["@prototype"]=>
+    string(42) "protected function describeTable($table) {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(9) "protected"
+    }
+  }
+  [18]=>
+  array(5) {
+    ["@description"]=>
+    string(110) "Takes the notnull field from the pragma table_info command from sqlite and returns the expected not null value"
+    ["@param"]=>
+    array(1) {
+      ["param633a90ff67a6c8.96690691"]=>
+      string(36) "mixed $result notnull value (0 or 1)"
+    }
+    ["@return"]=>
+    string(41) "string YES if null is allowed, NO if not."
+    ["@prototype"]=>
+    string(41) "private function sqliteNotnull($result) {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(7) "private"
+    }
+  }
+  [19]=>
+  array(3) {
+    ["@description"]=>
+    string(59) "Takes the PK field and checks if it's set to 1 (PK) or not."
+    ["@prototype"]=>
+    string(36) "private function sqlitePk($result) {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(7) "private"
+    }
+  }
+  [20]=>
+  array(5) {
+    ["@description"]=>
+    string(310) "Return a MariaDB field's primitive data type (string or number) for a given field's set data type.These data types are taken from https://mariadb.com/kb/en/data-types/ valid as of 10.3Known numerical values will be returned as numerical, all others will be returned as text.Dates will be considered text types."
+    ["@param"]=>
+    array(1) {
+      ["param633a90ff67ade1.53521454"]=>
+      string(48) "mixed $fieldDataType Database data type to check"
+    }
+    ["@return"]=>
+    string(70) "int 1 for numerical type, 0 for everything else (text, dates, spatial)"
+    ["@prototype"]=>
+    string(55) "private function returnPrimitiveDataType($typeRecord) {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(7) "private"
+    }
+  }
+  [21]=>
+  array(5) {
+    ["@description"]=>
+    string(573) "Return an SQLite field's primitive data type (string or number) for a given field's set data type.This library expects STRICT tables, where the value actually does match the column's data type.
+- or at least where the table users respect these types.These data types are taken from https://www.sqlite.org/datatype3.html valid as of 3Known numerical values will be returned as numerical, all others will be returned as text.Dates will be considered text types.BLOB's are undefined... but will best be considered text, and insert hex strings into them rather than raw binary!"
+    ["@param"]=>
+    array(1) {
+      ["param633a90ff67b566.95007678"]=>
+      string(48) "mixed $fieldDataType Database data type to check"
+    }
+    ["@return"]=>
+    string(70) "int 1 for numerical type, 0 for everything else (text, dates, spatial)"
+    ["@prototype"]=>
+    string(61) "private function returnSqlitePrimitiveDataType($typeRecord) {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(7) "private"
+    }
+  }
+  [22]=>
+  array(5) {
+    ["@description"]=>
+    string(61) "Check if the Extra column contains an auto_increment modifier"
+    ["@param"]=>
+    array(1) {
+      ["param633a90ff67b885.56871524"]=>
+      string(85) "mixed $extraData Value from the Extra column from a show columns from table statement"
+    }
+    ["@return"]=>
+    string(76) "bool True if the field contains an auto_increment modifier, otherwise False."
+    ["@prototype"]=>
+    string(46) "private function isAutoIncrement($extraData) {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(7) "private"
+    }
+  }
+  [23]=>
+  array(4) {
+    ["@description"]=>
+    string(292) "Get the value from a loaded record if the field exists.Note 1) MySQL/MariaDB could have case sensitive field names, so you MUST match the case of the loaded field names or the method will raise a fatal error.Note 2) This method will return the data as it is stored in the database, unescaped."
+    ["@param"]=>
+    array(1) {
+      ["param633a90ff67bd72.81361793"]=>
+      string(97) "string $fieldName Case sensitive name of the loaded field containing the value you want to return"
+    }
+    ["@prototype"]=>
+    string(38) "public function getField($fieldName) {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(6) "public"
+    }
+  }
+  [24]=>
+  array(5) {
+    ["@description"]=>
+    string(68) "Escape and quote a value for a specific field according to it's type"
+    ["@param"]=>
+    array(2) {
+      ["param633a90ff67bfd9.28419318"]=>
+      string(39) "mixed $field Name of the field to check"
+      ["param633a90ff67c0b1.41146879"]=>
+      string(54) "mixed $value Value of the field that may need escaping"
+    }
+    ["@return"]=>
+    string(129) "mixed If the expected type is numerical, then the value will be returned as is. If it is a string, it will be quoted and escaped."
+    ["@prototype"]=>
+    string(59) "protected function escapeQuoteValueByType($field, $value) {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(9) "protected"
+    }
+  }
+  [25]=>
+  array(5) {
+    ["@description"]=>
+    string(833) "Sets the value of the field of a loaded record for UPDATE, as long as it does not conflict with the loaded where list or auto_increment primary key.Text values set here will not be escaped at this level (this is done when the update method is called.)Note 1) MySQL/MariaDB could have case sensitive field names, so you MUST match the case of the loaded field names or the method will return a fatal error.Note 2) This method will set the data as it is provided, but escaping will only happen on update or insert for text valuesNote 3) The method will raise a fatal error if you attempt to:
+- Update the primary key value (if a primary key is present)
+- Update values that are set in the WHERE clause, as these are needed to identify the correct record to update
+- Set a value that does not match the field's type (numerical or text)*"
+    ["@param"]=>
+    array(2) {
+      ["param633a90ff67ca24.37853885"]=>
+      string(16) "mixed $fieldName"
+      ["param633a90ff67cb06.79317418"]=>
+      string(17) "mixed $fieldValue"
+    }
+    ["@return"]=>
+    string(4) "void"
+    ["@prototype"]=>
+    string(51) "public function setField($fieldName, $fieldValue) {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(6) "public"
+    }
+  }
+  [26]=>
+  array(3) {
+    ["@description"]=>
+    string(98) "Check if there is a table described and loaded into the class, and fail with a fatal error if not."
+    ["@prototype"]=>
+    string(49) "public function failIfTableStructureNotLoaded() {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(6) "public"
+    }
+  }
+  [27]=>
+  array(3) {
+    ["@description"]=>
+    string(573) "Loads a known record from the database, and makes it available for reading, field by field, but also allows for updating those loaded fields whichcan then be written back to the database.with the new values.Note that if the record is read from a table with a Primary Key, then all the fields can be updated except the Primary Key as it allows for atomic updatingwith only one identification key.If the record does not have a Primary Key, then the update will need to be based from the WHERE conditions used to read that unique record,and those fields will not be updatable."
+    ["@prototype"]=>
+    string(51) "class recordReadUpdate extends singleRecordCommon {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(5) "class"
+      ["visibility"]=>
+      string(7) "nothing"
+    }
+  }
+  [28]=>
+  array(5) {
+    ["@description"]=>
+    string(184) "Generate "field = value" pairs to be used in an SQL "where" clause. The field must exist, and the value must match the field's datatype.Strings sent will be automatically sql escapaed."
+    ["@param"]=>
+    array(2) {
+      ["param633a90ff67d6a1.10487794"]=>
+      string(62) "mixed $field Field to be used as a condition in a where clause"
+      ["param633a90ff67d782.26549013"]=>
+      string(105) "mixed $whereValue Value linked to the field in the where clause. Text data will be escaped automatically."
+    }
+    ["@return"]=>
+    string(128) "void Method will generate a fatal error if you try to set a where clause on a non existing field or use the incorrect data type."
+    ["@prototype"]=>
+    string(47) "public function addWhere($field, $whereValue) {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(6) "public"
+    }
+  }
+  [29]=>
+  array(4) {
+    ["@description"]=>
+    string(573) "Read a record from the database, taking the filter conditions into account that have been set through the addWhere method, if any.If the query does not return EXACTLY one record from the system, there will be a fatal error: The method does not force a limit 1, as if more thanone record is returned, you have no guarantee that you are working on the correct record, and so the method will error out if your where conditionsare not sufficiently precise, and if you have zero records, then you have nothing to do and there is a problem with your query or your database table."
+    ["@return"]=>
+    string(4) "void"
+    ["@prototype"]=>
+    string(33) "public function loadOneRecord() {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(6) "public"
+    }
+  }
+  [30]=>
+  array(4) {
+    ["@description"]=>
+    string(138) "Take the field values from the tableStructure array and update the values in the database, either from the PK or from the where condition."
+    ["@return"]=>
+    string(4) "void"
+    ["@prototype"]=>
+    string(32) "public function updateRecord() {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(6) "public"
+    }
+  }
+  [31]=>
+  array(3) {
+    ["@description"]=>
+    string(86) "Inserts a new record into the loaded table, that must respect the table's data format."
+    ["@prototype"]=>
+    string(44) "class recordNew extends singleRecordCommon {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(5) "class"
+      ["visibility"]=>
+      string(7) "nothing"
+    }
+  }
+  [32]=>
+  array(4) {
+    ["@description"]=>
+    string(338) "Insert a new record into the loaded table with data added via the setField method. Data will be checked againstthe expected data type from the table, and returned escaped and quoted to build the insert query.If the class has identified a Primary Key Auto Increment, then this field will be automaticallyignored as the DB will auto-fill it"
+    ["@return"]=>
+    string(60) "mixed ID of the inserted auto-increment record if available."
+    ["@prototype"]=>
+    string(35) "public function insertNewRecord() {"
+    ["type"]=>
+    array(2) {
+      ["type"]=>
+      string(6) "method"
+      ["visibility"]=>
+      string(6) "public"
+    }
+  }
+}

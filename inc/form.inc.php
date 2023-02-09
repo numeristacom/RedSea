@@ -147,7 +147,7 @@ class input {
      */
     public function render() {
         debug::flow();
-        return $this->singleLineTagRender($this->type());
+        return $this->tagRender($this->type());
     }
 }
 
@@ -219,7 +219,7 @@ class label {
      */
     public function render() {
         debug::flow();
-        return $this->singleLineTagRender($this->type(), $this->displayValue);
+        return $this->tagRender($this->type(), $this->displayValue);
     }
 
 }
@@ -365,7 +365,7 @@ class select {
             }
         }
         if($this->outputFullTag) {
-            return $this->singleLineTagRender($this->type(), $optionString);
+            return $this->tagRender($this->type(), $optionString);
         } else {
             return $optionString;
         }
@@ -379,6 +379,8 @@ class select {
 class option {
     
     use commonHtmlProperties;
+
+    public $optionDisplayValue;
 
     /**
      * This is the list of tag specific attributes with their corresponding expected data types.
@@ -421,7 +423,7 @@ class option {
      */
      public function render() {
         debug::flow();
-        return $this->singleLineTagRender($this->type(), $this->optionDisplayValue);
+        return $this->tagRender($this->type(), $this->optionDisplayValue);
     }
 }
 
@@ -502,7 +504,7 @@ class textarea {
      */
      public function render() {
         debug::flow();
-        return $this->singleLineTagRender($this->type(), $this->tagDisplayValue);
+        return $this->tagRender($this->type(), $this->tagDisplayValue);
     }
 }
 
@@ -559,7 +561,31 @@ class button {
      */
     public function render() {
         debug::flow();
-        return $this->singleLineTagRender($this->type(), $this->tagDisplayValue);
+        return $this->tagRender($this->type(), $this->tagDisplayValue);
+    }
+}
+
+/**
+ * 
+ *  Creates a generic HTML tag
+ */
+class tag {
+    use commonHtmlProperties;
+    /**
+     * Class constructor.
+     * Does nothing but load the type = table.
+     */
+    public function __construct($tagType) {
+        debug::flow();
+        $this->type($tagType);
+    }
+    /**
+     * Return the HTML code for this tag
+     * @return string HTML code for the specified tag.
+     */
+    public function render() {
+        debug::flow();
+        return $this->tagRender($this->type(), $this->tagDisplayValue);
     }
 }
 
@@ -796,6 +822,7 @@ class GlobalPropertiesAndAttributes {
     }
 }
 
+
 /** Defines common HTML tag attributes that most HTML elements share.
  * This class will be inherited by RedSea managed HTML tag classes.
  * For attributes and values see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes and the
@@ -983,7 +1010,7 @@ trait commonHtmlProperties {
      * @return string rendered single line HTML tag.
      * @internal
      */
-    private function singleLineTagRender($tagName, $tagHasValue=null) {
+    private function tagRender($tagName, $tagHasValue=null) {
         debug::flow();
         $commonProperties = null;
         $renderData = "<" . $tagName;

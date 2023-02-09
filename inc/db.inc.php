@@ -12,16 +12,13 @@
 */
 
 namespace RedSea;
-
 use PDO;
-
 
 /**
  * RedSea Database helper class. Based on PDO, this class simplifies connections to SQLite, 
  * and provides methods to execute direct SQL queries without returning a result, return a result set for parsing, and
  * can return the current PDO connection as a standalone object.
  */
-
 class rsdb {
 
     /**
@@ -168,7 +165,6 @@ class recordset {
      */
     public $end = false;
     private $result = null;
-    protected $InsertOrReadUpdate = null;
     
     /**
      * Set a local object for procesing by passing an SQLite result set to the class.
@@ -219,7 +215,7 @@ class recordset {
      * @return mixed False if no records, otherwise the integer number of records queried.
      */
     public function recordCount() {
-        die(var_dump($this->result->rowCount()));
+        //die(var_dump($this->result->rowCount()));
         return $this->result->rowCount();
     }
 }
@@ -231,12 +227,13 @@ class recordset {
  * Note: Your table may have a unique fields. This class does not manage these. It will only manage data types, pk ai and not null
  */
 class singleRecordCommon {
-    protected $dbCnx = null;
-    protected $tableName = null;
-    protected $tableStructure = array();      // array: field name => array(primitive type, null, key, auto increment)
-    protected $whereFields = array();         // fields used to hold fields to generate a "where" condition for a query.
-    protected $pkField = null;                // If the table contains a primary key, we will store it, as this allows us to run an update only on the unique PK field as a key rather than relying on WHERE conditions.
-    protected $recordIsLoaded = false;        // Set flag to true when a record is correctly loaded
+    public $dbCnx = null;
+    public $tableName = null;
+    public $tableStructure = array();      // array: field name => array(primitive type, null, key, auto increment)
+    public $whereFields = array();         // fields used to hold fields to generate a "where" condition for a query.
+    public $pkField = null;                // If the table contains a primary key, we will store it, as this allows us to run an update only on the unique PK field as a key rather than relying on WHERE conditions.
+    public $recordIsLoaded = false;        // Set flag to true when a record is correctly loaded
+    public $shadowTableStructure = null;   // Keep a copy of the loaded table structure so this can be reset without reinstantiating the object 
     
     /**
      * Class constructor.
@@ -250,6 +247,8 @@ class singleRecordCommon {
         if($this->describeTable($tableName) !== true) {     //Crash and burn.
             debug::fatal("Could not load table structure for table", $tableName);
         } else {
+            //Cache a copy of the table structure for future use in loops.
+            $this->shadowTableStructure = $this->tableStructure;
             $this->recordIsLoaded = true;
         }
     }
@@ -263,7 +262,11 @@ class singleRecordCommon {
         $table = str::sqlString($table);
         $ret = false;
         // MariaDB or SQLite? We need to run different types of queries to get the same information.
-        switch ($this->dbCnx->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+        $dbType = $this->dbCnx->getAttribute(PDO::ATTR_DRIVER_NAME);
+        debug::flow('DB type', $dbType);
+        switch ($dbType) {
+            case "mysql":
+                //No break, just MariaDB will connect as MySQL internally, so don't break and roll into the mariadb part.
             case "mariadb":
                 //Easy with MariaDB/MySql
                 $sql = "show columns from " . $table;
@@ -280,7 +283,8 @@ class singleRecordCommon {
                         'nullAllowed' => $result['Null'],   //Is null value allowed?
                         'key' => $result['Key'],            //Is there a key or index here? (PRI = primary key. If auto increment, ignore this value in insert / update unless forced.)
                         'ai' => $this->isAutoIncrement($result['Extra']),   //Is this an auto increment field?
-                        'fieldValue' => null                //Store the field value here when a value is loaded, or store values for an insert.
+                        'fieldValue' => null,                //Store the field value here when a value is loaded, or store values for an insert.
+                        'valueChanged' => false
                     );
                 }
                 $ret = true;
@@ -329,7 +333,8 @@ class singleRecordCommon {
                 debug::fatal('Database type not recognised', $this->dbCnx->selectedDbType);
         }
         unset($rs);
-
+        //Now copy the table structure array to a shadow copy.
+        $this->shadowTableStructure = $this->tableStructure;
         return $ret;
     }
 
@@ -465,6 +470,8 @@ class singleRecordCommon {
      * @param mixed $fieldValue 
      * @return void 
      */
+
+     // setField - needs to be independant depending if this is an insert or update and not added to the table structure.
     public function setField($fieldName, $fieldValue) {
         if(array_key_exists($fieldName, $this->tableStructure)) {
             //Is this a numerical field but a non numeric value?
@@ -473,29 +480,20 @@ class singleRecordCommon {
                     debug::fatal('Field value does not match field data type', array('Field' => $fieldName, "Value" => $fieldValue, "Type" => $this->tableStructure[$fieldName]['primitive']));
                 }
             }
-            
-            //Is there a primary key in the table? If so, we can ignore the where conditions. 
-            //If not, then we must rely on the where conditions to identify the unique record.
 
-            //Are we attempting to update the primary key?
-            if(!is_null($this->pkField)) {
-                //We have a primary key. We can ignore attempts to update on WHERE fields as the PK is enough to uniquely identify the record we want to update.
-                if($fieldName == $this->pkField && $this->InsertOrReadUpdate == 'ReadUpdate') {
-                    debug::fatal('Attempting to update the primary key', $fieldName);
-                }
+            if($this->tableStructure[$fieldName]['primitive'] == "NUM") {
+                $fieldValue = str::sqlNumber($fieldValue);
             } else {
-                //No PK, so the only way to update a unique record is by the provided WHERE records, so we must reject any attempts to update a field that is used in the where condition.
-                if(array_key_exists($fieldName, $this->whereFields)) {
-                    //Is this field in the primary key list?
-                    debug::fatal('Attempting to update a field used in the WHERE condition and no table contains no primary key', $fieldName);
-                }
+                $fieldValue = str::sqlString($fieldValue);
             }
-            
+
             //So... If we have not failed out... set the value!
-            $this->tableStructure[$fieldName]['fieldValue'] = $fieldValue;            
+            $this->tableStructure[$fieldName]['fieldValue'] = $fieldValue;
+            $this->tableStructure[$fieldName]['valueChanged'] = true;        
         } else {
-            debug::fatal('Requested field to set does not exist in the table or does not match field name case sensitivity', $fieldName);
+            debug::fatal('Requested field to set does not exist in the table (or does not match field name case sensitivity)', $fieldName);
         }
+
     }
 
     /**
@@ -504,6 +502,115 @@ class singleRecordCommon {
     public function failIfTableStructureNotLoaded() {
         if(!$this->recordIsLoaded) {
             debug::fatal('No table structure loaded. Insert not possible');
+        }
+    }
+}
+
+class recordUpsert extends singleRecordCommon {
+    public $pkid = null;
+    private $operationToExecute = null;
+
+    // This class's constructor will call the parent constructor as it's inherited.
+    public function __construct($cnx, $tableName, $pkid=null) {
+        parent::__construct($cnx, $tableName);
+        //We can target using where or a unique id in the table. Guaranteed 100% is the pkid record read. 
+        //If this value is not null, then we don't need to do anything else.
+        if(is_null($pkid)) {
+            $this->operationToExecute = "INSERT";
+        } else {
+            if(is_numeric($pkid)) {
+                $this->pkid = $pkid;
+                $this->operationToExecute = "UPDATE";
+            } else {
+                debug::fatal("Non numeric PK id for the table was provided.");
+            }
+        }
+    }
+
+    public function upsert() {
+        $this->failIfTableStructureNotLoaded();
+        $i = 0;
+        if($this->operationToExecute == 'UPDATE') {
+            $sql = "UPDATE " . $this->tableName . " SET ";
+            $and = null;
+            foreach($this->tableStructure as $field => $fieldData) {
+                if($fieldData['valueChanged'] == true) {
+                    if(is_null($fieldData['fieldValue']) && $fieldData['nullAllowed'] == 'NO') {
+                        debug::fatal('Attempting to insert null value into not null field', array($field, $fieldData));
+                    }
+
+                    if($i > 0) {
+                        $and = ", ";
+                    }
+                    
+                    $sql .= $and . $field . " = " . str::sqlUpsertValue($fieldData['fieldValue'], $fieldData['primitive']);
+                    $i++;
+                }
+            }
+            $sql .= " WHERE " . $this->pkField . " = " . $this->pkid;
+
+        } else {
+            $sql = "INSERT INTO " . $this->tableName . " (";
+            $sqlValues = " VALUES (";
+            $sqlData = null;
+
+            foreach($this->tableStructure as $field => $fieldData) {
+
+                if($fieldData['valueChanged'] == true) {
+                    if(is_null($fieldData['fieldValue']) && $fieldData['nullAllowed'] == 'NO' && !$fieldData['ai'] = true ) {
+                        debug::fatal('Attempting to insert null value into not null field', array($field,$fieldData));
+                    }
+
+                    if($i == 0) {
+                        $comma = '';
+                    } else {
+                        $comma = ', ';
+                    }
+
+                    $sql .= $comma . $field;
+                    $sqlValues .= $comma . str::sqlUpsertValue($fieldData['fieldValue'], $fieldData['primitive']);
+                    $i++;
+                }
+            }
+
+            $sql .= ") ";
+            $sqlValues .= ")";
+            $sql .= $sqlValues;
+        }
+
+        $affectedRecords = $this->dbCnx->exec($sql);
+        // Get the number of affected rows. If 0: problem, if 1: ok, if more than one: WTF.
+        if($affectedRecords != 1) {
+            debug::fatal('query did not match exactly 1 record', array($sql, $this->dbCnx->affectedRecords));
+        } else {
+            if($this->operationToExecute == 'INSERT') {
+                return $this->dbCnx->lastInsertId();
+            } else {
+                return true;
+            }
+        }
+    }
+
+    /**
+     * Reset the object so it can be used for a new insert without having to instanciate a  new one, when used in a multi-upsert
+     * loop as if the class is re-instanciated, each upsert would require a describe and analysis of the table.
+     * Calling reset allows the class to clear and reset the initally described table data structures, and allow a fresh upsert
+     * operation, without the class and database overhead that a new object would require.
+     * @return void. Fails if a non numeric record primary key value provided.
+     */
+    public function reset($pkid=null) {
+        //Overwrite the currently used data structure with the shadow copy
+        $this->tableStructure = $this->shadowTableStructure;
+        //And reset the operation to execute:
+        if(is_null($pkid)) {
+            $this->operationToExecute = "INSERT";
+        } else {
+            if(is_numeric($pkid)) {
+                $this->pkid = $pkid;
+                $this->operationToExecute = "UPDATE";
+            } else {
+                debug::fatal("Non numeric PK id for the table was provided.");
+            }
         }
     }
 }
@@ -517,73 +624,33 @@ class singleRecordCommon {
  * If the record does not have a Primary Key, then the update will need to be based from the WHERE conditions used to read that unique record,
  * and those fields will not be updatable.
  */
-class recordReadUpdate extends singleRecordCommon {
+class recordRead extends singleRecordCommon {
     
+    public $pkid = null;
+
     // This class's constructor will call the parent constructor as it's inherited.
-    public function __construct($cnx, $tableName) {
+    public function __construct($cnx, $tableName, $pkid) {
         parent::__construct($cnx, $tableName);
-        $this->InsertOrReadUpdate = 'ReadUpdate';
-    }
-
-    /**
-     * Generate "field = value" pairs to be used in an SQL "where" clause. The field must exist, and the value must match the field's datatype. 
-     * Strings sent will be automatically sql escapaed.
-     * @param mixed $field Field to be used as a condition in a where clause 
-     * @param mixed $whereValue Value linked to the field in the where clause. Text data will be escaped automatically. 
-     * @return void Method will generate a fatal error if you try to set a where clause on a non existing field or use the incorrect data type.
-     */
-    public function addWhere($field, $whereValue) {
-        $this->failIfTableStructureNotLoaded();
-
-        //Does the field even exist?
-        if(array_key_exists($field, $this->tableStructure)) {
-            //Is this field a numerical or text field?
-            if($this->tableStructure[$field]['primitive'] == 'NUM') {
-                if(is_numeric($whereValue)) {
-                    $this->whereFields[$field] = $whereValue;
-                } else {
-                    debug::fatal("Type error for field '$field'", $whereValue);
-                }
-            } else {
-                //Process as text
-                $this->whereFields[$field] = str::sqlString($whereValue);
-            }
+        //We can target using where or a unique id in the table. Guaranteed 100% is the pkid record read. 
+        //If this value is not null, then we don't need to do anything else.
+        if(!is_null($pkid) && is_numeric($pkid)) {
+            $this->pkid = $pkid;
         } else {
-            //Error: specified field does not exist. Die.
-            debug::fatal("Field '$field' does not exist on table", $this->tableName);
+            debug::fatal("No PK id for the table was provided.");
         }
-    }
 
-    /**
-     * Read a record from the database, taking the filter conditions into account that have been set through the addWhere method, if any.
-     * If the query does not return EXACTLY one record from the system, there will be a fatal error: The method does not force a limit 1, as if more than
-     * one record is returned, you have no guarantee that you are working on the correct record, and so the method will error out if your where conditions
-     * are not sufficiently precise, and if you have zero records, then you have nothing to do and there is a problem with your query or your database table.
-     * @return void 
-     */
-    public function loadOneRecord() {
         $this->failIfTableStructureNotLoaded();
 
-        $sqlHead = "select * from " . $this->tableName;
-        $sqlExtra = '';
-        // Are there any where conditions? 
-        $where = null;
-        $i = 0;
-        $and = null;
-        foreach($this->whereFields as $field => $value) {
-            if($i == 0) {
-                $sqlExtra .= " WHERE ";
-                $i++;
-            } else {
-                $sqlExtra .= " AND ";
-            }
-            $sqlExtra .= $field . " = " . $this->escapeQuoteValueByType($field, $value);
+        if(is_null($this->pkField)) {
+            debug::fatal("There is no PK field found in this table");
         }
 
-        $rs = new recordset($this->dbCnx->query($sqlHead . $sqlExtra));
+        $sqlHead = "select * from " . $this->tableName . " where " . $this->pkField . " = " . $this->pkid;
+
+        $rs = new recordset($this->dbCnx->query($sqlHead));
         if($this->dbCnx->getAttribute(PDO::ATTR_DRIVER_NAME) == 'sqlite') {
             //We have to do a select count(*) on sqlite, as recordCount does not work on selects... :(
-            foreach ($this->dbCnx->query('select count(*) as num from ' . $this->tableName . $sqlExtra) as $row) {
+            foreach ($this->dbCnx->query('select count(*) as num from ' . $this->tableName . " where " . $this->pkField . " = " . $this->pkid) as $row) {
                 $records = $row['num'];
             }
         } else {
@@ -591,7 +658,7 @@ class recordReadUpdate extends singleRecordCommon {
         }
         
         if($records != 1) {
-            debug::fatal("Query returned $records rows. Only 1 row is expected", 'select count(*) as num from ' . $this->tableName . $sqlExtra);
+            debug::fatal("Query returned $records rows. Only 1 row is expected", $sqlHead );
         } else {
             while ($result = $rs->fetchArray()) {
                 foreach($result as $field => $value) {
@@ -600,147 +667,20 @@ class recordReadUpdate extends singleRecordCommon {
             }
         }
     }
-
-    /**
-     * Take the field values from the tableStructure array and update the values in the database, either from the PK or from the where condition.
-     * @return void 
-     */
-    public function updateRecord() {
-
-        $this->failIfTableStructureNotLoaded();
-
-        $sql = "UPDATE " . $this->tableName . " SET ";
-        $and = null;
-        $i = 0;
-        
-        foreach($this->tableStructure as $field => $fieldData) {
-            //Reset the skip flag
-            $skipField = false;
-
-            
-            if(!is_null($this->pkField)) {
-                //Update on the loaded PK
-                if($field == $this->pkField) {
-                    $skipField = true;
-                }
-            } else {
-                //update on the where condition used to select the content.
-                if(array_key_exists($field, $this->whereFields)) {
-                    $skipField = true;
-                }
-            }
-
-            if(is_null($fieldData) && $this->tableStructure[$field]['nullAllowed'] == 'NO') {
-                debug::fatal('Attempting to insert null value into not null field', $field);
-            }
-
-            if(!$skipField) {
-                $sql .= $and . $field . " = " . $this->escapeQuoteValueByType($field, $fieldData['fieldValue']);
-            } else {
-                echo "skipping $field : " . $fieldData['fieldValue'] . "\n"; 
-            }
-
-            if(!$skipField) {
-                $i++;
-            }
-            
-            if($i > 0) {
-                $and = ", ";
-            }
-        }
-
-        //Add in the WHERE conditions:
-        if(!is_null($this->pkField)) {
-            $sql .= " WHERE " . $this->pkField . " = " . $this->tableStructure[$this->pkField]['fieldValue'];
-        } else {
-            //We will have to use the where array.
-            $where = null;
-            $i = 0;
-            foreach($this->whereFields as $field => $value) {
-                
-                if($i == 0) {
-                    $where .= " WHERE ";
-                } else {
-                    $where .= " AND ";
-                }
-
-                $where .= $field . " = " .  $this->escapeQuoteValueByType($field, $value);
-                $i++;
-            }
-            $sql .= $where;
-        }
-
-        //We can run the generated query.
-        $affectedRecords = $this->dbCnx->exec($sql);
-        // Get the number of affected rows. If 0: problem, if 1: ok, if more than one: WTF.
-        if($affectedRecords != 1) {
-            debug::fatal('Update query did not match exactly 1 record', array($sql, $this->dbCnx->affectedRecords));
-        } else {
-            return true;
-        }
-    }
 }
 
-/**
- * Inserts a new record into the loaded table, that must respect the table's data format.
- */
-class recordNew extends singleRecordCommon {
-
+class recordDelete extends singleRecordCommon {
     // This class's constructor will call the parent constructor as it's inherited.
-    public function __construct($cnx, $tableName) {
+    public function __construct($cnx, $tableName, $pkid=null) {
         parent::__construct($cnx, $tableName);
-        $this->InsertOrReadUpdate = 'Insert';
     }
-    
-    /**
-     * Insert a new record into the loaded table with data added via the setField method. Data will be checked against
-     * the expected data type from the table, and returned escaped and quoted to build the insert query.
-     * If the class has identified a Primary Key Auto Increment, then this field will be automatically 
-     * ignored as the DB will auto-fill it
-     * @return mixed ID of the inserted auto-increment record if available.
-     */
-    public function insertNewRecord() {
 
-        $this->failIfTableStructureNotLoaded();
-
-        if(!is_null($this->pkField) && $this->tableStructure[$this->pkField]['ai'] == TRUE && !is_null($this->tableStructure[$this->pkField]['fieldValue'])) {
-            debug::fatal("Attempting to insert defined value into auto increment primary key field. Null expected", $this->pkField);
+    public function delete($pkid) {
+        if((!is_numeric($pkid))) {
+            debug::fatal("Non numeric primary key ID provided", $pkid);
         }
-
-        $sql = "INSERT INTO " . $this->tableName . " (";
-        $sqlValues = " VALUES (";
-        $sqlData = null;
-        $i = 0;
-        foreach($this->tableStructure as $field => $fieldArray) {
-            $skipRecord = false;
-            if($field == $this->pkField && $fieldArray['ai'] == true) {
-                $skipRecord = true;
-            }
-
-            if(is_null($fieldArray['fieldValue']) && $fieldArray['nullAllowed'] == 'NO') {
-                debug::fatal('Attempting to insert null value into not null field', $field);
-            }
-            
-            if(!$skipRecord) {
-                $escapedFieldValue = $this->escapeQuoteValueByType($field, $fieldArray['fieldValue']);
-
-                if($i == 0) {
-                    $sql .= $field;
-                    $sqlValues .= $escapedFieldValue;
-                } else {
-                    $sql .= ", " . $field;
-                    $sqlValues .= ", " . $escapedFieldValue;
-                }
-                $i++;
-            }
-        }
-
-        $sql .= ") ";
-        $sqlValues .= ")";
-        
-        //We can run the generated query.
-        $this->dbCnx->exec($sql . $sqlValues);
-        $this->dbCnx->lastInsertId();
+        $sql = "delete from " . $this->tableName . " where " . $this->pkField . " = " . $pkid;
+        return $this->dbCnx->exec($sql);
     }
 }
 

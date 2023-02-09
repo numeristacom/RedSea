@@ -1,7 +1,6 @@
 <?php 
 
 namespace RedSea;
-
     /**
      * @class timer
      * A simple class that starts and stops a timer
@@ -43,5 +42,4 @@ class timer {
         return $ret;
     }
 }
-
 ?>

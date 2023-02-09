@@ -60,6 +60,14 @@ if(php_sapi_name() === 'cli') {
  */
 define("RS_CACHE", __DIR__ . DIRECTORY_SEPARATOR);
 
+/*
+* Define contstants used to identify where to get a variable from
+*/
+define("RS_GET", 'GET');
+define("RS_POST", 'POST');
+define("RS_NUM", "NUM");
+define("RS_STR", "STR");
+
 //Library autoloader
 
 /* debug.inc.php must be set first as all other objects depend on it for debug and execution flow services */

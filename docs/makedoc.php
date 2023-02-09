@@ -90,7 +90,7 @@ foreach($fileArray as $line) {
         if($ignoreLine == false) {
             //Take the next line as this is what the docblock links to then unset the next line flag.
             echo __line__ . ":adding $line to prototype...\n";
-            $docBlocks[$docBlockCounter]['@prototype'] = $line;
+            $docBlocks[$docBlockCounter]['@prototype'] = str_replace('{', '', $line);
             $takeOneMoreLine = false;
             $inDocBlock = false;
             $docBlockCounter++;
@@ -108,6 +108,75 @@ foreach($docBlocks as $id=>$block) {
 
 //Lets see what we have!
 die(var_dump($docBlocks));
+
+
+
+/*
+End of processing. Generate the output file sequentially from the $docBlocks array.
+*/
+
+$fileOutput = null;
+
+$lastBlock = array();
+$madeLastBlock = false;
+foreach($docBlocks as $id=>$block) {
+    //The block containing  Author, Copyright and Licence are level 1 (#),
+    //and are to be added to the absolute end of the output
+    //Class, Trait, Function (not method) are level 1 - #
+    //Method and Property are level 2 - ##
+    //Anything else is level 3
+    //Return is also level 3 - ### and must be the last out of the block.
+
+
+    //Every time we extract a known value from the block, add it here
+    //As we are not pulling the data sequentially, 
+    $processedBlockElements = array();  
+
+    if(!$madeLastBlock) {
+        if(array_key_exists('@copyright', $block)) {
+            $madeLastBlock = true;
+            $lastBlock = $block;
+        }  
+    }
+
+    if(!$madeLastBlock) {
+        if(array_key_exists('@licence', $block)) {
+            $madeLastBlock = true;
+            $lastBlock = $block;
+        }  
+    }
+
+    if(!$madeLastBlock) {
+        if(array_key_exists('@author', $block)) {
+            $madeLastBlock = true;
+            $lastBlock = $block;
+        }
+    }
+
+    if(!$madeLastBlock) {
+        //Process it sequentially as we don't have an identified last block right now in the loop and generate the raw output
+        $type = $block['type']['type'];
+        
+        switch($type) {
+            case 'class':
+                break;
+            case 'function':
+                break;
+            case 'trait':
+                break;
+            case 'method':
+                break;
+            case 'property':
+                break;
+            default:
+                //This one should be 'nothing' - so it should not be a title...
+        }
+    }
+}
+
+/*
+Helper functions
+*/
 
 function stripLine($lineToClean) {
     echo __function__ . ":" . __line__ . ":" . $lineToClean . "\n";
@@ -192,7 +261,7 @@ function getBlockType($prototype, $id) {
 function lookFor($for, $to) {
     global $docBlocks;
     for($i = 0; $i<= $to; $i++) {
-        if($docBlocks[$i]['type']['type'] == 'class');
+        if($docBlocks[$i]['type']['type'] == $for);
         return true;
     }
     return false; 
